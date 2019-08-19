@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <PreferenceCategory android:title="@string/settings_general">
+
+    <ListPreference
+      android:defaultValue="quality"
+      android:entries="@array/media_qualities"
+      android:entryValues="@array/media_qualities_values"
+      android:key="media_quality"
+      android:title="@string/settings_media_quality" />
+
+    <SeekBarPreference
+      android:defaultValue="1"
+      android:key="media_cache_size"
+      android:max="5"
+      android:min="0"
+      android:title="@string/settings_media_cache_size"
+      app:showSeekBarValue="true"
+      app:updatesContinuously="true" />
+
+  </PreferenceCategory>
+
+  <PreferenceCategory android:title="@string/settings_other">
+
+    <ListPreference
+      android:defaultValue="system"
+      android:entries="@array/night_mode"
+      android:entryValues="@array/night_mode_values"
+      android:key="night_mode"
+      android:title="@string/settings_night_mode" />
+
+    <Preference
+      android:key="oss_licences"
+      android:title="@string/title_oss_licences" />
+
+    <Preference
+      android:key="logout"
+      android:title="@string/settings_logout" />
+
+  </PreferenceCategory>
+
+</androidx.preference.PreferenceScreen>

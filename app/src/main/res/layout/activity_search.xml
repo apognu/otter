@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical"
+  tools:context=".activities.SearchActivity">
+
+  <androidx.cardview.widget.CardView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:elevation="4dp">
+
+    <androidx.appcompat.widget.SearchView
+      android:id="@+id/search"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      app:iconifiedByDefault="false"
+      app:queryHint="@string/search_placeholder" />
+
+  </androidx.cardview.widget.CardView>
+
+  <ProgressBar
+    android:id="@+id/search_spinner"
+    android:layout_width="32dp"
+    android:layout_height="32dp"
+    android:layout_gravity="center"
+    android:layout_marginTop="16dp"
+    android:indeterminate="true"
+    android:visibility="gone" />
+
+  <TextView
+    android:id="@+id/search_empty"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginTop="16dp"
+    android:drawableTop="@drawable/ottericon"
+    android:drawablePadding="16dp"
+    android:drawableTint="#525252"
+    android:text="@string/search_welcome"
+    android:textAlignment="center"
+    android:textSize="14sp" />
+
+  <TextView
+    android:id="@+id/search_no_results"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginTop="16dp"
+    android:drawableTop="@drawable/ottericon"
+    android:drawablePadding="16dp"
+    android:drawableTint="#525252"
+    android:text="@string/search_no_results"
+    android:textAlignment="center"
+    android:textSize="14sp"
+    android:visibility="gone" />
+
+  <androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/results"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:itemCount="10"
+    tools:listitem="@layout/row_track" />
+
+</LinearLayout>

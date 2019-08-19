@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/swiper"
+  style="@style/AppTheme.Fragment"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:transitionGroup="true">
+
+  <androidx.core.widget.NestedScrollView
+    android:id="@+id/scroller"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:clipChildren="false"
+      android:clipToPadding="false"
+      android:orientation="vertical">
+
+      <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
+        android:elevation="1dp">
+
+        <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="vertical">
+
+          <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+              android:id="@+id/cover"
+              android:layout_width="match_parent"
+              android:layout_height="250dp"
+              android:contentDescription="@string/alt_album_cover"
+              android:scaleType="centerCrop"
+              app:layout_constraintBottom_toBottomOf="parent"
+              app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintTop_toTopOf="parent"
+              app:layout_constraintVertical_bias="0"
+              tools:src="@tools:sample/avatars"
+              tools:visibility="invisible" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+              android:id="@+id/covers"
+              android:layout_width="match_parent"
+              android:layout_height="250dp"
+              android:visibility="gone"
+              app:layout_constraintBottom_toBottomOf="parent"
+              app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintTop_toTopOf="parent"
+              app:layout_constraintVertical_bias="0"
+              tools:visibility="visible">
+
+              <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent=".50" />
+
+              <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent=".50" />
+
+              <com.github.apognu.otter.views.SquareImageView
+                android:id="@+id/cover_top_left"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/cover"
+                app:layout_constraintBottom_toBottomOf="@id/vertical"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="@id/horizontal"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:src="@tools:sample/avatars" />
+
+              <com.github.apognu.otter.views.SquareImageView
+                android:id="@+id/cover_top_right"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/cover"
+                app:layout_constraintBottom_toBottomOf="@id/vertical"
+                app:layout_constraintLeft_toLeftOf="@id/horizontal"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:src="@tools:sample/avatars" />
+
+              <com.github.apognu.otter.views.SquareImageView
+                android:id="@+id/cover_bottom_left"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/cover"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="@id/horizontal"
+                app:layout_constraintTop_toTopOf="@id/vertical"
+                tools:src="@tools:sample/avatars" />
+
+              <com.github.apognu.otter.views.SquareImageView
+                android:id="@+id/cover_bottom_right"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/cover"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="@id/horizontal"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/vertical"
+                tools:src="@tools:sample/avatars" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+              android:id="@+id/play"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:backgroundTint="@color/colorPrimary"
+              android:elevation="10dp"
+              android:text="@string/playback_shuffle"
+              android:textColor="@android:color/white"
+              app:icon="@drawable/play"
+              app:iconTint="@android:color/white"
+              app:layout_constraintBottom_toBottomOf="@id/cover"
+              app:layout_constraintLeft_toLeftOf="@id/cover"
+              app:layout_constraintRight_toRightOf="@id/cover"
+              app:layout_constraintTop_toBottomOf="@id/cover" />
+
+          </androidx.constraintlayout.widget.ConstraintLayout>
+
+          <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_weight="1"
+              android:orientation="vertical">
+
+              <TextView
+                android:id="@+id/artist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                android:textAllCaps="true"
+                android:textSize="14sp"
+                tools:text="Muse" />
+
+              <TextView
+                android:id="@+id/title"
+                style="@style/AppTheme.Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="16dp"
+                tools:text="Absolution" />
+
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+              android:id="@+id/queue"
+              style="@style/AppTheme.OutlinedButton"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center"
+              android:layout_marginHorizontal="16dp"
+              android:text="@string/playback_queue"
+              app:icon="@drawable/add" />
+
+          </LinearLayout>
+
+        </LinearLayout>
+
+      </com.google.android.material.card.MaterialCardView>
+
+      <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/tracks"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:itemCount="10"
+        tools:listitem="@layout/row_track" />
+
+    </LinearLayout>
+
+  </androidx.core.widget.NestedScrollView>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

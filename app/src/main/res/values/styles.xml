@@ -1,0 +1,65 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+  <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <item name="android:forceDarkAllowed" tools:targetApi="q">true</item>
+
+    <item name="colorPrimary">@color/colorPrimary</item>
+    <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+    <item name="colorAccent">@color/colorAccent</item>
+    <item name="android:navigationBarColor">@color/colorPrimary</item>
+
+    <item name="preferenceTheme">@style/AppTheme.Preference</item>
+  </style>
+
+  <style name="AppTheme.Fragment">
+  </style>
+
+  <style name="AppTheme.Title">
+    <item name="android:fontFamily">sans-serif-light</item>
+    <item name="android:textSize">28sp</item>
+    <item name="android:textColor">@color/itemTitle</item>
+  </style>
+
+  <style name="AppTheme.ItemTitle">
+    <item name="android:textSize">16sp</item>
+    <item name="android:textColor">@color/itemTitle</item>
+  </style>
+
+  <style name="AppTheme.OutlinedButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+    <item name="android:textColor">@color/controlForeground</item>
+    <item name="iconTint">@color/controlForeground</item>
+  </style>
+
+  <style name="AppTheme.Preference" parent="PreferenceThemeOverlay">
+    <item name="android:textColor">@color/itemTitle</item>
+
+    <item name="preferenceCategoryStyle">@style/AppTheme.PreferenceCategory</item>
+  </style>
+
+  <style name="AppTheme.PreferenceCategory" parent="Preference.Category">
+    <item name="android:layout" tools:override="true">@layout/preference_category</item>
+  </style>
+
+  <style name="IconButton" parent="Widget.AppCompat.ActionButton">
+    <item name="android:tint">@color/controlForeground</item>
+    <item name="android:adjustViewBounds">true</item>
+    <item name="android:scaleType">fitCenter</item>
+  </style>
+
+  <style name="AppTheme.AppBar" parent="ThemeOverlay.MaterialComponents.Toolbar.Primary">
+    <item name="android:drawableTint" tools:targetApi="m">@android:color/white</item>
+    <item name="android:tint">@android:color/white</item>
+
+    <item name="android:popupTheme">@style/ThemeOverlay.AppCompat.DayNight</item>
+  </style>
+
+  <style name="AppTheme.FloatingBottomSheet" parent="Theme.MaterialComponents.DayNight.BottomSheetDialog">
+    <item name="bottomSheetStyle">@style/AppTheme.BottomSheetStyle</item>
+  </style>
+
+  <style name="AppTheme.BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+    <item name="android:windowBackground">@android:color/transparent</item>
+    <item name="android:background">@android:color/transparent</item>
+  </style>
+
+</resources>

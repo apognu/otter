@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <color name="surfaceAccent">@android:color/background_light</color>
+  <color name="surface">@android:color/background_light</color>
+
+  <color name="colorPrimary">#327eae</color>
+  <color name="colorPrimaryDark">#3d3e40</color>
+  <color name="colorAccent">#d35400</color>
+
+  <color name="colorSelected">#dadada</color>
+  <color name="colorFavorite">#e17055</color>
+
+  <color name="itemTitle">@android:color/black</color>
+
+  <color name="controlForeground">@color/colorPrimary</color>
+</resources>

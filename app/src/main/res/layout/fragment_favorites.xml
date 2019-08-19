@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/swiper"
+  style="@style/AppTheme.Fragment"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <androidx.core.widget.NestedScrollView
+    android:id="@+id/scroller"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:clipChildren="false"
+      android:orientation="vertical">
+
+      <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipChildren="false">
+
+        <TextView
+          style="@style/AppTheme.Title"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginHorizontal="16dp"
+          android:layout_marginTop="64dp"
+          android:layout_marginBottom="16dp"
+          android:text="@string/favorites" />
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+          android:id="@+id/play"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_centerHorizontal="true"
+          android:layout_marginTop="16dp"
+          android:backgroundTint="@color/colorPrimary"
+          android:elevation="10dp"
+          android:text="@string/playback_shuffle"
+          android:textColor="@android:color/white"
+          app:icon="@drawable/play"
+          app:iconTint="@android:color/white" />
+
+      </RelativeLayout>
+
+      <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/favorites"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:listitem="@layout/row_track" />
+    </LinearLayout>
+
+  </androidx.core.widget.NestedScrollView>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

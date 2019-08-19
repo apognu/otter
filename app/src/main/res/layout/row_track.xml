@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:background="?android:attr/selectableItemBackground"
+  android:gravity="center_vertical"
+  android:orientation="horizontal"
+  android:paddingHorizontal="16dp"
+  android:paddingVertical="12dp"
+  android:transitionGroup="true"
+  tools:showIn="@layout/fragment_tracks">
+
+  <com.github.apognu.otter.views.SquareImageView
+    android:id="@+id/handle"
+    android:layout_width="18dp"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="16dp"
+    android:src="@drawable/reorder"
+    android:tint="#787878"
+    android:visibility="gone"
+    tools:visibility="visible" />
+
+  <com.github.apognu.otter.views.SquareImageView
+    android:id="@+id/cover"
+    android:layout_width="48dp"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="16dp"
+    tools:src="@tools:sample/avatars" />
+
+  <LinearLayout
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:orientation="vertical">
+
+    <TextView
+      android:id="@+id/title"
+      style="@style/AppTheme.ItemTitle"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="4dp"
+      android:ellipsize="end"
+      android:lines="1"
+      tools:text="Absolution" />
+
+    <TextView
+      android:id="@+id/artist"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:ellipsize="end"
+      android:lines="1"
+      tools:text="Muse" />
+
+  </LinearLayout>
+
+  <ImageButton
+    android:id="@+id/favorite"
+    style="@style/IconButton"
+    android:layout_width="48dp"
+    android:layout_height="48dp"
+    android:contentDescription="@string/manage_add_to_favorites"
+    android:src="@drawable/favorite" />
+
+  <ImageButton
+    android:id="@+id/actions"
+    style="@style/IconButton"
+    android:layout_width="48dp"
+    android:layout_height="48dp"
+    android:src="@drawable/more" />
+
+</LinearLayout>

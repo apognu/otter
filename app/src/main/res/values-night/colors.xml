@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <color name="surface">#121212</color>
+  <color name="colorPrimary">#71a5cd</color>
+
+  <color name="colorSelected">#525252</color>
+  <color name="itemTitle">#caffffff</color>
+
+  <color name="controlForeground">#caffffff</color>
+</resources>

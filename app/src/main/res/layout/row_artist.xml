@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:background="?android:attr/selectableItemBackground"
+  android:gravity="center_vertical"
+  android:orientation="horizontal"
+  android:paddingHorizontal="16dp"
+  android:paddingVertical="12dp"
+  android:transitionGroup="true"
+  tools:showIn="@layout/fragment_artists">
+
+  <com.github.apognu.otter.views.SquareImageView
+    android:id="@+id/art"
+    android:layout_width="48dp"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="16dp"
+    android:scaleType="centerCrop"
+    tools:src="@tools:sample/avatars" />
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+      android:id="@+id/name"
+      style="@style/AppTheme.ItemTitle"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="4dp"
+      android:ellipsize="end"
+      android:lines="1"
+      tools:text="Muse" />
+
+    <TextView
+      android:id="@+id/albums"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:ellipsize="end"
+      android:lines="1"
+      tools:text="2 album(s)" />
+
+  </LinearLayout>
+
+</LinearLayout>

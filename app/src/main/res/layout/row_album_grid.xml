@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:background="?android:attr/selectableItemBackground"
+  android:orientation="vertical"
+  android:padding="8dp"
+  android:transitionGroup="true"
+  tools:showIn="@layout/fragment_albums_grid">
+
+  <com.github.apognu.otter.views.SquareImageView
+    android:id="@+id/cover"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    tools:src="@tools:sample/avatars" />
+
+  <TextView
+    android:id="@+id/title"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:ellipsize="end"
+    android:lines="1"
+    android:textAlignment="center"
+    tools:text="Black holes and revelations" />
+
+</LinearLayout>
