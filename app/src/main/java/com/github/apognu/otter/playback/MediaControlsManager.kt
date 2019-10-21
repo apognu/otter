@@ -46,6 +46,7 @@ class MediaControlsManager(val context: Service, private val mediaSession: Media
         mediaSession.setMetadata(MediaMetadataCompat.Builder().apply {
           putString(MediaMetadata.METADATA_KEY_ARTIST, track.artist.name)
           putString(MediaMetadata.METADATA_KEY_TITLE, track.title)
+          putLong(MediaMetadata.METADATA_KEY_DURATION, (track.bestUpload()?.duration?.toLong() ?: 0L) * 1000)
         }.build())
 
         notification = NotificationCompat.Builder(
