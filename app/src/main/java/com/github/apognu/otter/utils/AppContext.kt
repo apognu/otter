@@ -19,7 +19,7 @@ object AppContext {
   const val NOTIFICATION_MEDIA_CONTROL = 1
   const val NOTIFICATION_CHANNEL_MEDIA_CONTROL = "mediacontrols"
 
-  const val PAGE_SIZE = 7
+  const val PAGE_SIZE = 50
   const val TRANSITION_DURATION = 300L
 
   fun init(context: Activity) {

@@ -20,7 +20,7 @@ import kotlin.math.ceil
 
 class HttpUpstream<D : Any, R : FunkwhaleResponse<D>>(private val behavior: Behavior, private val url: String, private val type: Type) : Upstream<D> {
   enum class Behavior {
-    AtOnce, Progressive
+    Single, AtOnce, Progressive
   }
 
   private var _channel: Channel<Repository.Response<D>>? = null
@@ -34,6 +34,8 @@ class HttpUpstream<D : Any, R : FunkwhaleResponse<D>>(private val behavior: Beha
     }
 
   override fun fetch(data: List<D>): Channel<Repository.Response<D>>? {
+    if (behavior ==  Behavior.Single && data.isNotEmpty()) return null
+
     val page = ceil(data.size / AppContext.PAGE_SIZE.toDouble()).toInt() + 1
 
     GlobalScope.launch(Dispatchers.IO) {

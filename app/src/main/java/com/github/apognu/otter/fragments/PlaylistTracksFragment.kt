@@ -6,6 +6,7 @@ import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.adapters.PlaylistTracksAdapter
+import com.github.apognu.otter.repositories.FavoritesRepository
 import com.github.apognu.otter.repositories.PlaylistTracksRepository
 import com.github.apognu.otter.utils.*
 import com.squareup.picasso.Picasso
@@ -17,6 +18,8 @@ import kotlinx.coroutines.launch
 class PlaylistTracksFragment : FunkwhaleFragment<PlaylistTrack, PlaylistTracksAdapter>() {
   override val viewRes = R.layout.fragment_tracks
   override val recycler: RecyclerView get() = tracks
+
+  lateinit var favoritesRepository: FavoritesRepository
 
   var albumId = 0
   var albumArtist = ""
@@ -46,8 +49,9 @@ class PlaylistTracksFragment : FunkwhaleFragment<PlaylistTrack, PlaylistTracksAd
       albumCover = getString("albumCover") ?: ""
     }
 
-    adapter = PlaylistTracksAdapter(context)
+    adapter = PlaylistTracksAdapter(context, FavoriteListener())
     repository = PlaylistTracksRepository(context, albumId)
+    favoritesRepository = FavoritesRepository(context)
 
     watchEventBus()
   }
@@ -114,6 +118,15 @@ class PlaylistTracksFragment : FunkwhaleFragment<PlaylistTrack, PlaylistTracksAd
             }
           }
         }
+      }
+    }
+  }
+
+  inner class FavoriteListener : PlaylistTracksAdapter.OnFavoriteListener {
+    override fun onToggleFavorite(id: Int, state: Boolean) {
+      when (state) {
+        true -> favoritesRepository.addFavorite(id)
+        false -> favoritesRepository.deleteFavorite(id)
       }
     }
   }

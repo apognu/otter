@@ -18,7 +18,11 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.row_track.view.*
 import java.util.*
 
-class PlaylistTracksAdapter(private val context: Context?, val fromQueue: Boolean = false) : FunkwhaleAdapter<PlaylistTrack, PlaylistTracksAdapter.ViewHolder>() {
+class PlaylistTracksAdapter(private val context: Context?, private val favoriteListener: OnFavoriteListener? = null, val fromQueue: Boolean = false) : FunkwhaleAdapter<PlaylistTrack, PlaylistTracksAdapter.ViewHolder>() {
+  interface OnFavoriteListener {
+    fun onToggleFavorite(id: Int, state: Boolean)
+  }
+
   private lateinit var touchHelper: ItemTouchHelper
 
   var currentTrack: Track? = null
@@ -77,6 +81,22 @@ class PlaylistTracksAdapter(private val context: Context?, val fromQueue: Boolea
       holder.artist.setTypeface(holder.artist.typeface, Typeface.BOLD)
     }
 
+    context?.let {
+      when (track.track.favorite) {
+        true -> holder.favorite.setColorFilter(context.getColor(R.color.colorFavorite))
+        false -> holder.favorite.setColorFilter(context.getColor(R.color.colorSelected))
+      }
+
+      holder.favorite.setOnClickListener {
+        favoriteListener?.let {
+          favoriteListener.onToggleFavorite(track.track.id, !track.track.favorite)
+
+          track.track.favorite = !track.track.favorite
+          notifyItemChanged(position)
+        }
+      }
+    }
+
     holder.actions.setOnClickListener {
       context?.let { context ->
         PopupMenu(context, holder.actions, Gravity.START, R.attr.actionOverflowMenuStyle, 0).apply {
@@ -130,6 +150,8 @@ class PlaylistTracksAdapter(private val context: Context?, val fromQueue: Boolea
     val cover = view.cover
     val title = view.title
     val artist = view.artist
+
+    val favorite = view.favorite
     val actions = view.actions
 
     override fun onClick(view: View?) {

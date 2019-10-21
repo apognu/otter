@@ -117,6 +117,5 @@ class TracksFragment : FunkwhaleFragment<Track, TracksAdapter>() {
         false -> favoritesRepository.deleteFavorite(id)
       }
     }
-
   }
 }
