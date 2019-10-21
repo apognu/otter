@@ -1,6 +1,14 @@
+plugins {
+  id 'com.github.triplet.play' version '2.4.2'
+}
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+
+def props = new Properties()
+
+props.load(new FileInputStream(rootProject.file('local.properties')))
 
 android {
   compileOptions {
@@ -16,19 +24,42 @@ android {
 
   defaultConfig {
     applicationId "com.github.apognu.otter"
+
     minSdkVersion 23
     targetSdkVersion 29
-    versionCode 6
-    versionName "1.0.5"
-    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+    versionCode androidGitVersion.code()
+    versionName androidGitVersion.name()
+  }
+
+  signingConfigs {
+    release {
+      storeFile file(props.get('signing.store'))
+      storePassword props.get('signing.store_passphrase')
+      keyAlias props.get('signing.alias')
+      keyPassword props.get('signing.key_passphrase')
+    }
   }
 
   buildTypes {
     release {
+      signingConfig signingConfigs.release
+
       minifyEnabled false
       proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
     }
   }
+
+  androidGitVersion {
+    codeFormat = 'MNNPP'
+  }
+}
+
+play {
+  serviceAccountCredentials = file(props.get('play.credentials'))
+
+  defaultToAppBundles = true
+  track = "beta"
 }
 
 dependencies {
