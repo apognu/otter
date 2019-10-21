@@ -9,7 +9,7 @@ import androidx.transition.TransitionValues
 import androidx.transition.Visibility
 
 class ExplodeReveal : Visibility() {
-  val SCREEN_BOUNDS = "screenBounds"
+  private val SCREEN_BOUNDS = "screenBounds"
 
   private val locations = IntArray(2)
 

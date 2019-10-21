@@ -13,7 +13,7 @@ import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.row_album_grid.view.*
 
-class AlbumsGridAdapter(val context: Context?, val listener: OnAlbumClickListener) : FunkwhaleAdapter<Album, AlbumsGridAdapter.ViewHolder>() {
+class AlbumsGridAdapter(val context: Context?, private val listener: OnAlbumClickListener) : FunkwhaleAdapter<Album, AlbumsGridAdapter.ViewHolder>() {
   interface OnAlbumClickListener {
     fun onClick(view: View?, album: Album)
   }
@@ -41,7 +41,7 @@ class AlbumsGridAdapter(val context: Context?, val listener: OnAlbumClickListene
     holder.title.text = album.title
   }
 
-  inner class ViewHolder(view: View, val listener: OnAlbumClickListener) : RecyclerView.ViewHolder(view), View.OnClickListener {
+  inner class ViewHolder(view: View, private val listener: OnAlbumClickListener) : RecyclerView.ViewHolder(view), View.OnClickListener {
     val cover = view.cover
     val title = view.title
 

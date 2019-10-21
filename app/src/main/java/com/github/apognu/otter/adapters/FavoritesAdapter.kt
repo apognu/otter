@@ -2,16 +2,13 @@ package com.github.apognu.otter.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
 import android.graphics.Typeface
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.FunkwhaleAdapter
@@ -21,7 +18,7 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.row_track.view.*
 import java.util.*
 
-class FavoritesAdapter(private val context: Context?, val favoriteListener: OnFavoriteListener, val fromQueue: Boolean = false) : FunkwhaleAdapter<Favorite, FavoritesAdapter.ViewHolder>() {
+class FavoritesAdapter(private val context: Context?, private val favoriteListener: OnFavoriteListener, val fromQueue: Boolean = false) : FunkwhaleAdapter<Favorite, FavoritesAdapter.ViewHolder>() {
   interface OnFavoriteListener {
     fun onToggleFavorite(id: Int, state: Boolean)
   }
@@ -109,7 +106,7 @@ class FavoritesAdapter(private val context: Context?, val favoriteListener: OnFa
 
   fun onItemMove(oldPosition: Int, newPosition: Int) {
     if (oldPosition < newPosition) {
-      for (i in oldPosition.rangeTo(newPosition - 1)) {
+      for (i in oldPosition.until(newPosition)) {
         Collections.swap(data, i, i + 1)
       }
     } else {
@@ -123,7 +120,6 @@ class FavoritesAdapter(private val context: Context?, val favoriteListener: OnFa
   }
 
   inner class ViewHolder(view: View, val context: Context?) : RecyclerView.ViewHolder(view), View.OnClickListener {
-    val handle = view.handle
     val cover = view.cover
     val title = view.title
     val artist = view.artist
@@ -142,42 +138,6 @@ class FavoritesAdapter(private val context: Context?, val favoriteListener: OnFa
           }
         }
       }
-    }
-  }
-
-  inner class TouchHelperCallback : ItemTouchHelper.Callback() {
-    override fun isLongPressDragEnabled() = false
-
-    override fun isItemViewSwipeEnabled() = false
-
-    override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) =
-      makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0)
-
-    override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
-      onItemMove(viewHolder.adapterPosition, target.adapterPosition)
-
-      return true
-    }
-
-    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}
-
-    @SuppressLint("NewApi")
-    override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
-      if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
-        context?.let {
-          Build.VERSION_CODES.M.onApi(
-            { viewHolder?.itemView?.background = ColorDrawable(context.resources.getColor(R.color.colorSelected, null)) },
-            { viewHolder?.itemView?.background = ColorDrawable(context.resources.getColor(R.color.colorSelected)) })
-        }
-      }
-
-      super.onSelectedChanged(viewHolder, actionState)
-    }
-
-    override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
-      viewHolder.itemView.background = ColorDrawable(Color.TRANSPARENT)
-
-      super.clearView(recyclerView, viewHolder)
     }
   }
 }

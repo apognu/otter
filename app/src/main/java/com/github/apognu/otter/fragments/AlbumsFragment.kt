@@ -64,7 +64,7 @@ class AlbumsFragment : FunkwhaleFragment<Album, AlbumsAdapter>() {
   }
 
   inner class OnAlbumClickListener : AlbumsAdapter.OnAlbumClickListener {
-    override fun onClick(holder: View?, album: Album) {
+    override fun onClick(view: View?, album: Album) {
       (context as? MainActivity)?.let { activity ->
         exitTransition = Fade().apply {
           duration = AppContext.TRANSITION_DURATION

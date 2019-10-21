@@ -13,7 +13,7 @@ import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.row_artist.view.*
 
-class ArtistsAdapter(val context: Context?, val listener: OnArtistClickListener) : FunkwhaleAdapter<Artist, ArtistsAdapter.ViewHolder>() {
+class ArtistsAdapter(val context: Context?, private val listener: OnArtistClickListener) : FunkwhaleAdapter<Artist, ArtistsAdapter.ViewHolder>() {
   interface OnArtistClickListener {
     fun onClick(holder: View?, artist: Artist)
   }
@@ -53,7 +53,7 @@ class ArtistsAdapter(val context: Context?, val listener: OnArtistClickListener)
     }
   }
 
-  inner class ViewHolder(view: View, val listener: OnArtistClickListener) : RecyclerView.ViewHolder(view), View.OnClickListener {
+  inner class ViewHolder(view: View, private val listener: OnArtistClickListener) : RecyclerView.ViewHolder(view), View.OnClickListener {
     val art = view.art
     val name = view.name
     val albums = view.albums

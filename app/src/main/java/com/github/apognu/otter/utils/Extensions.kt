@@ -1,11 +1,7 @@
 package com.github.apognu.otter.utils
 
 import android.os.Build
-import android.view.ViewGroup
-import android.view.animation.Interpolator
-import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
-import androidx.transition.TransitionSet
 import com.github.apognu.otter.fragments.BrowseFragment
 import com.github.apognu.otter.repositories.Repository
 import kotlinx.coroutines.Dispatchers.Main
@@ -35,25 +31,11 @@ inline fun <D> Channel<Repository.Response<D>>.untilNetwork(context: CoroutineCo
   }
 }
 
-fun TransitionSet.setCommonInterpolator(interpolator: Interpolator): TransitionSet {
-  (0 until transitionCount)
-    .map { index -> getTransitionAt(index) }
-    .forEach { transition -> transition.interpolator = interpolator }
-
-  return this
-}
-
 fun Fragment.onViewPager(block: Fragment.() -> Unit) {
   for (f in activity?.supportFragmentManager?.fragments ?: listOf()) {
     if (f is BrowseFragment) {
       f.block()
     }
-  }
-}
-
-fun Fragment.startTransitions() {
-  (view?.parent as? ViewGroup)?.doOnPreDraw {
-    startPostponedEnterTransition()
   }
 }
 
@@ -72,17 +54,17 @@ fun <T, U> Int.onApi(block: () -> T, elseBlock: (() -> U)) {
 }
 
 fun <T> Int.onApiForResult(block: () -> T, elseBlock: (() -> T)): T {
-  if (Build.VERSION.SDK_INT >= this) {
-    return block()
+  return if (Build.VERSION.SDK_INT >= this) {
+    block()
   } else {
-    return elseBlock()
+    elseBlock()
   }
 }
 
 fun <T> T.applyOnApi(api: Int, block: T.() -> T): T {
-  if (Build.VERSION.SDK_INT >= api) {
-    return block()
+  return if (Build.VERSION.SDK_INT >= api) {
+    block()
   } else {
-    return this
+    this
   }
 }

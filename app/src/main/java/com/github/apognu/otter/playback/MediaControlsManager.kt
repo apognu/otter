@@ -20,16 +20,15 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class MediaControlsManager(val context: Service, val mediaSession: MediaSessionCompat) {
+class MediaControlsManager(val context: Service, private val mediaSession: MediaSessionCompat) {
   companion object {
     const val NOTIFICATION_ACTION_OPEN_QUEUE = 0
     const val NOTIFICATION_ACTION_PREVIOUS = 1
     const val NOTIFICATION_ACTION_TOGGLE = 2
     const val NOTIFICATION_ACTION_NEXT = 3
-    const val NOTIFICATION_ACTION_FAVORITE = 4
   }
 
-  var notification: Notification? = null
+  private var notification: Notification? = null
 
   fun updateNotification(track: Track?, playing: Boolean) {
     if (notification == null && !playing) return

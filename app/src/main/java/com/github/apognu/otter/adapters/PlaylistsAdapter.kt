@@ -11,7 +11,7 @@ import com.github.apognu.otter.utils.Playlist
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.row_playlist.view.*
 
-class PlaylistsAdapter(val context: Context?, val listener: OnPlaylistClickListener) : FunkwhaleAdapter<Playlist, PlaylistsAdapter.ViewHolder>() {
+class PlaylistsAdapter(val context: Context?, private val listener: OnPlaylistClickListener) : FunkwhaleAdapter<Playlist, PlaylistsAdapter.ViewHolder>() {
   interface OnPlaylistClickListener {
     fun onClick(holder: View?, playlist: Playlist)
   }
@@ -49,7 +49,7 @@ class PlaylistsAdapter(val context: Context?, val listener: OnPlaylistClickListe
     }
   }
 
-  inner class ViewHolder(view: View, val listener: OnPlaylistClickListener) : RecyclerView.ViewHolder(view), View.OnClickListener {
+  inner class ViewHolder(view: View, private val listener: OnPlaylistClickListener) : RecyclerView.ViewHolder(view), View.OnClickListener {
     val name = view.name
     val summary = view.summary
 

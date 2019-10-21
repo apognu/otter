@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.LoginDialog
 import com.github.apognu.otter.utils.AppContext
-import com.github.apognu.otter.utils.log
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitObjectResult
 import com.github.kittinunf.fuel.gson.gsonDeserializerOf

@@ -112,7 +112,7 @@ class PlaylistTracksAdapter(private val context: Context?, val fromQueue: Boolea
 
   fun onItemMove(oldPosition: Int, newPosition: Int) {
     if (oldPosition < newPosition) {
-      for (i in oldPosition.rangeTo(newPosition - 1)) {
+      for (i in oldPosition.until(newPosition)) {
         Collections.swap(data, i, i + 1)
       }
     } else {

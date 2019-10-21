@@ -21,10 +21,10 @@ class TracksFragment : FunkwhaleFragment<Track, TracksAdapter>() {
 
   lateinit var favoritesRepository: FavoritesRepository
 
-  var albumId = 0
-  var albumArtist = ""
-  var albumTitle = ""
-  var albumCover = ""
+  private var albumId = 0
+  private var albumArtist = ""
+  private var albumTitle = ""
+  private var albumCover = ""
 
   companion object {
     fun new(album: Album): TracksFragment {

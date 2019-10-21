@@ -29,7 +29,7 @@ class AlbumsGridFragment : FunkwhaleFragment<Album, AlbumsGridAdapter>() {
   }
 
   inner class OnAlbumClickListener : AlbumsGridAdapter.OnAlbumClickListener {
-    override fun onClick(holder: View?, album: Album) {
+    override fun onClick(view: View?, album: Album) {
       (context as? MainActivity)?.let { activity ->
         onViewPager {
           exitTransition = Fade().apply {

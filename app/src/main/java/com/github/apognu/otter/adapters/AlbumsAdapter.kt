@@ -43,7 +43,7 @@ class AlbumsAdapter(val context: Context?, val listener: OnAlbumClickListener) :
     holder.artist.text = album.artist.name
   }
 
-  inner class ViewHolder(view: View, val listener: OnAlbumClickListener) : RecyclerView.ViewHolder(view), View.OnClickListener {
+  inner class ViewHolder(view: View, private val listener: OnAlbumClickListener) : RecyclerView.ViewHolder(view), View.OnClickListener {
     val art = view.art
     val title = view.title
     val artist = view.artist

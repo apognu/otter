@@ -18,7 +18,7 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.row_track.view.*
 import java.util.*
 
-class TracksAdapter(private val context: Context?, val favoriteListener: OnFavoriteListener? = null, val fromQueue: Boolean = false) : FunkwhaleAdapter<Track, TracksAdapter.ViewHolder>() {
+class TracksAdapter(private val context: Context?, private val favoriteListener: OnFavoriteListener? = null, val fromQueue: Boolean = false) : FunkwhaleAdapter<Track, TracksAdapter.ViewHolder>() {
   interface OnFavoriteListener {
     fun onToggleFavorite(id: Int, state: Boolean)
   }
@@ -132,7 +132,7 @@ class TracksAdapter(private val context: Context?, val favoriteListener: OnFavor
 
   fun onItemMove(oldPosition: Int, newPosition: Int) {
     if (oldPosition < newPosition) {
-      for (i in oldPosition.rangeTo(newPosition - 1)) {
+      for (i in oldPosition.until(newPosition)) {
         Collections.swap(data, i, i + 1)
       }
     } else {
