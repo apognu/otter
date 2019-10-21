@@ -13,4 +13,5 @@
   <color name="itemTitle">@android:color/black</color>
 
   <color name="controlForeground">@color/colorPrimary</color>
+  <color name="controlColor">@color/colorPrimary</color>
 </resources>

@@ -8,10 +8,21 @@
     <item name="colorAccent">@color/colorAccent</item>
     <item name="android:navigationBarColor">@color/colorPrimary</item>
 
+    <item name="materialButtonStyle">@style/AppTheme.ButtonStyle</item>
+
     <item name="preferenceTheme">@style/AppTheme.Preference</item>
   </style>
 
   <style name="AppTheme.Fragment">
+  </style>
+
+  <style name="AppTheme.ButtonStyle" parent="Widget.MaterialComponents.Button">
+    <item name="materialThemeOverlay">@style/AppTheme.ButtonStyleTextColor</item>
+  </style>
+
+  <style name="AppTheme.ButtonStyleTextColor">
+    <item name="colorPrimary">@android:color/transparent</item>
+    <item name="colorOnPrimary">@color/controlColor</item>
   </style>
 
   <style name="AppTheme.Title">
