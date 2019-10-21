@@ -25,8 +25,8 @@
     android:textColor="@android:color/white" />
 
   <com.google.android.material.textfield.TextInputLayout
-    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
     android:id="@+id/hostname_field"
+    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
@@ -46,8 +46,8 @@
   </com.google.android.material.textfield.TextInputLayout>
 
   <com.google.android.material.textfield.TextInputLayout
-    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
     android:id="@+id/username_field"
+    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
@@ -67,8 +67,8 @@
   </com.google.android.material.textfield.TextInputLayout>
 
   <com.google.android.material.textfield.TextInputLayout
-    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
     android:id="@+id/password_field"
+    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
@@ -93,6 +93,6 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:backgroundTint="@color/colorAccent"
-    android:textColor="@android:color/white"
-    android:text="@string/login_submit" />
+    android:text="@string/login_submit"
+    android:textColor="@android:color/white" />
 </LinearLayout>

@@ -71,7 +71,10 @@
   <string name="alt_app_logo">Application logo</string>
   <string name="alt_artist_art">Artist art</string>
   <string name="alt_album_cover">Album cover</string>
+  <string name="alt_more_options">More options</string>
 
   <string name="logout_title">Sign out</string>
   <string name="logout_content">Are you sure you want to sign out of your Funkwhale instance?</string>
+
+  <string name="playlist_description">%d tracks • %s"</string>
 </resources>

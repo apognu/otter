@@ -4,7 +4,8 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:paddingHorizontal="16dp"
+  android:layout_marginStart="16dp"
+  android:layout_marginEnd="16dp"
   android:paddingTop="16dp">
 
   <androidx.cardview.widget.CardView
@@ -29,7 +30,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginVertical="64dp"
+        android:layout_marginTop="64dp"
+        android:layout_marginBottom="64dp"
         android:drawableTop="@drawable/ottericon"
         android:drawablePadding="16dp"
         android:drawableTint="#525252"

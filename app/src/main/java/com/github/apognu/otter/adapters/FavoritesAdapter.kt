@@ -71,8 +71,8 @@ class FavoritesAdapter(private val context: Context?, private val favoriteListen
 
     context?.let {
       when (favorite.track.favorite) {
-        true -> holder.favorite.setColorFilter(context.resources.getColor(R.color.colorFavorite))
-        false -> holder.favorite.setColorFilter(context.resources.getColor(R.color.colorSelected))
+        true -> holder.favorite.setColorFilter(context.getColor(R.color.colorFavorite))
+        false -> holder.favorite.setColorFilter(context.getColor(R.color.colorSelected))
       }
 
       holder.favorite.setOnClickListener {

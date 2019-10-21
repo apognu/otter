@@ -10,6 +10,7 @@ import com.github.apognu.otter.repositories.Repository
 import com.github.apognu.otter.repositories.SearchRepository
 import com.github.apognu.otter.utils.untilNetwork
 import kotlinx.android.synthetic.main.activity_search.*
+import java.util.*
 
 class SearchActivity : AppCompatActivity() {
   private lateinit var adapter: TracksAdapter
@@ -35,7 +36,7 @@ class SearchActivity : AppCompatActivity() {
     search.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
       override fun onQueryTextSubmit(query: String?): Boolean {
         query?.let {
-          repository = SearchRepository(this@SearchActivity, it.toLowerCase())
+          repository = SearchRepository(this@SearchActivity, it.toLowerCase(Locale.ROOT))
 
           search_spinner.visibility = View.VISIBLE
           search_no_results.visibility = View.GONE

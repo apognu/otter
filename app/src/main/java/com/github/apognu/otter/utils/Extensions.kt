@@ -1,6 +1,8 @@
 package com.github.apognu.otter.utils
 
+import android.content.Context
 import android.os.Build
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.github.apognu.otter.fragments.BrowseFragment
 import com.github.apognu.otter.repositories.Repository
@@ -9,6 +11,10 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
+
+fun Context.getColor(colorRes: Int): Int {
+  return ContextCompat.getColor(this, colorRes)
+}
 
 inline fun <D> Channel<Repository.Response<D>>.await(context: CoroutineContext = Main, crossinline callback: (data: List<D>) -> Unit) {
   GlobalScope.launch(context) {

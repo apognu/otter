@@ -241,8 +241,8 @@ class MainActivity : AppCompatActivity() {
 
                   track.favorite = favorites.contains(track.id)
                   when (track.favorite) {
-                    true -> now_playing_details_favorite.setColorFilter(resources.getColor(R.color.colorFavorite))
-                    false -> now_playing_details_favorite.setColorFilter(resources.getColor(R.color.controlForeground))
+                    true -> now_playing_details_favorite.setColorFilter(getColor(R.color.colorFavorite))
+                    false -> now_playing_details_favorite.setColorFilter(getColor(R.color.controlForeground))
                   }
                 }
               }
@@ -251,12 +251,12 @@ class MainActivity : AppCompatActivity() {
                 when (track.favorite) {
                   true -> {
                     favoriteRepository.deleteFavorite(track.id)
-                    now_playing_details_favorite.setColorFilter(resources.getColor(R.color.controlForeground))
+                    now_playing_details_favorite.setColorFilter(getColor(R.color.controlForeground))
                   }
 
                   false -> {
                     favoriteRepository.addFavorite(track.id)
-                    now_playing_details_favorite.setColorFilter(resources.getColor(R.color.colorFavorite))
+                    now_playing_details_favorite.setColorFilter(getColor(R.color.colorFavorite))
                   }
                 }
 

@@ -24,3 +24,17 @@ fun normalizeUrl(url: String): String {
     URI("https", host, path, query, null)
   }.toString()
 }
+
+fun toDurationString(seconds: Long): String {
+  val days = (seconds / 86400)
+  val hours = (seconds % 86400) / 3600
+  val minutes = (seconds % 86400 % 3600) / 60
+
+  val ret = StringBuilder()
+
+  if (days > 0) ret.append("${days}d")
+  if (hours > 0) ret.append(" ${hours}h")
+  if (minutes > 0) ret.append(" ${minutes}m")
+
+  return ret.toString()
+}

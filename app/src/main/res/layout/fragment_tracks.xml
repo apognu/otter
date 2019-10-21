@@ -159,8 +159,9 @@
                 android:id="@+id/artist"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
                 android:textAllCaps="true"
                 android:textSize="14sp"
                 tools:text="Muse" />
@@ -170,7 +171,8 @@
                 style="@style/AppTheme.Title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
                 tools:text="Absolution" />
 
@@ -182,7 +184,8 @@
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
               android:layout_gravity="center"
-              android:layout_marginHorizontal="16dp"
+              android:layout_marginStart="16dp"
+              android:layout_marginEnd="16dp"
               android:text="@string/playback_queue"
               app:icon="@drawable/add" />
 

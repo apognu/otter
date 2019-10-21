@@ -184,13 +184,10 @@ class TracksAdapter(private val context: Context?, private val favoriteListener:
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}
 
-    @SuppressLint("NewApi")
     override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
       if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
         context?.let {
-          Build.VERSION_CODES.M.onApi(
-            { viewHolder?.itemView?.background = ColorDrawable(context.resources.getColor(R.color.colorSelected, null)) },
-            { viewHolder?.itemView?.background = ColorDrawable(context.resources.getColor(R.color.colorSelected)) })
+          viewHolder?.itemView?.background = ColorDrawable(context.getColor(R.color.colorSelected))
         }
       }
 

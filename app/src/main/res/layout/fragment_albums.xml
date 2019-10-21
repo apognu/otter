@@ -44,7 +44,7 @@
               android:id="@+id/cover"
               android:layout_width="match_parent"
               android:layout_height="250dp"
-              android:contentDescription="@string/alt_album_cover"
+              android:contentDescription="@string/alt_artist_art"
               android:scaleType="centerCrop"
               app:layout_constraintBottom_toBottomOf="parent"
               app:layout_constraintEnd_toEndOf="parent"
@@ -58,34 +58,29 @@
           <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:baselineAligned="false"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <LinearLayout
-              android:layout_width="0dp"
+            <TextView
+              android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:layout_weight="1"
-              android:orientation="vertical">
+              android:layout_marginStart="16dp"
+              android:layout_marginTop="16dp"
+              android:layout_marginEnd="16dp"
+              android:text="@string/albums"
+              android:textAllCaps="true"
+              android:textSize="14sp" />
 
-              <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="16dp"
-                android:text="@string/albums"
-                android:textAllCaps="true"
-                android:textSize="14sp" />
-
-              <TextView
-                android:id="@+id/artist"
-                style="@style/AppTheme.Title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginBottom="16dp"
-                tools:text="Muse" />
-
-            </LinearLayout>
+            <TextView
+              android:id="@+id/artist"
+              style="@style/AppTheme.Title"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginStart="16dp"
+              android:layout_marginEnd="16dp"
+              android:layout_marginBottom="16dp"
+              tools:text="Muse" />
 
           </LinearLayout>
 
