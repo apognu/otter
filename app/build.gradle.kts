@@ -1,5 +1,6 @@
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
+import org.jetbrains.kotlin.konan.properties.hasProperty
 import java.io.FileInputStream
 import java.util.*
 
@@ -43,7 +44,7 @@ android {
 
   signingConfigs {
     create("release") {
-      if (props.contains("signing.store")) {
+      if (props.hasProperty("signing.store")) {
         storeFile = file(props.getProperty("signing.store"))
         storePassword = props.getProperty("signing.store_passphrase")
         keyAlias = props.getProperty("signing.alias").toString()
@@ -74,7 +75,7 @@ ktlint {
 }
 
 play {
-  isEnabled = props.contains("play.credentials")
+  isEnabled = props.hasProperty("play.credentials")
 
   if (isEnabled) {
     serviceAccountCredentials = file(props.getProperty("play.credentials"))
