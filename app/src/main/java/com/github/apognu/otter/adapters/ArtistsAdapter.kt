@@ -8,7 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.FunkwhaleAdapter
 import com.github.apognu.otter.utils.Artist
-import com.github.apognu.otter.utils.normalizeUrl
+import com.github.apognu.otter.utils.maybeLoad
+import com.github.apognu.otter.utils.maybeNormalizeUrl
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.row_artist.view.*
@@ -36,9 +37,8 @@ class ArtistsAdapter(val context: Context?, private val listener: OnArtistClickL
     artist.albums?.let { albums ->
       if (albums.isNotEmpty()) {
         Picasso.get()
-          .load(normalizeUrl(albums[0].cover.original))
+          .maybeLoad(maybeNormalizeUrl(albums[0].cover.original))
           .fit()
-          .placeholder(R.drawable.cover)
           .transform(RoundedCornersTransformation(16, 0))
           .into(holder.art)
       }

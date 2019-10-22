@@ -60,7 +60,7 @@ class TracksFragment : FunkwhaleFragment<Track, TracksAdapter>() {
     super.onViewCreated(view, savedInstanceState)
 
     Picasso.get()
-      .load(albumCover)
+      .maybeLoad(maybeNormalizeUrl(albumCover))
       .noFade()
       .fit()
       .centerCrop()

@@ -1,11 +1,15 @@
 package com.github.apognu.otter.utils
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.BrowseFragment
 import com.github.apognu.otter.repositories.Repository
+import com.squareup.picasso.Picasso
+import com.squareup.picasso.RequestCreator
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
@@ -73,4 +77,9 @@ fun <T> T.applyOnApi(api: Int, block: T.() -> T): T {
   } else {
     this
   }
+}
+
+fun Picasso.maybeLoad(url: String?): RequestCreator {
+  if (url == null) return load(R.drawable.cover)
+  else return load(url)
 }

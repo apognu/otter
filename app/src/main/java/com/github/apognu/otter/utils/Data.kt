@@ -23,7 +23,7 @@ object HTTP {
       "password" to PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("password")
     ).toList()
 
-    val result = Fuel.post(normalizeUrl("/api/v1/token"), body).awaitObjectResult(gsonDeserializerOf(FwCredentials::class.java))
+    val result = Fuel.post(mustNormalizeUrl("/api/v1/token"), body).awaitObjectResult(gsonDeserializerOf(FwCredentials::class.java))
 
     return result.fold(
       { data ->
@@ -39,7 +39,7 @@ object HTTP {
     val token = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("access_token")
 
     val (_, response, result) = Fuel
-      .get(normalizeUrl(url))
+      .get(mustNormalizeUrl(url))
       .header("Authorization", "Bearer $token")
       .awaitObjectResponseResult(gsonDeserializerOf(T::class.java))
 
@@ -55,7 +55,7 @@ object HTTP {
       val token = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("access_token")
 
       Fuel
-        .get(normalizeUrl(url))
+        .get(mustNormalizeUrl(url))
         .header("Authorization", "Bearer $token")
         .awaitObjectResult(gsonDeserializerOf(T::class.java))
     } else {

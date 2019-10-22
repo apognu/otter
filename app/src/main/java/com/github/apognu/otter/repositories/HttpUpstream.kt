@@ -78,7 +78,7 @@ class HttpUpstream<D : Any, R : FunkwhaleResponse<D>>(private val behavior: Beha
     val token = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("access_token")
 
     val (_, response, result) = Fuel
-      .get(normalizeUrl(url))
+      .get(mustNormalizeUrl(url))
       .header("Authorization", "Bearer $token")
       .awaitObjectResponseResult(GenericDeserializer<R>(type))
 
@@ -94,7 +94,7 @@ class HttpUpstream<D : Any, R : FunkwhaleResponse<D>>(private val behavior: Beha
       val token = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("access_token")
 
       Fuel
-        .get(normalizeUrl(url))
+        .get(mustNormalizeUrl(url))
         .header("Authorization", "Bearer $token")
         .awaitObjectResult(GenericDeserializer(type))
     } else {

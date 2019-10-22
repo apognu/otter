@@ -100,7 +100,7 @@ class PlaylistTracksFragment : FunkwhaleFragment<PlaylistTrack, PlaylistTracksAd
       }
 
       Picasso.get()
-        .load(normalizeUrl(url))
+        .maybeLoad(maybeNormalizeUrl(url))
         .into(imageView)
     }
   }

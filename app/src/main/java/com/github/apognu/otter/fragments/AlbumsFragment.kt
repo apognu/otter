@@ -11,9 +11,7 @@ import com.github.apognu.otter.R
 import com.github.apognu.otter.activities.MainActivity
 import com.github.apognu.otter.adapters.AlbumsAdapter
 import com.github.apognu.otter.repositories.AlbumsRepository
-import com.github.apognu.otter.utils.Album
-import com.github.apognu.otter.utils.AppContext
-import com.github.apognu.otter.utils.Artist
+import com.github.apognu.otter.utils.*
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_albums.*
 
@@ -54,7 +52,7 @@ class AlbumsFragment : FunkwhaleFragment<Album, AlbumsAdapter>() {
     super.onViewCreated(view, savedInstanceState)
 
     Picasso.get()
-      .load(artistArt)
+      .maybeLoad(maybeNormalizeUrl(artistArt))
       .noFade()
       .fit()
       .centerCrop()

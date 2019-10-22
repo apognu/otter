@@ -224,13 +224,13 @@ class MainActivity : AppCompatActivity() {
               now_playing_details_progress.progress = 0
 
               Picasso.get()
-                .load(normalizeUrl(track.album.cover.original))
+                .maybeLoad(maybeNormalizeUrl(track.album.cover.original))
                 .fit()
                 .centerCrop()
                 .into(now_playing_cover)
 
               Picasso.get()
-                .load(normalizeUrl(track.album.cover.original))
+                .maybeLoad(maybeNormalizeUrl(track.album.cover.original))
                 .fit()
                 .centerCrop()
                 .into(now_playing_details_cover)

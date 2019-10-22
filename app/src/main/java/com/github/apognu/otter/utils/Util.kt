@@ -16,7 +16,18 @@ fun Any.log(message: String) {
   Log.d("FUNKWHALE", "${this.javaClass.simpleName}: $message")
 }
 
-fun normalizeUrl(url: String): String {
+fun maybeNormalizeUrl(url: String?): String? {
+  if (url == null || url.isEmpty()) return null
+
+  val fallbackHost = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("hostname")
+  val uri = URI(url).takeIf { it.host != null } ?: URI("$fallbackHost$url")
+
+  return uri.run {
+    URI("https", host, path, query, null)
+  }.toString()
+}
+
+fun mustNormalizeUrl(url: String): String {
   val fallbackHost = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("hostname")
   val uri = URI(url).takeIf { it.host != null } ?: URI("$fallbackHost$url")
 

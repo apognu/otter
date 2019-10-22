@@ -60,7 +60,12 @@ class MediaControlsManager(val context: Service, private val mediaSession: Media
               .setShowActionsInCompactView(0, 1, 2)
           )
           .setSmallIcon(R.drawable.ottericon)
-          .setLargeIcon(Picasso.get().load(normalizeUrl(track.album.cover.original)).get())
+          .run {
+            val url = maybeNormalizeUrl(track.album.cover.original)
+
+            if (url != null) setLargeIcon(Picasso.get().load(url).get())
+            else this
+          }
           .setContentTitle(track.title)
           .setContentText(track.artist.name)
           .setContentIntent(openPendingIntent)

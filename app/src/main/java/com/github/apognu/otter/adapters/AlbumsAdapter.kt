@@ -8,7 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.FunkwhaleAdapter
 import com.github.apognu.otter.utils.Album
-import com.github.apognu.otter.utils.normalizeUrl
+import com.github.apognu.otter.utils.maybeLoad
+import com.github.apognu.otter.utils.maybeNormalizeUrl
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.row_album.view.*
@@ -33,9 +34,8 @@ class AlbumsAdapter(val context: Context?, val listener: OnAlbumClickListener) :
     val album = data[position]
 
     Picasso.get()
-      .load(normalizeUrl(album.cover.original))
+      .maybeLoad(maybeNormalizeUrl(album.cover.original))
       .fit()
-      .placeholder(R.drawable.cover)
       .transform(RoundedCornersTransformation(16, 0))
       .into(holder.art)
 

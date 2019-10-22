@@ -37,7 +37,7 @@ class QueueManager(val context: Context) {
         val factory = factory()
 
         datasources.addMediaSources(metadata.map { track ->
-          val url = normalizeUrl(track.bestUpload()?.listen_url ?: "")
+          val url = mustNormalizeUrl(track.bestUpload()?.listen_url ?: "")
 
           ProgressiveMediaSource.Factory(factory).setTag(track.title).createMediaSource(Uri.parse(url))
         })
@@ -73,7 +73,7 @@ class QueueManager(val context: Context) {
     val factory = factory()
 
     val sources = tracks.map { track ->
-      val url = normalizeUrl(track.bestUpload()?.listen_url ?: "")
+      val url = mustNormalizeUrl(track.bestUpload()?.listen_url ?: "")
 
       ProgressiveMediaSource.Factory(factory).setTag(track.title).createMediaSource(Uri.parse(url))
     }
@@ -92,7 +92,7 @@ class QueueManager(val context: Context) {
     val tracks = tracks.filter { metadata.indexOf(it) == -1 }
 
     val sources = tracks.map { track ->
-      val url = normalizeUrl(track.bestUpload()?.listen_url ?: "")
+      val url = mustNormalizeUrl(track.bestUpload()?.listen_url ?: "")
 
       ProgressiveMediaSource.Factory(factory).createMediaSource(Uri.parse(url))
     }
@@ -107,7 +107,7 @@ class QueueManager(val context: Context) {
 
   fun insertNext(track: Track) {
     val factory = factory()
-    val url = normalizeUrl(track.bestUpload()?.listen_url ?: "")
+    val url = mustNormalizeUrl(track.bestUpload()?.listen_url ?: "")
 
     if (metadata.indexOf(track) == -1) {
       ProgressiveMediaSource.Factory(factory).createMediaSource(Uri.parse(url)).let {

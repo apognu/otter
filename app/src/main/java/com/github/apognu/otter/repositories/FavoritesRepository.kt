@@ -31,7 +31,7 @@ class FavoritesRepository(override val context: Context?) : Repository<Favorite,
 
     runBlocking(IO) {
       Fuel
-        .post(normalizeUrl("/api/v1/favorites/tracks"))
+        .post(mustNormalizeUrl("/api/v1/favorites/tracks"))
         .header("Authorization", "Bearer $token")
         .header("Content-Type", "application/json")
         .body(Gson().toJson(body))
@@ -45,7 +45,7 @@ class FavoritesRepository(override val context: Context?) : Repository<Favorite,
 
     runBlocking(IO) {
       Fuel
-        .post(normalizeUrl("/api/v1/favorites/tracks/remove/"))
+        .post(mustNormalizeUrl("/api/v1/favorites/tracks/remove/"))
         .header("Authorization", "Bearer $token")
         .header("Content-Type", "application/json")
         .body(Gson().toJson(body))
