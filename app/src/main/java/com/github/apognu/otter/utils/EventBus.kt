@@ -1,5 +1,6 @@
 package com.github.apognu.otter.utils
 
+import com.github.apognu.otter.Otter
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.*
@@ -48,15 +49,13 @@ sealed class Response {
 }
 
 object EventBus {
-  private var bus: BroadcastChannel<Event> = BroadcastChannel(10)
-
   fun send(event: Event) {
     GlobalScope.launch {
-      bus.offer(event)
+      get().offer(event)
     }
   }
 
-  fun get() = bus
+  fun get() = Otter.get().eventBus
 
   inline fun <reified T : Event> asChannel(): ReceiveChannel<T> {
     return get().openSubscription().filter { it is T }.map { it as T }
@@ -64,31 +63,27 @@ object EventBus {
 }
 
 object CommandBus {
-  private var bus: Channel<Command> = Channel(10)
-
   fun send(command: Command) {
     GlobalScope.launch {
-      bus.offer(command)
+      get().offer(command)
     }
   }
 
-  fun asChannel() = bus
+  fun get() = Otter.get().commandBus
 }
 
 object RequestBus {
-  private var bus: BroadcastChannel<Request> = BroadcastChannel(10)
-
   fun send(request: Request): Channel<Response> {
     return Channel<Response>().also {
       GlobalScope.launch(Main) {
         request.channel = it
 
-        bus.offer(request)
+        get().offer(request)
       }
     }
   }
 
-  fun get() = bus
+  fun get() = Otter.get().requestBus
 
   inline fun <reified T> asChannel(): ReceiveChannel<T> {
     return get().openSubscription().filter { it is T }.map { it as T }
@@ -96,16 +91,14 @@ object RequestBus {
 }
 
 object ProgressBus {
-  private val bus: BroadcastChannel<Triple<Int, Int, Int>> = ConflatedBroadcastChannel()
-
   fun send(current: Int, duration: Int, percent: Int) {
     GlobalScope.launch {
-      bus.send(Triple(current, duration, percent))
+      Otter.get().progressBus.send(Triple(current, duration, percent))
     }
   }
 
   fun asChannel(): ReceiveChannel<Triple<Int, Int, Int>> {
-    return bus.openSubscription()
+    return Otter.get().progressBus.openSubscription()
   }
 }
 

@@ -37,6 +37,7 @@
   </style>
 
   <style name="AppTheme.OutlinedButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+    <item name="rippleColor">@android:color/darker_gray</item>
     <item name="android:textColor">@color/controlForeground</item>
     <item name="iconTint">@color/controlForeground</item>
   </style>

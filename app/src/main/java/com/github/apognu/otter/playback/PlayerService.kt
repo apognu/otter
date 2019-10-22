@@ -113,7 +113,7 @@ class PlayerService : Service() {
 
   private fun watchEventBus() {
     jobs.add(GlobalScope.launch(Main) {
-      for (message in CommandBus.asChannel()) {
+      for (message in CommandBus.get()) {
         when (message) {
           is Command.RefreshService -> {
             EventBus.send(Event.QueueChanged)
