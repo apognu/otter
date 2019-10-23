@@ -403,6 +403,7 @@ class PlayerService : Service() {
     }
 
     override fun onPlayerError(error: ExoPlaybackException?) {
+      log(error.toString())
       EventBus.send(
         Event.PlaybackError(
           getString(R.string.error_playback)

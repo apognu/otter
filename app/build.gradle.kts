@@ -100,9 +100,12 @@ dependencies {
   implementation("com.google.android.material:material:1.1.0-beta01")
   implementation("com.android.support.constraint:constraint-layout:1.1.3")
 
-  implementation("com.google.android.exoplayer:exoplayer:2.10.3")
+  implementation("com.google.android.exoplayer:exoplayer:2.10.5")
   implementation("com.google.android.exoplayer:extension-mediasession:2.10.6")
   implementation("com.google.android.exoplayer:extension-cast:2.10.6")
+  implementation("com.github.PaulWoitaschek.ExoPlayer-Extensions:extension-flac:2.10.5") {
+    isTransitive = false
+  }
   implementation("com.aliassadi:power-preference-lib:1.4.1")
   implementation("com.github.kittinunf.fuel:fuel:2.1.0")
   implementation("com.github.kittinunf.fuel:fuel-coroutines:2.1.0")

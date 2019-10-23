@@ -94,6 +94,8 @@ class QueueManager(val context: Context) {
     val sources = tracks.map { track ->
       val url = mustNormalizeUrl(track.bestUpload()?.listen_url ?: "")
 
+      log(url)
+
       ProgressiveMediaSource.Factory(factory).createMediaSource(Uri.parse(url))
     }
 

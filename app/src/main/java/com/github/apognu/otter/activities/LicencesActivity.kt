@@ -39,6 +39,11 @@ class LicencesActivity : AppCompatActivity() {
         "https://github.com/google/ExoPlayer/blob/release-v2/LICENSE"
       ),
       Licence(
+        "ExoPlayer-Extensions",
+        "Apache License 2.0",
+        "https://github.com/PaulWoitaschek/ExoPlayer-Extensions/blob/master/LICENSE"
+      ),
+      Licence(
         "Fuel",
         "MIT License",
         "https://github.com/kittinunf/fuel/blob/master/LICENSE.md"
