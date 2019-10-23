@@ -49,8 +49,6 @@ class LoginActivity : AppCompatActivity() {
           else e.message
 
         hostname_field.error = message
-
-        return@setOnClickListener
       }
 
       hostname_field.error = ""
@@ -65,27 +63,37 @@ class LoginActivity : AppCompatActivity() {
       }
 
       GlobalScope.launch(Main) {
-        val result = Fuel.post("$hostname/api/v1/token", body)
-          .awaitObjectResult(gsonDeserializerOf(FwCredentials::class.java))
+        try {
+          val result = Fuel.post("$hostname/api/v1/token", body)
+            .awaitObjectResult(gsonDeserializerOf(FwCredentials::class.java))
 
-        result.fold(
-          { data ->
-            PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).apply {
-              setString("hostname", hostname)
-              setString("username", username)
-              setString("password", password)
-              setString("access_token", data.token)
+          result.fold(
+            { data ->
+              PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).apply {
+                setString("hostname", hostname)
+                setString("username", username)
+                setString("password", password)
+                setString("access_token", data.token)
+              }
+
+              dialog.dismiss()
+              startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+            },
+            { error ->
+              dialog.dismiss()
+
+              hostname_field.error = error.localizedMessage
             }
+          )
+        } catch (e: Exception) {
+          dialog.dismiss()
 
-            dialog.dismiss()
-            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
-          },
-          { error ->
-            dialog.dismiss()
+          val message =
+            if (e.message?.isEmpty() == true) getString(R.string.login_error_hostname)
+            else e.message
 
-            hostname_field.error = error.localizedMessage
-          }
-        )
+          hostname_field.error = message
+        }
       }
     }
   }

@@ -11,6 +11,8 @@
     <item name="materialButtonStyle">@style/AppTheme.ButtonStyle</item>
 
     <item name="preferenceTheme">@style/AppTheme.Preference</item>
+
+    <item name="colorError">@color/colorError</item>
   </style>
 
   <style name="AppTheme.Fragment">
@@ -74,10 +76,6 @@
   <style name="AppTheme.BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
     <item name="android:windowBackground">@android:color/transparent</item>
     <item name="android:background">@android:color/transparent</item>
-  </style>
-
-  <style name="AppTheme.ErrorStyle" parent="@android:style/TextAppearance">
-    <item name="android:textColor">@color/colorError</item>
   </style>
 
 </resources>
