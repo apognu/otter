@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-  xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="com.github.apognu.otter">
 
-  <uses-permission android:name="android.permission.INTERNET"/>
-  <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
-  <permission android:name="android.permission.MEDIA_CONTENT_CONTROL"/>
+  <permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
 
   <application
     android:name="com.github.apognu.otter.Otter"
@@ -14,31 +13,39 @@
     android:icon="@mipmap/ic_launcher"
     android:label="@string/app_name"
     android:roundIcon="@mipmap/ic_launcher_round"
-    android:supportsRtl="true"
     android:screenOrientation="portrait"
+    android:supportsRtl="true"
     android:theme="@style/AppTheme">
 
     <!-- <meta-data
       android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
       android:value="com.google.android.exoplayer2.ext.cast.DefaultCastOptionsProvider"/> -->
 
-    <activity android:name="com.github.apognu.otter.activities.LoginActivity" android:noHistory="true" android:launchMode="singleInstance">
+    <activity
+      android:name="com.github.apognu.otter.activities.SplashActivity"
+      android:launchMode="singleInstance"
+      android:noHistory="true">
       <intent-filter>
-        <action android:name="android.intent.action.MAIN"/>
-        <action android:name="android.intent.action.VIEW"/>
+        <action android:name="android.intent.action.MAIN" />
+        <action android:name="android.intent.action.VIEW" />
 
-        <category android:name="android.intent.category.LAUNCHER"/>
+        <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
 
-    <activity android:name="com.github.apognu.otter.activities.MainActivity"/>
-    <activity android:name="com.github.apognu.otter.activities.SearchActivity" android:launchMode="singleTop"/>
-    <activity android:name="com.github.apognu.otter.activities.SettingsActivity"/>
-    <activity android:name="com.github.apognu.otter.activities.LicencesActivity"/>
+    <activity
+      android:name="com.github.apognu.otter.activities.LoginActivity"
+      android:launchMode="singleInstance" />
+    <activity android:name="com.github.apognu.otter.activities.MainActivity" />
+    <activity
+      android:name="com.github.apognu.otter.activities.SearchActivity"
+      android:launchMode="singleTop" />
+    <activity android:name="com.github.apognu.otter.activities.SettingsActivity" />
+    <activity android:name="com.github.apognu.otter.activities.LicencesActivity" />
 
-    <service android:name="com.github.apognu.otter.playback.PlayerService"/>
+    <service android:name="com.github.apognu.otter.playback.PlayerService" />
 
-    <receiver android:name="com.github.apognu.otter.playback.MediaControlActionReceiver"/>
+    <receiver android:name="com.github.apognu.otter.playback.MediaControlActionReceiver" />
 
   </application>
 

@@ -8,7 +8,7 @@ class AlbumsCache(data: List<Album>) : CacheItem<Album>(data)
 class TracksCache(data: List<Track>) : CacheItem<Track>(data)
 class PlaylistsCache(data: List<Playlist>) : CacheItem<Playlist>(data)
 class PlaylistTracksCache(data: List<PlaylistTrack>) : CacheItem<PlaylistTrack>(data)
-class FavoritesCache(data: List<Favorite>) : CacheItem<Favorite>(data)
+class FavoritedCache(data: List<Int>) : CacheItem<Int>(data)
 class QueueCache(data: List<Track>) : CacheItem<Track>(data)
 
 abstract class FunkwhaleResponse<D : Any> {
@@ -16,6 +16,10 @@ abstract class FunkwhaleResponse<D : Any> {
   abstract val next: String?
 
   abstract fun getData(): List<D>
+}
+
+data class UserResponse(override val count: Int, override val next: String?, val results: List<Artist>) : FunkwhaleResponse<Artist>() {
+  override fun getData() = results
 }
 
 data class ArtistsResponse(override val count: Int, override val next: String?, val results: List<Artist>) : FunkwhaleResponse<Artist>() {
@@ -30,8 +34,8 @@ data class TracksResponse(override val count: Int, override val next: String?, v
   override fun getData() = results
 }
 
-data class FavoritesResponse(override val count: Int, override val next: String?, val results: List<Favorite>) : FunkwhaleResponse<Favorite>() {
-  override fun getData() = results
+data class FavoritedResponse(override val count: Int, override val next: String?, val results: List<Favorited>) : FunkwhaleResponse<Int>() {
+  override fun getData() = results.map { it.track }
 }
 
 data class PlaylistsResponse(override val count: Int, override val next: String?, val results: List<Playlist>) : FunkwhaleResponse<Playlist>() {
@@ -100,7 +104,7 @@ data class Track(
   }
 }
 
-data class Favorite(val id: Int, val track: Track)
+data class Favorited(val track: Int)
 
 data class Playlist(
   val id: Int,

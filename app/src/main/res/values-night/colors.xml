@@ -3,12 +3,16 @@
   <color name="surface">#121212</color>
 
   <color name="colorPrimary">#283f4e</color>
-  <color name="colorAccent">#99440c</color>
+  <color name="colorAccent">#f1b44f</color>
 
   <color name="colorSelected">#525252</color>
+  <color name="colorFavorite">#eba999</color>
+
   <color name="itemTitle">#caffffff</color>
 
   <color name="controlForeground">#caffffff</color>
+  <color name="controlColor">#53bce7</color>
 
-  <color name="controlColor">#327eae</color>
+  <color name="whiteWhileLight">#000000</color>
+  <color name="blackWhileLight">#ffffff</color>
 </resources>

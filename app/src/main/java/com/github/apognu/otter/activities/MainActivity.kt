@@ -19,6 +19,7 @@ import com.github.apognu.otter.fragments.BrowseFragment
 import com.github.apognu.otter.fragments.QueueFragment
 import com.github.apognu.otter.playback.MediaControlsManager
 import com.github.apognu.otter.playback.PlayerService
+import com.github.apognu.otter.repositories.FavoritedRepository
 import com.github.apognu.otter.repositories.FavoritesRepository
 import com.github.apognu.otter.repositories.Repository
 import com.github.apognu.otter.utils.*
@@ -32,7 +33,12 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
+  enum class ResultCode(val code: Int) {
+    LOGOUT(1001)
+  }
+
   private val favoriteRepository = FavoritesRepository(this)
+  private val favoriteCheckRepository = FavoritedRepository(this)
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -127,10 +133,23 @@ class MainActivity : AppCompatActivity() {
 
       R.id.nav_queue -> launchDialog(QueueFragment())
       R.id.nav_search -> startActivity(Intent(this, SearchActivity::class.java))
-      R.id.settings -> startActivity(Intent(this, SettingsActivity::class.java))
+      R.id.settings -> startActivityForResult(Intent(this, SettingsActivity::class.java), 0)
     }
 
     return true
+  }
+
+  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    super.onActivityResult(requestCode, resultCode, data)
+
+    if (resultCode == ResultCode.LOGOUT.code) {
+      Intent(this, LoginActivity::class.java).apply {
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+
+        startActivity(this)
+        finish()
+      }
+    }
   }
 
   private fun launchFragment(fragment: Fragment) {
@@ -235,11 +254,10 @@ class MainActivity : AppCompatActivity() {
                 .centerCrop()
                 .into(now_playing_details_cover)
 
-              favoriteRepository.fetch().untilNetwork(IO) { favorites ->
+              favoriteCheckRepository.fetch().untilNetwork(IO) { favorites ->
                 GlobalScope.launch(Main) {
-                  val favorites = favorites.map { it.track.id }
-
                   track.favorite = favorites.contains(track.id)
+
                   when (track.favorite) {
                     true -> now_playing_details_favorite.setColorFilter(getColor(R.color.colorFavorite))
                     false -> now_playing_details_favorite.setColorFilter(getColor(R.color.controlForeground))

@@ -27,8 +27,9 @@
 
   <style name="AppTheme.Title">
     <item name="android:fontFamily">sans-serif-light</item>
-    <item name="android:textSize">28sp</item>
+    <item name="android:textSize">24sp</item>
     <item name="android:textColor">@color/itemTitle</item>
+    <item name="android:textStyle">bold</item>
   </style>
 
   <style name="AppTheme.ItemTitle">
@@ -44,6 +45,7 @@
 
   <style name="AppTheme.Preference" parent="PreferenceThemeOverlay">
     <item name="android:textColor">@color/itemTitle</item>
+    <item name="android:tint">@color/blackWhileLight</item>
 
     <item name="preferenceCategoryStyle">@style/AppTheme.PreferenceCategory</item>
   </style>
@@ -72,6 +74,10 @@
   <style name="AppTheme.BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
     <item name="android:windowBackground">@android:color/transparent</item>
     <item name="android:background">@android:color/transparent</item>
+  </style>
+
+  <style name="AppTheme.ErrorStyle" parent="@android:style/TextAppearance">
+    <item name="android:textColor">@color/colorError</item>
   </style>
 
 </resources>

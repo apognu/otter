@@ -56,12 +56,10 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
             .setPositiveButton(android.R.string.yes) { _, _ ->
               PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).clear()
 
-              Intent(context, LoginActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+              context.cacheDir.deleteRecursively()
 
-                startActivity(this)
-                activity?.finish()
-              }
+              activity?.setResult(MainActivity.ResultCode.LOGOUT.code)
+              activity?.finish()
             }
             .setNegativeButton(android.R.string.no, null)
             .show()

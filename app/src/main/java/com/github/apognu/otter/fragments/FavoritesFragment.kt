@@ -11,7 +11,7 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class FavoritesFragment : FunkwhaleFragment<Favorite, FavoritesAdapter>() {
+class FavoritesFragment : FunkwhaleFragment<Track, FavoritesAdapter>() {
   override val viewRes = R.layout.fragment_favorites
   override val recycler: RecyclerView get() = favorites
 
@@ -22,7 +22,6 @@ class FavoritesFragment : FunkwhaleFragment<Favorite, FavoritesAdapter>() {
 
     adapter = FavoritesAdapter(context, FavoriteListener())
     repository = FavoritesRepository(context)
-    favoritesRepository = FavoritesRepository(context)
 
     watchEventBus()
   }
@@ -38,7 +37,7 @@ class FavoritesFragment : FunkwhaleFragment<Favorite, FavoritesAdapter>() {
     }
 
     play.setOnClickListener {
-      CommandBus.send(Command.ReplaceQueue(adapter.data.shuffled().map { it.track }))
+      CommandBus.send(Command.ReplaceQueue(adapter.data.shuffled()))
     }
   }
 

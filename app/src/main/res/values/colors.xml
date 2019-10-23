@@ -6,6 +6,7 @@
   <color name="colorPrimary">#327eae</color>
   <color name="colorPrimaryDark">#3d3e40</color>
   <color name="colorAccent">#d35400</color>
+  <color name="colorError">#b94705</color>
 
   <color name="colorSelected">#dadada</color>
   <color name="colorFavorite">#e17055</color>
@@ -14,4 +15,7 @@
 
   <color name="controlForeground">@color/colorPrimary</color>
   <color name="controlColor">@color/colorPrimary</color>
+
+  <color name="whiteWhileLight">#ffffff</color>
+  <color name="blackWhileLight">#000000</color>
 </resources>

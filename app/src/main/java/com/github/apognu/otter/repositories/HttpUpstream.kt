@@ -34,7 +34,7 @@ class HttpUpstream<D : Any, R : FunkwhaleResponse<D>>(private val behavior: Beha
     }
 
   override fun fetch(data: List<D>): Channel<Repository.Response<D>>? {
-    if (behavior ==  Behavior.Single && data.isNotEmpty()) return null
+    if (behavior == Behavior.Single && data.isNotEmpty()) return null
 
     val page = ceil(data.size / AppContext.PAGE_SIZE.toDouble()).toInt() + 1
 

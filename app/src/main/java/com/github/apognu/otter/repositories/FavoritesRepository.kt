@@ -12,16 +12,16 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.runBlocking
 import java.io.BufferedReader
 
-class FavoritesRepository(override val context: Context?) : Repository<Favorite, FavoritesCache>() {
-  override val cacheId = "favorites"
-  override val upstream = HttpUpstream<Favorite, FunkwhaleResponse<Favorite>>(HttpUpstream.Behavior.AtOnce, "/api/v1/favorites/tracks?playable=true", object : TypeToken<FavoritesResponse>() {}.type)
+class FavoritesRepository(override val context: Context?) : Repository<Track, TracksCache>() {
+  override val cacheId = "favorites.v2"
+  override val upstream = HttpUpstream<Track, FunkwhaleResponse<Track>>(HttpUpstream.Behavior.AtOnce, "/api/v1/tracks?favorites=true&playable=true", object : TypeToken<TracksResponse>() {}.type)
 
-  override fun cache(data: List<Favorite>) = FavoritesCache(data)
-  override fun uncache(reader: BufferedReader) = gsonDeserializerOf(FavoritesCache::class.java).deserialize(reader)
+  override fun cache(data: List<Track>) = TracksCache(data)
+  override fun uncache(reader: BufferedReader) = gsonDeserializerOf(TracksCache::class.java).deserialize(reader)
 
-  override fun onDataFetched(data: List<Favorite>) = data.map {
+  override fun onDataFetched(data: List<Track>) = data.map {
     it.apply {
-      it.track.favorite = true
+      it.favorite = true
     }
   }
 
@@ -52,4 +52,12 @@ class FavoritesRepository(override val context: Context?) : Repository<Favorite,
         .awaitByteArrayResponseResult()
     }
   }
+}
+
+class FavoritedRepository(override val context: Context?) : Repository<Int, FavoritedCache>() {
+  override val cacheId = "favorited"
+  override val upstream = HttpUpstream<Int, FunkwhaleResponse<Int>>(HttpUpstream.Behavior.Single, "/api/v1/favorites/tracks/all?playable=true", object : TypeToken<FavoritedResponse>() {}.type)
+
+  override fun cache(data: List<Int>) = FavoritedCache(data)
+  override fun uncache(reader: BufferedReader) = gsonDeserializerOf(FavoritedCache::class.java).deserialize(reader)
 }

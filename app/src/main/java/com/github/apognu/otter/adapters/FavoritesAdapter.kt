@@ -18,7 +18,7 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.row_track.view.*
 import java.util.*
 
-class FavoritesAdapter(private val context: Context?, private val favoriteListener: OnFavoriteListener, val fromQueue: Boolean = false) : FunkwhaleAdapter<Favorite, FavoritesAdapter.ViewHolder>() {
+class FavoritesAdapter(private val context: Context?, private val favoriteListener: OnFavoriteListener, val fromQueue: Boolean = false) : FunkwhaleAdapter<Track, FavoritesAdapter.ViewHolder>() {
   interface OnFavoriteListener {
     fun onToggleFavorite(id: Int, state: Boolean)
   }
@@ -28,7 +28,7 @@ class FavoritesAdapter(private val context: Context?, private val favoriteListen
   override fun getItemCount() = data.size
 
   override fun getItemId(position: Int): Long {
-    return data[position].track.id.toLong()
+    return data[position].id.toLong()
   }
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -44,14 +44,14 @@ class FavoritesAdapter(private val context: Context?, private val favoriteListen
     val favorite = data[position]
 
     Picasso.get()
-      .maybeLoad(maybeNormalizeUrl(favorite.track.album.cover.original))
+      .maybeLoad(maybeNormalizeUrl(favorite.album.cover.original))
       .fit()
       .placeholder(R.drawable.cover)
       .transform(RoundedCornersTransformation(16, 0))
       .into(holder.cover)
 
-    holder.title.text = favorite.track.title
-    holder.artist.text = favorite.track.artist.name
+    holder.title.text = favorite.title
+    holder.artist.text = favorite.artist.name
 
     Build.VERSION_CODES.P.onApi(
       {
@@ -64,19 +64,19 @@ class FavoritesAdapter(private val context: Context?, private val favoriteListen
       })
 
 
-    if (favorite.track == currentTrack || favorite.track.current) {
+    if (favorite == currentTrack || favorite.current) {
       holder.title.setTypeface(holder.title.typeface, Typeface.BOLD)
       holder.artist.setTypeface(holder.artist.typeface, Typeface.BOLD)
     }
 
     context?.let {
-      when (favorite.track.favorite) {
+      when (favorite.favorite) {
         true -> holder.favorite.setColorFilter(context.getColor(R.color.colorFavorite))
         false -> holder.favorite.setColorFilter(context.getColor(R.color.colorSelected))
       }
 
       holder.favorite.setOnClickListener {
-        favoriteListener.onToggleFavorite(favorite.track.id, !favorite.track.favorite)
+        favoriteListener.onToggleFavorite(favorite.id, !favorite.favorite)
 
         data.remove(favorite)
         notifyItemRemoved(holder.adapterPosition)
@@ -90,9 +90,9 @@ class FavoritesAdapter(private val context: Context?, private val favoriteListen
 
           setOnMenuItemClickListener {
             when (it.itemId) {
-              R.id.track_add_to_queue -> CommandBus.send(Command.AddToQueue(listOf(favorite.track)))
-              R.id.track_play_next -> CommandBus.send(Command.PlayNext(favorite.track))
-              R.id.queue_remove -> CommandBus.send(Command.RemoveFromQueue(favorite.track))
+              R.id.track_add_to_queue -> CommandBus.send(Command.AddToQueue(listOf(favorite)))
+              R.id.track_play_next -> CommandBus.send(Command.PlayNext(favorite))
+              R.id.queue_remove -> CommandBus.send(Command.RemoveFromQueue(favorite))
             }
 
             true
@@ -132,7 +132,7 @@ class FavoritesAdapter(private val context: Context?, private val favoriteListen
         true -> CommandBus.send(Command.PlayTrack(layoutPosition))
         false -> {
           data.subList(layoutPosition, data.size).plus(data.subList(0, layoutPosition)).apply {
-            CommandBus.send(Command.ReplaceQueue(this.map { it.track }))
+            CommandBus.send(Command.ReplaceQueue(this))
 
             context.toast("All tracks were added to your queue")
           }

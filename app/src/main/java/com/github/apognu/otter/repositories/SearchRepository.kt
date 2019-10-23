@@ -18,15 +18,10 @@ class SearchRepository(override val context: Context?, query: String) : Reposito
   override fun uncache(reader: BufferedReader) = gsonDeserializerOf(TracksCache::class.java).deserialize(reader)
 
   override fun onDataFetched(data: List<Track>): List<Track> = runBlocking {
-    val favorites = FavoritesRepository(context).fetch(Origin.Network.origin).receive().data
+    val favorites = FavoritedRepository(context).fetch(Origin.Network.origin).receive().data
 
     data.map { track ->
-      val favorite = favorites.find { it.track.id == track.id }
-
-      if (favorite != null) {
-        track.favorite = true
-      }
-
+      track.favorite = favorites.contains(track.id)
       track
     }
   }

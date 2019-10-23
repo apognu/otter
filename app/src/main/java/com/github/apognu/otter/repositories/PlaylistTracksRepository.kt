@@ -1,7 +1,10 @@
 package com.github.apognu.otter.repositories
 
 import android.content.Context
-import com.github.apognu.otter.utils.*
+import com.github.apognu.otter.utils.FunkwhaleResponse
+import com.github.apognu.otter.utils.PlaylistTrack
+import com.github.apognu.otter.utils.PlaylistTracksCache
+import com.github.apognu.otter.utils.PlaylistTracksResponse
 import com.github.kittinunf.fuel.gson.gsonDeserializerOf
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.runBlocking
@@ -15,17 +18,10 @@ class PlaylistTracksRepository(override val context: Context?, playlistId: Int) 
   override fun uncache(reader: BufferedReader) = gsonDeserializerOf(PlaylistTracksCache::class.java).deserialize(reader)
 
   override fun onDataFetched(data: List<PlaylistTrack>): List<PlaylistTrack> = runBlocking {
-    val favorites = FavoritesRepository(context).fetch(Origin.Network.origin).receive().data
-
-    log(favorites.toString())
+    val favorites = FavoritedRepository(context).fetch(Origin.Network.origin).receive().data
 
     data.map { track ->
-      val favorite = favorites.find { it.track.id == track.track.id }
-
-      if (favorite != null) {
-        track.track.favorite = true
-      }
-
+      track.track.favorite = favorites.contains(track.track.id)
       track
     }
   }
