@@ -20,9 +20,8 @@ class FavoritesRepository(override val context: Context?) : Repository<Track, Tr
   override fun uncache(reader: BufferedReader) = gsonDeserializerOf(TracksCache::class.java).deserialize(reader)
 
   override fun onDataFetched(data: List<Track>) = data.map {
-    it.apply {
-      it.favorite = true
-    }
+    it.favorite = true
+    it
   }
 
   fun addFavorite(id: Int) {

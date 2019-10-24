@@ -24,7 +24,7 @@ class BrowseFragment : Fragment() {
       tabs.getTabAt(0)?.select()
 
       pager.adapter = adapter
-      pager.offscreenPageLimit = 4
+      pager.offscreenPageLimit = 3
     }
   }
 

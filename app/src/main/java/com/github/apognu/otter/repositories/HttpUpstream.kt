@@ -51,6 +51,8 @@ class HttpUpstream<D : Any, R : FunkwhaleResponse<D>>(private val behavior: Beha
         { response ->
           val data = data.plus(response.getData())
 
+          log(data.size.toString())
+
           if (behavior == Behavior.Progressive || response.next == null) {
             channel.offer(Repository.Response(Repository.Origin.Network, data))
           } else {
@@ -75,6 +77,8 @@ class HttpUpstream<D : Any, R : FunkwhaleResponse<D>>(private val behavior: Beha
   }
 
   suspend fun get(url: String): Result<R, FuelError> {
+    log(url)
+
     val token = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("access_token")
 
     val (_, response, result) = Fuel

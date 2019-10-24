@@ -2,6 +2,7 @@ package com.github.apognu.otter.activities
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
@@ -9,6 +10,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
@@ -295,6 +297,16 @@ class MainActivity : AppCompatActivity() {
               false -> {
                 now_playing_toggle.icon = getDrawable(R.drawable.play)
                 now_playing_details_toggle.icon = getDrawable(R.drawable.play)
+              }
+            }
+          }
+
+          is Event.QueueChanged -> {
+            findViewById<View>(R.id.nav_queue)?.let { view ->
+              ObjectAnimator.ofFloat(view, View.ROTATION, 0f, 360f).let {
+                it.duration = 500
+                it.interpolator = AccelerateDecelerateInterpolator()
+                it.start()
               }
             }
           }

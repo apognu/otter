@@ -24,6 +24,9 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
   lateinit var repository: Repository<D, *>
   lateinit var adapter: A
 
+  open var fetchOnCreate = true
+  private var initialFetched = false
+
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
     return inflater.inflate(viewRes, container, false)
   }
@@ -49,14 +52,7 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
 
     swiper?.isRefreshing = true
 
-    repository.fetch().untilNetwork {
-      swiper?.isRefreshing = false
-
-      onDataFetched(it)
-
-      adapter.data = it.toMutableList()
-      adapter.notifyDataSetChanged()
-    }
+    if (fetchOnCreate) fetch()
   }
 
   override fun onResume() {
@@ -74,7 +70,24 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
         adapter.notifyDataSetChanged()
       }
     }
+
+    if (!fetchOnCreate) fetch()
   }
 
   open fun onDataFetched(data: List<D>) {}
+
+  private fun fetch() {
+    if (!initialFetched) {
+      initialFetched = true
+
+      repository.fetch().untilNetwork {
+        swiper?.isRefreshing = false
+
+        onDataFetched(it)
+
+        adapter.data = it.toMutableList()
+        adapter.notifyDataSetChanged()
+      }
+    }
+  }
 }
