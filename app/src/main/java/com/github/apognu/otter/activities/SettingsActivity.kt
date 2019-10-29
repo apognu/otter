@@ -48,6 +48,17 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
   override fun onPreferenceTreeClick(preference: Preference?): Boolean {
     when (preference?.key) {
       "oss_licences" -> startActivity(Intent(activity, LicencesActivity::class.java))
+
+      "experiments" -> {
+        context?.let { context ->
+          AlertDialog.Builder(context)
+            .setTitle(context.getString(R.string.settings_experiments_restart_title))
+            .setMessage(context.getString(R.string.settings_experiments_restart_content))
+            .setPositiveButton(android.R.string.yes) { _, _ -> }
+            .show()
+        }
+      }
+
       "logout" -> {
         context?.let { context ->
           AlertDialog.Builder(context)

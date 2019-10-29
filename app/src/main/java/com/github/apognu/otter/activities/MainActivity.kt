@@ -256,7 +256,7 @@ class MainActivity : AppCompatActivity() {
                 .centerCrop()
                 .into(now_playing_details_cover)
 
-              favoriteCheckRepository.fetch().untilNetwork(IO) { favorites ->
+              favoriteCheckRepository.fetch().untilNetwork(IO) { favorites, _ ->
                 GlobalScope.launch(Main) {
                   track.favorite = favorites.contains(track.id)
 

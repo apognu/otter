@@ -38,6 +38,10 @@
   <string name="settings_night_mode_off_summary">Le mode jour sera toujours préféré</string>
   <string name="settings_night_mode_system">Suivre les préférences du système</string>
   <string name="settings_night_mode_system_summary">Le mode nuit suivra les préférence système</string>
+  <string name="settings_experiments">Activer les fonctionnalité expérimentales</string>
+  <string name="settings_experiments_description">Utiliser à vos risques et périls, peut potentiellement ralentir ou crasher l\'application</string>
+  <string name="settings_experiments_restart_title">Relancement requis</string>
+  <string name="settings_experiments_restart_content">Veuillez tuer puis relancer l\'application afin que ce changement soit pris en compte</string>
   <string name="settings_logout">Déconnexion</string>
 
   <string name="artists">Artistes</string>

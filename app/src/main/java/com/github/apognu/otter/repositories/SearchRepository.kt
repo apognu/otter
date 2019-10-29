@@ -12,7 +12,7 @@ import java.io.BufferedReader
 
 class SearchRepository(override val context: Context?, query: String) : Repository<Track, TracksCache>() {
   override val cacheId: String? = null
-  override val upstream = HttpUpstream<Track, FunkwhaleResponse<Track>>(HttpUpstream.Behavior.AtOnce, "/api/v1/tracks?playable=true&q=$query", object : TypeToken<TracksResponse>() {}.type)
+  override val upstream = HttpUpstream<Track, FunkwhaleResponse<Track>>(HttpUpstream.Behavior.AtOnce, "/api/v1/tracks/?playable=true&q=$query", object : TypeToken<TracksResponse>() {}.type)
 
   override fun cache(data: List<Track>) = TracksCache(data)
   override fun uncache(reader: BufferedReader) = gsonDeserializerOf(TracksCache::class.java).deserialize(reader)

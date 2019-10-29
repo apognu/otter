@@ -3,7 +3,6 @@ package com.github.apognu.otter.playback
 import android.content.Context
 import android.net.Uri
 import com.github.apognu.otter.R
-import com.github.apognu.otter.repositories.FavoritesRepository
 import com.github.apognu.otter.utils.*
 import com.github.kittinunf.fuel.gson.gsonDeserializerOf
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
@@ -93,8 +92,6 @@ class QueueManager(val context: Context) {
 
     val sources = tracks.map { track ->
       val url = mustNormalizeUrl(track.bestUpload()?.listen_url ?: "")
-
-      log(url)
 
       ProgressiveMediaSource.Factory(factory).createMediaSource(Uri.parse(url))
     }

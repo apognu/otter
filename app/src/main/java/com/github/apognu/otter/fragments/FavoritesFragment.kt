@@ -17,8 +17,6 @@ class FavoritesFragment : FunkwhaleFragment<Track, FavoritesAdapter>() {
 
   lateinit var favoritesRepository: FavoritesRepository
 
-  override var fetchOnCreate = false
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 

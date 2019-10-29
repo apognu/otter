@@ -1,6 +1,5 @@
 package com.github.apognu.otter.utils
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import androidx.core.content.ContextCompat
@@ -29,12 +28,12 @@ inline fun <D> Channel<Repository.Response<D>>.await(context: CoroutineContext =
   }
 }
 
-inline fun <D> Channel<Repository.Response<D>>.untilNetwork(context: CoroutineContext = Main, crossinline callback: (data: List<D>) -> Unit) {
+inline fun <D> Channel<Repository.Response<D>>.untilNetwork(context: CoroutineContext = Main, crossinline callback: (data: List<D>, hasMore: Boolean) -> Unit) {
   GlobalScope.launch(context) {
     for (data in this@untilNetwork) {
-      callback(data.data)
+      callback(data.data, data.hasMore)
 
-      if (data.origin == Repository.Origin.Network) {
+      if (data.origin == Repository.Origin.Network && !data.hasMore) {
         close()
       }
     }

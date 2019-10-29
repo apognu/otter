@@ -39,6 +39,12 @@
       android:key="oss_licences"
       android:title="@string/title_oss_licences" />
 
+    <CheckBoxPreference
+      android:icon="@drawable/experimental"
+      android:key="experiments"
+      android:title="@string/settings_experiments"
+      android:summary="@string/settings_experiments_description"/>
+
     <Preference
       android:icon="@drawable/logout"
       android:key="logout"

@@ -29,7 +29,7 @@ class AlbumsFragment : FunkwhaleFragment<Album, AlbumsAdapter>() {
         arguments = bundleOf(
           "artistId" to artist.id,
           "artistName" to artist.name,
-          "artistArt" to artist.albums!![0].cover.original
+          "artistArt" to if (artist.albums?.isNotEmpty() == true) artist.albums[0].cover.original else ""
         )
       }
     }

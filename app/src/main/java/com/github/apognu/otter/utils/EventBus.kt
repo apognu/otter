@@ -3,7 +3,10 @@ package com.github.apognu.otter.utils
 import com.github.apognu.otter.Otter
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.channels.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.channels.filter
+import kotlinx.coroutines.channels.map
 import kotlinx.coroutines.launch
 
 sealed class Command {

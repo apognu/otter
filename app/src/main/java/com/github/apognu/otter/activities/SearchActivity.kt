@@ -44,7 +44,7 @@ class SearchActivity : AppCompatActivity() {
           adapter.data.clear()
           adapter.notifyDataSetChanged()
 
-          repository.fetch(Repository.Origin.Network.origin).untilNetwork { tracks ->
+          repository.fetch(Repository.Origin.Network.origin).untilNetwork { tracks, _ ->
             search_spinner.visibility = View.GONE
             search_empty.visibility = View.GONE
 

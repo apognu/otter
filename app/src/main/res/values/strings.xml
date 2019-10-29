@@ -38,6 +38,10 @@
   <string name="settings_night_mode_off_summary">Light mode will always be preferred</string>
   <string name="settings_night_mode_system">Follow system settings</string>
   <string name="settings_night_mode_system_summary">Night mode will follow system settings</string>
+  <string name="settings_experiments">Enable experimental features</string>
+  <string name="settings_experiments_description">Use at your own risks, may freeze or crash the app</string>
+  <string name="settings_experiments_restart_title">Restart required</string>
+  <string name="settings_experiments_restart_content">Please kill and restart the app in order for this change to take effect</string>
   <string name="settings_logout">Sign out</string>
 
   <string name="artists">Artists</string>

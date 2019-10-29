@@ -64,7 +64,7 @@ class LoginActivity : AppCompatActivity() {
 
       GlobalScope.launch(Main) {
         try {
-          val result = Fuel.post("$hostname/api/v1/token", body)
+          val result = Fuel.post("$hostname/api/v1/token/", body)
             .awaitObjectResult(gsonDeserializerOf(FwCredentials::class.java))
 
           result.fold(

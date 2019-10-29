@@ -97,7 +97,7 @@ dependencies {
   implementation("androidx.preference:preference:1.1.0")
   implementation("androidx.recyclerview:recyclerview:1.0.0")
   implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
-  implementation("com.google.android.material:material:1.1.0-beta01")
+  implementation("com.google.android.material:material:1.2.0-alpha01")
   implementation("com.android.support.constraint:constraint-layout:1.1.3")
 
   implementation("com.google.android.exoplayer:exoplayer:2.10.5")

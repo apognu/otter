@@ -18,7 +18,7 @@ import java.io.Reader
 import java.lang.reflect.Type
 import kotlin.math.ceil
 
-class HttpUpstream<D : Any, R : FunkwhaleResponse<D>>(private val behavior: Behavior, private val url: String, private val type: Type) : Upstream<D> {
+class HttpUpstream<D : Any, R : FunkwhaleResponse<D>>(val behavior: Behavior, private val url: String, private val type: Type) : Upstream<D> {
   enum class Behavior {
     Single, AtOnce, Progressive
   }
@@ -33,10 +33,10 @@ class HttpUpstream<D : Any, R : FunkwhaleResponse<D>>(private val behavior: Beha
       return _channel!!
     }
 
-  override fun fetch(data: List<D>): Channel<Repository.Response<D>>? {
-    if (behavior == Behavior.Single && data.isNotEmpty()) return null
+  override fun fetch(size: Int): Channel<Repository.Response<D>>? {
+    if (behavior == Behavior.Single && size != 0) return null
 
-    val page = ceil(data.size / AppContext.PAGE_SIZE.toDouble()).toInt() + 1
+    val page = ceil(size / AppContext.PAGE_SIZE.toDouble()).toInt() + 1
 
     GlobalScope.launch(Dispatchers.IO) {
       val offsetUrl =
@@ -49,19 +49,22 @@ class HttpUpstream<D : Any, R : FunkwhaleResponse<D>>(private val behavior: Beha
 
       get(offsetUrl).fold(
         { response ->
-          val data = data.plus(response.getData())
-
-          log(data.size.toString())
+          val data = response.getData()
 
           if (behavior == Behavior.Progressive || response.next == null) {
-            channel.offer(Repository.Response(Repository.Origin.Network, data))
+            channel.offer(Repository.Response(Repository.Origin.Network, data, false))
           } else {
-            fetch(data)
+            channel.offer(Repository.Response(Repository.Origin.Network, data, true))
+
+            fetch(size + data.size)
           }
         },
         { error ->
+          log(error.toString())
+
           when (error.exception) {
             is RefreshError -> EventBus.send(Event.LogOut)
+            else -> channel.offer(Repository.Response(Repository.Origin.Network, listOf(), false))
           }
         }
       )
@@ -77,8 +80,6 @@ class HttpUpstream<D : Any, R : FunkwhaleResponse<D>>(private val behavior: Beha
   }
 
   suspend fun get(url: String): Result<R, FuelError> {
-    log(url)
-
     val token = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("access_token")
 
     val (_, response, result) = Fuel
