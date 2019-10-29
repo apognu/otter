@@ -15,7 +15,8 @@ plugins {
 }
 
 val props = Properties().apply {
-  load(FileInputStream(rootProject.file("local.properties")))
+  try { load(FileInputStream(rootProject.file("local.properties"))) }
+  catch(e: Exception) {}
 }
 
 android {
@@ -30,6 +31,7 @@ android {
     }
   }
 
+  buildToolsVersion = "29.0.2"
   compileSdkVersion(29)
 
   defaultConfig {
