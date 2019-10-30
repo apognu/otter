@@ -21,6 +21,9 @@ cache:
 script:
   - "./gradlew app:assembleDebug"
 
+before_deploy:
+  - RELEASE_MESSAGE="$(git tag -ln --format '%(subject)' $TRAVIS_TAG)"
+
 deploy:
   provider: releases
   name: $TRAVIS_TAG

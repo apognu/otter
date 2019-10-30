@@ -60,8 +60,6 @@ class HttpUpstream<D : Any, R : FunkwhaleResponse<D>>(val behavior: Behavior, pr
           }
         },
         { error ->
-          log(error.toString())
-
           when (error.exception) {
             is RefreshError -> EventBus.send(Event.LogOut)
             else -> channel.offer(Repository.Response(Repository.Origin.Network, listOf(), false))
