@@ -154,4 +154,10 @@ class QueueManager(val context: Context) {
 
     return metadata.getOrNull(current)
   }
+
+  fun clear() {
+    metadata = mutableListOf()
+    datasources.clear()
+    current = -1
+  }
 }

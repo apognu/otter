@@ -24,6 +24,7 @@ sealed class Command {
   class ReplaceQueue(val queue: List<Track>) : Command()
   class RemoveFromQueue(val track: Track) : Command()
   class MoveFromQueue(val oldPosition: Int, val newPosition: Int) : Command()
+  object ClearQueue : Command()
 
   class PlayTrack(val index: Int) : Command()
 }

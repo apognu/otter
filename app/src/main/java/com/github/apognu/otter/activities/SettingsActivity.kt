@@ -12,6 +12,8 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SeekBarPreference
 import com.github.apognu.otter.R
 import com.github.apognu.otter.utils.AppContext
+import com.github.apognu.otter.utils.Command
+import com.github.apognu.otter.utils.CommandBus
 import com.preference.PowerPreference
 
 class SettingsActivity : AppCompatActivity() {
@@ -68,6 +70,8 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
               PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).clear()
 
               context.cacheDir.deleteRecursively()
+
+              CommandBus.send(Command.ClearQueue)
 
               activity?.setResult(MainActivity.ResultCode.LOGOUT.code)
               activity?.finish()

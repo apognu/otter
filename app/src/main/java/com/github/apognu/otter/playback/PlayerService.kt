@@ -172,6 +172,8 @@ class PlayerService : Service() {
           is Command.NextTrack -> player.next()
           is Command.PreviousTrack -> previousTrack()
           is Command.Seek -> progress(message.progress)
+
+          is Command.ClearQueue -> queue.clear()
         }
 
         if (player.playWhenReady) {
