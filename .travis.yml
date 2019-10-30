@@ -18,6 +18,9 @@ cache:
     - "$HOME/.gradle/wrapper/"
     - "$HOME/.android/build-cache"
 
+before_install:
+  - echo y | sdkmanager ndk-bundle
+
 script:
   - "./gradlew app:assembleDebug"
 
