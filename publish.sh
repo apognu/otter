@@ -18,7 +18,7 @@ if [ "$(git tag -l | grep $TAG)" != '' ]; then
   exit 1
 fi
 
-git tag -a -m "$MESSAGE" "$TAG"
+git tag -a -s -m "$MESSAGE" "$TAG"
 git push --tags
 
 ./gradlew publish
