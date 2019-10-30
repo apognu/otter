@@ -17,7 +17,7 @@ class Otter : Application() {
     fun get(): Otter = instance
   }
 
-  var eventBus: BroadcastChannel<Event> = BroadcastChannel(10)
+  val eventBus: BroadcastChannel<Event> = BroadcastChannel(10)
   val commandBus: Channel<Command> = Channel(10)
   val requestBus: BroadcastChannel<Request> = BroadcastChannel(10)
   val progressBus: BroadcastChannel<Triple<Int, Int, Int>> = ConflatedBroadcastChannel()

@@ -59,8 +59,6 @@ class MainActivity : AppCompatActivity() {
       .replace(R.id.container, BrowseFragment())
       .commit()
 
-    startService(Intent(this, PlayerService::class.java))
-
     watchEventBus()
 
     CommandBus.send(Command.RefreshService)
@@ -68,6 +66,8 @@ class MainActivity : AppCompatActivity() {
 
   override fun onResume() {
     super.onResume()
+
+    startService(Intent(this, PlayerService::class.java))
 
     now_playing_toggle.setOnClickListener {
       CommandBus.send(Command.ToggleState)

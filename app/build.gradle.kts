@@ -90,8 +90,8 @@ dependencies {
   implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.50")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.2")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.2.2")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.2")
 
   implementation("androidx.appcompat:appcompat:1.1.0")
   implementation("androidx.core:core-ktx:1.2.0-beta01")
