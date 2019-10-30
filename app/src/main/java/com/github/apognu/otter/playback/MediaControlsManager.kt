@@ -43,10 +43,17 @@ class MediaControlsManager(val context: Service, private val mediaSession: Media
         val openIntent = Intent(context, MainActivity::class.java).apply { action = NOTIFICATION_ACTION_OPEN_QUEUE.toString() }
         val openPendingIntent = PendingIntent.getActivity(context, 0, openIntent, 0)
 
+        val coverUrl = maybeNormalizeUrl(track.album.cover.original)
+        val cover = coverUrl?.run { Picasso.get().load(coverUrl) }
+
         mediaSession.setMetadata(MediaMetadataCompat.Builder().apply {
           putString(MediaMetadata.METADATA_KEY_ARTIST, track.artist.name)
           putString(MediaMetadata.METADATA_KEY_TITLE, track.title)
           putLong(MediaMetadata.METADATA_KEY_DURATION, (track.bestUpload()?.duration?.toLong() ?: 0L) * 1000)
+
+          cover?.let {
+            putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, it.get())
+          }
         }.build())
 
         notification = NotificationCompat.Builder(
@@ -61,9 +68,7 @@ class MediaControlsManager(val context: Service, private val mediaSession: Media
           )
           .setSmallIcon(R.drawable.ottericon)
           .run {
-            val url = maybeNormalizeUrl(track.album.cover.original)
-
-            if (url != null) setLargeIcon(Picasso.get().load(url).get())
+            if (cover != null) setLargeIcon(cover.get())
             else this
           }
           .setContentTitle(track.title)
