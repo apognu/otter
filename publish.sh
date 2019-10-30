@@ -1,7 +1,7 @@
 #!/bin/sh
 
-if [ $# -ne 2 ]; then
-  echo 'Usage: ./publish.sh <TAG> <MESSAGE>' >&2
+if [ $# -lt 1 ] || [ $# -gt 2 ]; then
+  echo 'Usage: ./publish.sh TAG [MESSAGE]' >&2
   exit 1
 fi
 
@@ -18,8 +18,13 @@ if [ "$(git tag -l | grep $TAG)" != '' ]; then
   exit 1
 fi
 
-git tag -a -s -m "$MESSAGE" "$TAG"
+if [ "$MESSAGE" == '']; then
+  git tag -a -s -m "$MESSAGE" "$TAG"
+else
+  git tag -a -s "$TAG"
+fi
+
 git push --tags
 
+./gradlew publishListing
 ./gradlew publish
-

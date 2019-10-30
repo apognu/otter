@@ -1,0 +1,6 @@
+Otter is a simple music player that allows you to stream the audio content of your self-hosted Funkwhale pod.
+
+This app requires an account on a Funkwhale instance to work.
+
+Source code : https://github.com/apognu/otter
+Funkwhale : https://funkwhale.audio
