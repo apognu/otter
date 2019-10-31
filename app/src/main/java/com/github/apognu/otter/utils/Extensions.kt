@@ -11,7 +11,8 @@ import com.squareup.picasso.Picasso
 import com.squareup.picasso.RequestCreator
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
@@ -19,23 +20,10 @@ fun Context.getColor(colorRes: Int): Int {
   return ContextCompat.getColor(this, colorRes)
 }
 
-inline fun <D> Channel<Repository.Response<D>>.await(context: CoroutineContext = Main, crossinline callback: (data: List<D>) -> Unit) {
+inline fun <D> Flow<Repository.Response<D>>.untilNetwork(context: CoroutineContext = Main, crossinline callback: (data: List<D>, isCache: Boolean, hasMore: Boolean) -> Unit) {
   GlobalScope.launch(context) {
-    this@await.receive().also {
-      callback(it.data)
-      close()
-    }
-  }
-}
-
-inline fun <D> Channel<Repository.Response<D>>.untilNetwork(context: CoroutineContext = Main, crossinline callback: (data: List<D>, isCache: Boolean, hasMore: Boolean) -> Unit) {
-  GlobalScope.launch(context) {
-    for (data in this@untilNetwork) {
+    collect { data ->
       callback(data.data, data.origin == Repository.Origin.Cache, data.hasMore)
-
-      if (data.origin == Repository.Origin.Network && !data.hasMore) {
-        close()
-      }
     }
   }
 }

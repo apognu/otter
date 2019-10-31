@@ -7,6 +7,8 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.filter
 import kotlinx.coroutines.channels.map
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.launch
 
 sealed class Command {
@@ -55,15 +57,11 @@ sealed class Response {
 object EventBus {
   fun send(event: Event) {
     GlobalScope.launch {
-      get().offer(event)
+      Otter.get().eventBus.send(event)
     }
   }
 
-  fun get() = Otter.get().eventBus
-
-  inline fun <reified T : Event> asChannel(): ReceiveChannel<T> {
-    return get().openSubscription().filter { it is T }.map { it as T }
-  }
+  fun get() = Otter.get().eventBus.asFlow()
 }
 
 object CommandBus {
@@ -82,16 +80,12 @@ object RequestBus {
       GlobalScope.launch(Main) {
         request.channel = it
 
-        get().offer(request)
+        Otter.get().requestBus.offer(request)
       }
     }
   }
 
-  fun get() = Otter.get().requestBus
-
-  inline fun <reified T> asChannel(): ReceiveChannel<T> {
-    return get().openSubscription().filter { it is T }.map { it as T }
-  }
+  fun get() = Otter.get().requestBus.asFlow()
 }
 
 object ProgressBus {
@@ -101,9 +95,7 @@ object ProgressBus {
     }
   }
 
-  fun asChannel(): ReceiveChannel<Triple<Int, Int, Int>> {
-    return Otter.get().progressBus.openSubscription()
-  }
+  fun get() = Otter.get().progressBus.asFlow().conflate()
 }
 
 suspend inline fun <reified T> Channel<Response>.wait(): T? {

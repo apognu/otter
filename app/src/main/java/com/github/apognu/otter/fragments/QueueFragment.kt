@@ -16,6 +16,7 @@ import kotlinx.android.synthetic.main.fragment_queue.*
 import kotlinx.android.synthetic.main.fragment_queue.view.*
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class QueueFragment : BottomSheetDialogFragment() {
@@ -78,7 +79,7 @@ class QueueFragment : BottomSheetDialogFragment() {
 
   private fun watchEventBus() {
     GlobalScope.launch(Main) {
-      for (message in EventBus.asChannel<Event>()) {
+      EventBus.get().collect { message ->
         when (message) {
           is Event.TrackPlayed -> refresh()
           is Event.QueueChanged -> refresh()

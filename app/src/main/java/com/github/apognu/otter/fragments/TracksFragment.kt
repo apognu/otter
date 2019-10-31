@@ -13,6 +13,7 @@ import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_tracks.*
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class TracksFragment : FunkwhaleFragment<Track, TracksAdapter>() {
@@ -95,7 +96,7 @@ class TracksFragment : FunkwhaleFragment<Track, TracksAdapter>() {
 
   private fun watchEventBus() {
     GlobalScope.launch(Main) {
-      for (message in EventBus.asChannel<Event>()) {
+      EventBus.get().collect { message ->
         when (message) {
           is Event.TrackPlayed -> {
             GlobalScope.launch(Main) {

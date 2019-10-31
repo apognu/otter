@@ -22,6 +22,7 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class PlayerService : Service() {
@@ -183,7 +184,7 @@ class PlayerService : Service() {
     })
 
     jobs.add(GlobalScope.launch(Main) {
-      for (request in RequestBus.asChannel<Request>()) {
+      RequestBus.get().collect { request ->
         when (request) {
           is Request.GetCurrentTrack -> request.channel?.offer(
             Response.CurrentTrack(

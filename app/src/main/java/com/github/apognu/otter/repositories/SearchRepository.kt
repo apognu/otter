@@ -7,6 +7,8 @@ import com.github.apognu.otter.utils.TracksCache
 import com.github.apognu.otter.utils.TracksResponse
 import com.github.kittinunf.fuel.gson.gsonDeserializerOf
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import java.io.BufferedReader
 
@@ -18,7 +20,10 @@ class SearchRepository(override val context: Context?, query: String) : Reposito
   override fun uncache(reader: BufferedReader) = gsonDeserializerOf(TracksCache::class.java).deserialize(reader)
 
   override fun onDataFetched(data: List<Track>): List<Track> = runBlocking {
-    val favorites = FavoritedRepository(context).fetch(Origin.Network.origin).receive().data
+    val favorites = FavoritedRepository(context).fetch(Origin.Network.origin)
+      .map { it.data }
+      .toList()
+      .flatten()
 
     data.map { track ->
       track.favorite = favorites.contains(track.id)

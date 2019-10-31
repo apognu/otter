@@ -10,10 +10,10 @@ import com.github.kittinunf.fuel.coroutines.awaitObjectResult
 import com.github.kittinunf.result.Result
 import com.google.gson.Gson
 import com.preference.PowerPreference
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import java.io.Reader
 import java.lang.reflect.Type
 import kotlin.math.ceil
@@ -23,53 +23,39 @@ class HttpUpstream<D : Any, R : FunkwhaleResponse<D>>(val behavior: Behavior, pr
     Single, AtOnce, Progressive
   }
 
-  private var _channel: Channel<Repository.Response<D>>? = null
-  private val channel: Channel<Repository.Response<D>>
-    get() {
-      if (_channel?.isClosedForSend ?: true) {
-        _channel = Channel()
-      }
-
-      return _channel!!
-    }
-
-  override fun fetch(size: Int): Channel<Repository.Response<D>>? {
-    if (behavior == Behavior.Single && size != 0) return null
+  override fun fetch(size: Int): Flow<Repository.Response<D>> = flow {
+    if (behavior == Behavior.Single && size != 0) return@flow
 
     val page = ceil(size / AppContext.PAGE_SIZE.toDouble()).toInt() + 1
 
-    GlobalScope.launch(Dispatchers.IO) {
-      val offsetUrl =
-        Uri.parse(url)
-          .buildUpon()
-          .appendQueryParameter("page_size", AppContext.PAGE_SIZE.toString())
-          .appendQueryParameter("page", page.toString())
-          .build()
-          .toString()
+    val offsetUrl =
+      Uri.parse(url)
+        .buildUpon()
+        .appendQueryParameter("page_size", AppContext.PAGE_SIZE.toString())
+        .appendQueryParameter("page", page.toString())
+        .build()
+        .toString()
 
-      get(offsetUrl).fold(
-        { response ->
-          val data = response.getData()
+    get(offsetUrl).fold(
+      { response ->
+        val data = response.getData()
 
-          if (behavior == Behavior.Progressive || response.next == null) {
-            channel.offer(Repository.Response(Repository.Origin.Network, data, false))
-          } else {
-            channel.offer(Repository.Response(Repository.Origin.Network, data, true))
+        if (behavior == Behavior.Progressive || response.next == null) {
+          emit(Repository.Response(Repository.Origin.Network, data, false))
+        } else {
+          emit(Repository.Response(Repository.Origin.Network, data, true))
 
-            fetch(size + data.size)
-          }
-        },
-        { error ->
-          when (error.exception) {
-            is RefreshError -> EventBus.send(Event.LogOut)
-            else -> channel.offer(Repository.Response(Repository.Origin.Network, listOf(), false))
-          }
+          fetch(size + data.size)
         }
-      )
-    }
-
-    return channel
-  }
+      },
+      { error ->
+        when (error.exception) {
+          is RefreshError -> EventBus.send(Event.LogOut)
+          else -> emit(Repository.Response(Repository.Origin.Network, listOf(), false))
+        }
+      }
+    )
+  }.flowOn(IO)
 
   class GenericDeserializer<T : FunkwhaleResponse<*>>(val type: Type) : ResponseDeserializable<T> {
     override fun deserialize(reader: Reader): T? {

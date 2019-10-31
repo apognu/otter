@@ -32,6 +32,7 @@ import kotlinx.android.synthetic.main.partial_now_playing.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -178,7 +179,7 @@ class MainActivity : AppCompatActivity() {
   @SuppressLint("NewApi")
   private fun watchEventBus() {
     GlobalScope.launch(Main) {
-      for (message in EventBus.asChannel<Event>()) {
+      EventBus.get().collect { message ->
         when (message) {
           is Event.LogOut -> {
             PowerPreference.clearAllData()
@@ -315,7 +316,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     GlobalScope.launch(Main) {
-      for ((current, duration, percent) in ProgressBus.asChannel()) {
+      ProgressBus.get().collect { (current, duration, percent) ->
         now_playing_progress.progress = percent
         now_playing_details_progress.progress = percent
 

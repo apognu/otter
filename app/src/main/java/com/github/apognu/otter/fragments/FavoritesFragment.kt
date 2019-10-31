@@ -9,6 +9,7 @@ import com.github.apognu.otter.utils.*
 import kotlinx.android.synthetic.main.fragment_favorites.*
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class FavoritesFragment : FunkwhaleFragment<Track, FavoritesAdapter>() {
@@ -43,7 +44,7 @@ class FavoritesFragment : FunkwhaleFragment<Track, FavoritesAdapter>() {
 
   private fun watchEventBus() {
     GlobalScope.launch(Main) {
-      for (message in EventBus.asChannel<Event>()) {
+      EventBus.get().collect { message ->
         when (message) {
           is Event.TrackPlayed -> {
             GlobalScope.launch(Main) {
