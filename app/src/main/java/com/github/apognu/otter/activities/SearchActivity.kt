@@ -44,16 +44,16 @@ class SearchActivity : AppCompatActivity() {
           adapter.data.clear()
           adapter.notifyDataSetChanged()
 
-          repository.fetch(Repository.Origin.Network.origin).untilNetwork { tracks, _ ->
+          repository.fetch(Repository.Origin.Network.origin).untilNetwork { tracks, _, _ ->
             search_spinner.visibility = View.GONE
             search_empty.visibility = View.GONE
 
             when (tracks.isEmpty()) {
               true -> search_no_results.visibility = View.VISIBLE
-              false -> adapter.data = tracks.toMutableList()
+              false -> adapter.data.addAll(tracks)
             }
 
-            adapter.notifyDataSetChanged()
+            adapter.notifyItemRangeInserted(adapter.data.size, tracks.size)
           }
         }
 
@@ -61,7 +61,6 @@ class SearchActivity : AppCompatActivity() {
       }
 
       override fun onQueryTextChange(newText: String?) = true
-
     })
   }
 }

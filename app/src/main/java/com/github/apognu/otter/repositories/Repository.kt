@@ -3,6 +3,7 @@ package com.github.apognu.otter.repositories
 import android.content.Context
 import com.github.apognu.otter.utils.Cache
 import com.github.apognu.otter.utils.CacheItem
+import com.github.apognu.otter.utils.log
 import com.github.apognu.otter.utils.untilNetwork
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers.IO
@@ -60,16 +61,8 @@ abstract class Repository<D : Any, C : CacheItem<D>> {
   }
 
   private fun fromNetwork(size: Int) {
-    upstream.fetch(size)?.untilNetwork(IO) { data, hasMore ->
+    upstream.fetch(size)?.untilNetwork(IO) { data, _, hasMore ->
       val data = onDataFetched(data)
-
-      cacheId?.let { cacheId ->
-        Cache.set(
-          context,
-          cacheId,
-          Gson().toJson(cache(data)).toByteArray()
-        )
-      }
 
       channel.offer(Response(Origin.Network, data, hasMore))
     }

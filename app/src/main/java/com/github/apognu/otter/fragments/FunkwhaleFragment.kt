@@ -75,7 +75,13 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
       adapter.data.clear()
     }
 
-    repository.fetch(upstreams, size).untilNetwork(IO) { data, hasMore ->
+    repository.fetch(upstreams, size).untilNetwork(IO) { data, isCache, hasMore ->
+      if (isCache) {
+        adapter.data = data.toMutableList()
+
+        return@untilNetwork
+      }
+
       onDataFetched(data)
 
       if (!hasMore) {

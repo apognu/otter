@@ -28,10 +28,10 @@ inline fun <D> Channel<Repository.Response<D>>.await(context: CoroutineContext =
   }
 }
 
-inline fun <D> Channel<Repository.Response<D>>.untilNetwork(context: CoroutineContext = Main, crossinline callback: (data: List<D>, hasMore: Boolean) -> Unit) {
+inline fun <D> Channel<Repository.Response<D>>.untilNetwork(context: CoroutineContext = Main, crossinline callback: (data: List<D>, isCache: Boolean, hasMore: Boolean) -> Unit) {
   GlobalScope.launch(context) {
     for (data in this@untilNetwork) {
-      callback(data.data, data.hasMore)
+      callback(data.data, data.origin == Repository.Origin.Cache, data.hasMore)
 
       if (data.origin == Repository.Origin.Network && !data.hasMore) {
         close()
