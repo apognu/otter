@@ -1,0 +1,1 @@
+Cette version ajoute une meilleure intégration dans les contrôles musicaux des appareils WearOS, une correction de bug où les résultats de recherche n'apparaissaient pas tous à l'écran et quelques optimisations pour survivre aux optimiseurs de batterie faisant preuve d'un peu trop de zèle.

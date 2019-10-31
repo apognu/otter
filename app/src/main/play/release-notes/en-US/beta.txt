@@ -1,0 +1,1 @@
+This release adds better integration into WearOS devices media controls, a bug fix where search results not all appear on screen and some optimization to survive overzealous battery optimizers.
