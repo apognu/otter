@@ -1,7 +1,7 @@
 # Otter for Funkwhale
 
 ![](https://img.shields.io/github/license/apognu/otter?style=flat-square)
-[![](https://img.shields.io/travis/apognu/otter/master?style=flat-square)](https://travis-ci/apognu/otter)
+[![](https://img.shields.io/travis/apognu/otter/master?style=flat-square)](https://travis-ci.org/apognu/otter)
 [![](https://img.shields.io/badge/Play%20Store-otter-informational?style=flat-square)](https://play.google.com/store/apps/details?id=com.github.apognu.otter)
 [![](https://img.shields.io/badge/APK-otter-informational?style=flat-square)](https://github.com/apognu/otter/releases)
 
