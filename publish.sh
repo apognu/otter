@@ -18,7 +18,7 @@ if [ "$(git tag -l | grep $TAG)" != '' ]; then
   exit 1
 fi
 
-if [ "$MESSAGE" == '']; then
+if [ "$MESSAGE" == '' ]; then
   git tag -a -s -m "$MESSAGE" "$TAG"
 else
   git tag -a -s "$TAG"
