@@ -82,8 +82,8 @@ class TracksAdapter(private val context: Context?, private val favoriteListener:
 
     context?.let {
       when (track.favorite) {
-        true -> holder.favorite.setColorFilter(context.resources.getColor(R.color.colorFavorite))
-        false -> holder.favorite.setColorFilter(context.resources.getColor(R.color.colorSelected))
+        true -> holder.favorite.setColorFilter(context.getColor(R.color.colorFavorite))
+        false -> holder.favorite.setColorFilter(context.getColor(R.color.colorSelected))
       }
 
       holder.favorite.setOnClickListener {

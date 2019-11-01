@@ -12,6 +12,7 @@ import com.google.gson.Gson
 import com.preference.PowerPreference
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import java.io.Reader
@@ -45,7 +46,7 @@ class HttpUpstream<D : Any, R : FunkwhaleResponse<D>>(val behavior: Behavior, pr
         } else {
           emit(Repository.Response(Repository.Origin.Network, data, true))
 
-          fetch(size + data.size)
+          fetch(size + data.size).collect { emit(it) }
         }
       },
       { error ->

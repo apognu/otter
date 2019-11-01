@@ -100,10 +100,12 @@ class PlaylistTracksFragment : FunkwhaleFragment<PlaylistTrack, PlaylistTracksAd
         else -> cover_top_left
       }
 
-      GlobalScope.launch(Main) {
-        Picasso.get()
-          .maybeLoad(maybeNormalizeUrl(url))
-          .into(imageView)
+      imageView?.let { view ->
+        GlobalScope.launch(Main) {
+          Picasso.get()
+            .maybeLoad(maybeNormalizeUrl(url))
+            .into(view)
+        }
       }
     }
   }

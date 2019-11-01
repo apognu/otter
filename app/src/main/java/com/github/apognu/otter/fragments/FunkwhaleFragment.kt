@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.repositories.HttpUpstream
 import com.github.apognu.otter.repositories.Repository
 import com.github.apognu.otter.utils.Cache
-import com.github.apognu.otter.utils.log
 import com.github.apognu.otter.utils.untilNetwork
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_artists.*
@@ -45,8 +44,8 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
 
     (repository.upstream as? HttpUpstream<*, *>)?.let { upstream ->
       if (upstream.behavior == HttpUpstream.Behavior.Progressive) {
-        recycler.setOnScrollChangeListener { _, _, y, _, _ ->
-          if (y > 0 && !recycler.canScrollVertically(1)) {
+        recycler.setOnScrollChangeListener { _, _, _, _, _ ->
+          if (recycler.computeVerticalScrollOffset() > 0 && !recycler.canScrollVertically(1)) {
             fetch(Repository.Origin.Network.origin, adapter.data.size)
           }
         }
@@ -67,41 +66,47 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
   open fun onDataFetched(data: List<D>) {}
 
   private fun fetch(upstreams: Int = (Repository.Origin.Network.origin and Repository.Origin.Cache.origin), size: Int = 0) {
-    var first = true
+    var first = size == 0
 
     swiper?.isRefreshing = true
 
     repository.fetch(upstreams, size).untilNetwork(IO) { data, isCache, hasMore ->
-      if (isCache) {
-        adapter.data = data.toMutableList()
-        adapter.notifyDataSetChanged()
-
-        return@untilNetwork
-      }
-
-      if (first) {
-        first = false
-
-        adapter.data.clear()
-      }
-
-      onDataFetched(data)
-
-      adapter.data.addAll(data)
-
-      if (!hasMore) {
-        swiper?.isRefreshing = false
-
-        repository.cacheId?.let { cacheId ->
-          Cache.set(
-            context,
-            cacheId,
-            Gson().toJson(repository.cache(adapter.data)).toByteArray()
-          )
-        }
-      }
-
       GlobalScope.launch(Main) {
+        if (isCache) {
+          adapter.data = data.toMutableList()
+          adapter.notifyDataSetChanged()
+
+          return@launch
+        }
+
+        if (first && data.isNotEmpty()) {
+          first = false
+
+          adapter.data.clear()
+        }
+
+        onDataFetched(data)
+
+        adapter.data.addAll(data)
+
+        if (!hasMore) {
+          swiper?.isRefreshing = false
+
+          GlobalScope.launch(IO) {
+            if (adapter.data.isNotEmpty()) {
+              try {
+                repository.cacheId?.let { cacheId ->
+                  Cache.set(
+                    context,
+                    cacheId,
+                    Gson().toJson(repository.cache(adapter.data)).toByteArray()
+                  )
+                }
+              } catch (e: ConcurrentModificationException) {}
+            }
+          }
+        }
+
         when (first) {
           true -> {
             adapter.notifyDataSetChanged()

@@ -413,6 +413,7 @@ class PlayerService : Service() {
       )
 
       player.next()
+      player.playWhenReady = true
     }
   }
 
