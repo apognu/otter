@@ -5,19 +5,21 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.res.Configuration
+import android.graphics.Bitmap
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.util.DisplayMetrics
+import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.BrowseFragment
+import com.github.apognu.otter.fragments.LandscapeQueueFragment
 import com.github.apognu.otter.fragments.QueueFragment
 import com.github.apognu.otter.playback.MediaControlsManager
 import com.github.apognu.otter.playback.PlayerService
@@ -34,6 +36,7 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
   enum class ResultCode(val code: Int) {
@@ -101,6 +104,10 @@ class MainActivity : AppCompatActivity() {
         }
       }
     })
+
+    landscape_queue?.let {
+      supportFragmentManager.beginTransaction().replace(R.id.landscape_queue, LandscapeQueueFragment()).commit()
+    }
   }
 
   override fun onBackPressed() {
@@ -155,6 +162,10 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    super.onConfigurationChanged(newConfig)
+  }
+
   private fun launchFragment(fragment: Fragment) {
     supportFragmentManager.fragments.lastOrNull()?.also { oldFragment ->
       oldFragment.enterTransition = null
@@ -206,6 +217,12 @@ class MainActivity : AppCompatActivity() {
                 it.bottomMargin = it.bottomMargin / 2
               }
 
+              landscape_queue?.let { landscape_queue ->
+                (landscape_queue.layoutParams as? ViewGroup.MarginLayoutParams)?.let {
+                  it.bottomMargin = it.bottomMargin / 2
+                }
+              }
+
               now_playing.animate()
                 .alpha(0.0f)
                 .setDuration(400)
@@ -233,6 +250,12 @@ class MainActivity : AppCompatActivity() {
                 (container.layoutParams as? ViewGroup.MarginLayoutParams)?.let {
                   it.bottomMargin = it.bottomMargin * 2
                 }
+
+                landscape_queue?.let { landscape_queue ->
+                  (landscape_queue.layoutParams as? ViewGroup.MarginLayoutParams)?.let {
+                    it.bottomMargin = it.bottomMargin * 2
+                  }
+                }
               }
 
               now_playing_title.text = track.title
@@ -251,33 +274,60 @@ class MainActivity : AppCompatActivity() {
                 .centerCrop()
                 .into(now_playing_cover)
 
-              Picasso.get()
-                .maybeLoad(maybeNormalizeUrl(track.album.cover.original))
-                .fit()
-                .centerCrop()
-                .into(now_playing_details_cover)
+              now_playing_details_cover?.let { now_playing_details_cover ->
+                Picasso.get()
+                  .maybeLoad(maybeNormalizeUrl(track.album.cover.original))
+                  .fit()
+                  .centerCrop()
+                  .into(now_playing_details_cover)
+              }
 
-              favoriteCheckRepository.fetch().untilNetwork(IO) { favorites, _, _ ->
-                GlobalScope.launch(Main) {
-                  track.favorite = favorites.contains(track.id)
+              if (now_playing_details_cover == null) {
+                GlobalScope.launch(IO) {
+                  val width = DisplayMetrics().apply {
+                    windowManager.defaultDisplay.getMetrics(this)
+                  }.widthPixels
 
-                  when (track.favorite) {
-                    true -> now_playing_details_favorite.setColorFilter(getColor(R.color.colorFavorite))
-                    false -> now_playing_details_favorite.setColorFilter(getColor(R.color.controlForeground))
+                  val backgroundCover = Picasso.get()
+                    .maybeLoad(maybeNormalizeUrl(track.album.cover.original))
+                    .get()
+                    .run { Bitmap.createScaledBitmap(this, width, width, false).toDrawable(resources) }
+                    .apply {
+                      alpha = 20
+                      gravity = Gravity.CENTER
+                    }
+
+                  withContext(Main) {
+                    now_playing_details.background = backgroundCover
                   }
                 }
               }
 
-              now_playing_details_favorite.setOnClickListener {
-                when (track.favorite) {
-                  true -> {
-                    favoriteRepository.deleteFavorite(track.id)
-                    now_playing_details_favorite.setColorFilter(getColor(R.color.controlForeground))
-                  }
+              now_playing_details_favorite?.let { now_playing_details_favorite ->
+                favoriteCheckRepository.fetch().untilNetwork(IO) { favorites, _, _ ->
+                  GlobalScope.launch(Main) {
+                    track.favorite = favorites.contains(track.id)
 
-                  false -> {
-                    favoriteRepository.addFavorite(track.id)
-                    now_playing_details_favorite.setColorFilter(getColor(R.color.colorFavorite))
+                    when (track.favorite) {
+                      true -> now_playing_details_favorite.setColorFilter(getColor(R.color.colorFavorite))
+                      false -> now_playing_details_favorite.setColorFilter(getColor(R.color.controlForeground))
+                    }
+                  }
+                }
+              }
+
+              now_playing_details_favorite?.let { now_playing_details_favorite ->
+                now_playing_details_favorite.setOnClickListener {
+                  when (track.favorite) {
+                    true -> {
+                      favoriteRepository.deleteFavorite(track.id)
+                      now_playing_details_favorite.setColorFilter(getColor(R.color.controlForeground))
+                    }
+
+                    false -> {
+                      favoriteRepository.addFavorite(track.id)
+                      now_playing_details_favorite.setColorFilter(getColor(R.color.colorFavorite))
+                    }
                   }
                 }
 

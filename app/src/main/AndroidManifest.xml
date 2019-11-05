@@ -13,7 +13,6 @@
     android:icon="@mipmap/ic_launcher"
     android:label="@string/app_name"
     android:roundIcon="@mipmap/ic_launcher_round"
-    android:screenOrientation="portrait"
     android:supportsRtl="true"
     android:theme="@style/AppTheme">
 
@@ -35,6 +34,7 @@
 
     <activity
       android:name="com.github.apognu.otter.activities.LoginActivity"
+      android:configChanges="screenSize|orientation"
       android:launchMode="singleInstance" />
     <activity android:name="com.github.apognu.otter.activities.MainActivity" />
     <activity

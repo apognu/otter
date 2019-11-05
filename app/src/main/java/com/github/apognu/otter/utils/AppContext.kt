@@ -25,8 +25,6 @@ object AppContext {
   fun init(context: Activity) {
     setupNotificationChannels(context)
 
-    context.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-
     // CastContext.getSharedInstance(context)
 
     FuelManager.instance.addResponseInterceptor { next ->

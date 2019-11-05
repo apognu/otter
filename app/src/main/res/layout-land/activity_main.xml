@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:baselineAligned="false"
+    android:orientation="horizontal">
+
+    <FrameLayout
+      android:id="@+id/container"
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:layout_marginBottom="?attr/actionBarSize"
+      android:layout_weight="1"
+      app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <FrameLayout
+      android:id="@+id/landscape_queue"
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:layout_marginBottom="?attr/actionBarSize"
+      android:layout_weight="1"
+      app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+  </LinearLayout>
+
+  <com.github.apognu.otter.views.NowPlayingView
+    android:id="@+id/now_playing"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:layout_gravity="bottom"
+    android:layout_margin="8dp"
+    android:alpha="0"
+    android:visibility="gone"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="12dp"
+    app:layout_dodgeInsetEdges="bottom"
+    tools:alpha="1"
+    tools:visibility="visible">
+
+    <include layout="@layout/partial_now_playing" />
+
+  </com.github.apognu.otter.views.NowPlayingView>
+
+  <com.google.android.material.bottomappbar.BottomAppBar
+    android:id="@+id/appbar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:theme="@style/AppTheme.AppBar"
+    app:backgroundTint="@color/colorPrimary"
+    app:layout_insetEdge="bottom"
+    app:navigationIcon="@drawable/ottericon"
+    tools:menu="@menu/toolbar" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

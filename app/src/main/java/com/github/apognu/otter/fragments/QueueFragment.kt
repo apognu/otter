@@ -15,6 +15,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.fragment_queue.*
 import kotlinx.android.synthetic.main.fragment_queue.view.*
+import kotlinx.android.synthetic.main.partial_queue.*
+import kotlinx.android.synthetic.main.partial_queue.view.*
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
@@ -50,6 +52,10 @@ class QueueFragment : BottomSheetDialogFragment() {
       adapter = TracksAdapter(context, FavoriteListener(), fromQueue = true).also {
         queue.layoutManager = LinearLayoutManager(context)
         queue.adapter = it
+        adapter = TracksAdapter(context, fromQueue = true).also {
+          included.queue.layoutManager = LinearLayoutManager(context)
+          included.queue.adapter = it
+        }
       }
     }
   }
@@ -57,7 +63,7 @@ class QueueFragment : BottomSheetDialogFragment() {
   override fun onResume() {
     super.onResume()
 
-    queue?.visibility = View.GONE
+    included.queue?.visibility = View.GONE
     placeholder?.visibility = View.VISIBLE
 
     refresh()
@@ -66,16 +72,18 @@ class QueueFragment : BottomSheetDialogFragment() {
   private fun refresh() {
     GlobalScope.launch(Main) {
       RequestBus.send(Request.GetQueue).wait<Response.Queue>()?.let { response ->
-        adapter?.let {
-          it.data = response.queue.toMutableList()
-          it.notifyDataSetChanged()
+        included?.let {
+          adapter?.let {
+            it.data = response.queue.toMutableList()
+            it.notifyDataSetChanged()
 
-          if (it.data.isEmpty()) {
-            queue?.visibility = View.GONE
-            placeholder?.visibility = View.VISIBLE
-          } else {
-            queue?.visibility = View.VISIBLE
-            placeholder?.visibility = View.GONE
+            if (it.data.isEmpty()) {
+              included.queue?.visibility = View.GONE
+              placeholder?.visibility = View.VISIBLE
+            } else {
+              included.queue?.visibility = View.VISIBLE
+              placeholder?.visibility = View.GONE
+            }
           }
         }
       }

@@ -1,0 +1,29 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:layout_below="@layout/fragment_queue">
+
+  <androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/queue"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:itemCount="10"
+    tools:listitem="@layout/row_track" />
+
+  <TextView
+    android:id="@+id/placeholder"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_vertical"
+    android:layout_marginTop="64dp"
+    android:layout_marginBottom="64dp"
+    android:drawableTop="@drawable/ottericon"
+    android:drawablePadding="16dp"
+    android:drawableTint="#525252"
+    android:text="@string/playback_queue_empty"
+    android:textAlignment="center"
+    android:visibility="gone"
+    tools:visibility="visible" />
+
+</FrameLayout>
