@@ -19,6 +19,11 @@ val props = Properties().apply {
   catch(e: Exception) {}
 }
 
+androidGitVersion {
+  codeFormat = "MNNPP"
+  format = "%tag%%-count%%-commit%%-branch%"
+}
+
 android {
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -67,11 +72,6 @@ android {
       proguardFile("proguard-rules.pro")
     }
   }
-}
-
-androidGitVersion {
-  codeFormat = "MNNPP"
-  format = "%tag%%-count%%-commit%%-branch%"
 }
 
 ktlint {
