@@ -57,7 +57,9 @@ android {
 
   buildTypes {
     getByName("release") {
-      signingConfig = signingConfigs.getByName("release")
+      if (props.hasProperty("signing.store")) {
+        signingConfig = signingConfigs.getByName("release")
+      }
 
       isMinifyEnabled = false
 
