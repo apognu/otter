@@ -71,6 +71,7 @@ android {
 
 androidGitVersion {
   codeFormat = "MNNPP"
+  format = "%tag%%-count%%-commit%%-branch%"
 }
 
 ktlint {
