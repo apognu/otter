@@ -53,6 +53,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:layout_marginEnd="8dp"
         android:layout_weight="2"
         android:orientation="vertical">
 
@@ -60,6 +61,8 @@
           android:id="@+id/now_playing_title"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
+          android:ellipsize="end"
+          android:lines="1"
           android:textColor="@color/itemTitle"
           tools:text="Supermassive Black Hole" />
 
@@ -67,6 +70,8 @@
           android:id="@+id/now_playing_album"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
+          android:ellipsize="end"
+          android:lines="1"
           tools:text="Muse" />
 
       </LinearLayout>
