@@ -78,6 +78,7 @@ class LoginActivity : AppCompatActivity() {
 
               dialog.dismiss()
               startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+              finish()
             },
             { error ->
               dialog.dismiss()
