@@ -13,12 +13,12 @@ fi
 TAG="$1"
 MESSAGE="$2"
 
-if [ "$(git tag -l | grep $TAG)" != '' ]; then
+if [ "$(git tag -l | grep -e "^$TAG$")" != '' ]; then
   echo "ERROR: tag $TAG already exists." >&2
   exit 1
 fi
 
-if [ "$MESSAGE" == '' ]; then
+if [ "$MESSAGE" != '' ]; then
   git tag -a -s -m "$MESSAGE" "$TAG"
 else
   git tag -a -s "$TAG"
