@@ -76,7 +76,7 @@ class PlaylistTracksAdapter(private val context: Context?, private val favoriteL
       })
 
 
-    if (track.track == currentTrack || track.track.current) {
+    if (track.track == currentTrack) {
       holder.title.setTypeface(holder.title.typeface, Typeface.BOLD)
       holder.artist.setTypeface(holder.artist.typeface, Typeface.BOLD)
     }

@@ -70,8 +70,8 @@ class TracksAdapter(private val context: Context?, private val favoriteListener:
         holder.artist.setTypeface(holder.artist.typeface, Typeface.DEFAULT.weight)
       },
       {
-        holder.title.setTypeface(holder.title.typeface, Typeface.NORMAL)
-        holder.artist.setTypeface(holder.artist.typeface, Typeface.NORMAL)
+        holder.title.typeface = Typeface.create(holder.title.typeface, Typeface.NORMAL)
+        holder.artist.typeface = Typeface.create(holder.artist.typeface, Typeface.NORMAL)
       })
 
 

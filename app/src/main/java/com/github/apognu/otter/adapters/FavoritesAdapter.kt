@@ -59,12 +59,11 @@ class FavoritesAdapter(private val context: Context?, private val favoriteListen
         holder.artist.setTypeface(holder.artist.typeface, Typeface.DEFAULT.weight)
       },
       {
-        holder.title.setTypeface(holder.title.typeface, Typeface.NORMAL)
-        holder.artist.setTypeface(holder.artist.typeface, Typeface.NORMAL)
+        holder.title.typeface = Typeface.create(holder.title.typeface, Typeface.NORMAL)
+        holder.artist.typeface = Typeface.create(holder.artist.typeface, Typeface.NORMAL)
       })
 
-
-    if (favorite == currentTrack || favorite.current) {
+    if (favorite.id == currentTrack?.id) {
       holder.title.setTypeface(holder.title.typeface, Typeface.BOLD)
       holder.artist.setTypeface(holder.artist.typeface, Typeface.BOLD)
     }
