@@ -8,15 +8,17 @@ import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.LoginDialog
 import com.github.apognu.otter.utils.AppContext
 import com.github.kittinunf.fuel.Fuel
-import com.github.kittinunf.fuel.coroutines.awaitObjectResult
+import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
 import com.github.kittinunf.fuel.gson.gsonDeserializerOf
+import com.github.kittinunf.result.Result
+import com.google.gson.Gson
 import com.preference.PowerPreference
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-data class FwCredentials(val token: String)
+data class FwCredentials(val token: String, val non_field_errors: List<String>)
 
 class LoginActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,28 +66,38 @@ class LoginActivity : AppCompatActivity() {
 
       GlobalScope.launch(Main) {
         try {
-          val result = Fuel.post("$hostname/api/v1/token/", body)
-            .awaitObjectResult(gsonDeserializerOf(FwCredentials::class.java))
+          val (_, response, result) = Fuel.post("$hostname/api/v1/token/", body)
+            .awaitObjectResponseResult(gsonDeserializerOf(FwCredentials::class.java))
 
-          result.fold(
-            { data ->
+          when (result) {
+            is Result.Success -> {
               PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).apply {
                 setString("hostname", hostname)
                 setString("username", username)
                 setString("password", password)
-                setString("access_token", data.token)
+                setString("access_token", result.get().token)
               }
 
               dialog.dismiss()
               startActivity(Intent(this@LoginActivity, MainActivity::class.java))
               finish()
-            },
-            { error ->
+            }
+
+            is Result.Failure -> {
               dialog.dismiss()
 
-              hostname_field.error = error.localizedMessage
+              val error = Gson().fromJson(String(response.data), FwCredentials::class.java)
+
+              hostname_field.error = null
+              username_field.error = null
+
+              if (error != null && error.non_field_errors.isNotEmpty()) {
+                username_field.error = error.non_field_errors[0]
+              } else {
+                hostname_field.error = result.error.localizedMessage
+              }
             }
-          )
+          }
         } catch (e: Exception) {
           dialog.dismiss()
 
