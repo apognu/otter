@@ -9,7 +9,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.preference.PowerPreference
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.io.BufferedReader
 
 class FavoritesRepository(override val context: Context?) : Repository<Track, TracksCache>() {
@@ -28,7 +29,7 @@ class FavoritesRepository(override val context: Context?) : Repository<Track, Tr
     val token = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("access_token")
     val body = mapOf("track" to id)
 
-    runBlocking(IO) {
+    GlobalScope.launch(IO) {
       Fuel
         .post(mustNormalizeUrl("/api/v1/favorites/tracks/"))
         .header("Authorization", "Bearer $token")
@@ -42,7 +43,7 @@ class FavoritesRepository(override val context: Context?) : Repository<Track, Tr
     val token = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("access_token")
     val body = mapOf("track" to id)
 
-    runBlocking(IO) {
+    GlobalScope.launch(IO) {
       Fuel
         .post(mustNormalizeUrl("/api/v1/favorites/tracks/remove/"))
         .header("Authorization", "Bearer $token")

@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.apognu.otter.R
 import com.github.apognu.otter.adapters.TracksAdapter
+import com.github.apognu.otter.repositories.FavoritesRepository
 import com.github.apognu.otter.repositories.Repository
 import com.github.apognu.otter.repositories.SearchRepository
 import com.github.apognu.otter.utils.untilNetwork
@@ -17,13 +18,14 @@ class SearchActivity : AppCompatActivity() {
   private lateinit var adapter: TracksAdapter
 
   lateinit var repository: SearchRepository
+  lateinit var favoritesRepository: FavoritesRepository
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
     setContentView(R.layout.activity_search)
 
-    adapter = TracksAdapter(this).also {
+    adapter = TracksAdapter(this, FavoriteListener()).also {
       results.layoutManager = LinearLayoutManager(this)
       results.adapter = it
     }
@@ -40,6 +42,7 @@ class SearchActivity : AppCompatActivity() {
           val query = URLEncoder.encode(it, "UTF-8")
 
           repository = SearchRepository(this@SearchActivity, query.toLowerCase(Locale.ROOT))
+          favoritesRepository = FavoritesRepository(this@SearchActivity)
 
           search_spinner.visibility = View.VISIBLE
           search_no_results.visibility = View.GONE
@@ -65,5 +68,14 @@ class SearchActivity : AppCompatActivity() {
 
       override fun onQueryTextChange(newText: String?) = true
     })
+  }
+
+  inner class FavoriteListener : TracksAdapter.OnFavoriteListener {
+    override fun onToggleFavorite(id: Int, state: Boolean) {
+      when (state) {
+        true -> favoritesRepository.addFavorite(id)
+        false -> favoritesRepository.deleteFavorite(id)
+      }
+    }
   }
 }

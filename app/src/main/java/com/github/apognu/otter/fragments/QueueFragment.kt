@@ -9,6 +9,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.apognu.otter.R
 import com.github.apognu.otter.adapters.TracksAdapter
+import com.github.apognu.otter.repositories.FavoritesRepository
 import com.github.apognu.otter.utils.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -22,8 +23,12 @@ import kotlinx.coroutines.launch
 class QueueFragment : BottomSheetDialogFragment() {
   private var adapter: TracksAdapter? = null
 
+  lateinit var favoritesRepository: FavoritesRepository
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+
+    favoritesRepository = FavoritesRepository(context)
 
     setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme_FloatingBottomSheet)
 
@@ -42,7 +47,7 @@ class QueueFragment : BottomSheetDialogFragment() {
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
     return inflater.inflate(R.layout.fragment_queue, container, false).apply {
-      adapter = TracksAdapter(context, fromQueue = true).also {
+      adapter = TracksAdapter(context, FavoriteListener(), fromQueue = true).also {
         queue.layoutManager = LinearLayoutManager(context)
         queue.adapter = it
       }
@@ -84,6 +89,15 @@ class QueueFragment : BottomSheetDialogFragment() {
           is Event.TrackPlayed -> refresh()
           is Event.QueueChanged -> refresh()
         }
+      }
+    }
+  }
+
+  inner class FavoriteListener : TracksAdapter.OnFavoriteListener {
+    override fun onToggleFavorite(id: Int, state: Boolean) {
+      when (state) {
+        true -> favoritesRepository.addFavorite(id)
+        false -> favoritesRepository.deleteFavorite(id)
       }
     }
   }

@@ -55,6 +55,8 @@ class TracksAdapter(private val context: Context?, private val favoriteListener:
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
     val track = data[position]
 
+    log("Bind ${track.favorite}")
+
     Picasso.get()
       .maybeLoad(maybeNormalizeUrl(track.album.cover.original))
       .fit()
@@ -90,7 +92,8 @@ class TracksAdapter(private val context: Context?, private val favoriteListener:
         favoriteListener?.let {
           favoriteListener.onToggleFavorite(track.id, !track.favorite)
 
-          track.favorite = !track.favorite
+          data[position].favorite = !track.favorite
+
           notifyItemChanged(position)
         }
       }
