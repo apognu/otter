@@ -55,8 +55,6 @@ class TracksAdapter(private val context: Context?, private val favoriteListener:
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
     val track = data[position]
 
-    log("Bind ${track.favorite}")
-
     Picasso.get()
       .maybeLoad(maybeNormalizeUrl(track.album.cover.original))
       .fit()
@@ -144,6 +142,7 @@ class TracksAdapter(private val context: Context?, private val favoriteListener:
     }
 
     notifyItemMoved(oldPosition, newPosition)
+
     CommandBus.send(Command.MoveFromQueue(oldPosition, newPosition))
   }
 

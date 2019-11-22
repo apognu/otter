@@ -50,12 +50,8 @@ class QueueFragment : BottomSheetDialogFragment() {
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
     return inflater.inflate(R.layout.fragment_queue, container, false).apply {
       adapter = TracksAdapter(context, FavoriteListener(), fromQueue = true).also {
-        queue.layoutManager = LinearLayoutManager(context)
-        queue.adapter = it
-        adapter = TracksAdapter(context, fromQueue = true).also {
-          included.queue.layoutManager = LinearLayoutManager(context)
-          included.queue.adapter = it
-        }
+        included.queue.layoutManager = LinearLayoutManager(context)
+        included.queue.adapter = it
       }
     }
   }
@@ -72,7 +68,7 @@ class QueueFragment : BottomSheetDialogFragment() {
   private fun refresh() {
     GlobalScope.launch(Main) {
       RequestBus.send(Request.GetQueue).wait<Response.Queue>()?.let { response ->
-        included?.let {
+        included?.let { included ->
           adapter?.let {
             it.data = response.queue.toMutableList()
             it.notifyDataSetChanged()

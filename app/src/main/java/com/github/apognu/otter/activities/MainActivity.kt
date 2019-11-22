@@ -314,9 +314,7 @@ class MainActivity : AppCompatActivity() {
                     }
                   }
                 }
-              }
 
-              now_playing_details_favorite?.let { now_playing_details_favorite ->
                 now_playing_details_favorite.setOnClickListener {
                   when (track.favorite) {
                     true -> {
@@ -329,11 +327,11 @@ class MainActivity : AppCompatActivity() {
                       now_playing_details_favorite.setColorFilter(getColor(R.color.colorFavorite))
                     }
                   }
+
+                  track.favorite = !track.favorite
+
+                  favoriteRepository.fetch(Repository.Origin.Network.origin)
                 }
-
-                track.favorite = !track.favorite
-
-                favoriteRepository.fetch(Repository.Origin.Network.origin)
               }
             }
           }
