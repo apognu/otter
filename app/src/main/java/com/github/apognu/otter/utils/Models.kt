@@ -75,6 +75,7 @@ data class Track(
   val title: String,
   val artist: Artist,
   val album: Album,
+  val position: Int,
   val uploads: List<Upload>
 ) {
   var current: Boolean = false

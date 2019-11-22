@@ -25,6 +25,6 @@ class TracksRepository(override val context: Context?, albumId: Int) : Repositor
     data.map { track ->
       track.favorite = favorites.contains(track.id)
       track
-    }
+    }.sortedBy { it.position }
   }
 }
