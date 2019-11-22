@@ -9,8 +9,4 @@
     android:id="@+id/track_play_next"
     android:title="@string/playback_queue_play_next" />
 
-  <item
-    android:id="@+id/track_add_toçplaylist"
-    android:title="@string/manage_add_to_playlist" />
-
 </menu>
