@@ -1,7 +1,10 @@
 package com.github.apognu.otter.repositories
 
 import android.content.Context
-import com.github.apognu.otter.utils.*
+import com.github.apognu.otter.utils.FunkwhaleResponse
+import com.github.apognu.otter.utils.Track
+import com.github.apognu.otter.utils.TracksCache
+import com.github.apognu.otter.utils.TracksResponse
 import com.github.kittinunf.fuel.gson.gsonDeserializerOf
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.map

@@ -7,7 +7,6 @@ import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ActivityInfo
 import android.os.Build
 import com.github.apognu.otter.R
 import com.github.kittinunf.fuel.core.FuelManager

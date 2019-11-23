@@ -16,8 +16,6 @@ class FavoritesFragment : FunkwhaleFragment<Track, FavoritesAdapter>() {
   override val viewRes = R.layout.fragment_favorites
   override val recycler: RecyclerView get() = favorites
 
-  lateinit var favoritesRepository: FavoritesRepository
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
@@ -61,11 +59,12 @@ class FavoritesFragment : FunkwhaleFragment<Track, FavoritesAdapter>() {
 
   inner class FavoriteListener : FavoritesAdapter.OnFavoriteListener {
     override fun onToggleFavorite(id: Int, state: Boolean) {
-      when (state) {
-        true -> favoritesRepository.addFavorite(id)
-        false -> favoritesRepository.deleteFavorite(id)
+      (repository as? FavoritesRepository)?.let { repository ->
+        when (state) {
+          true -> repository.addFavorite(id)
+          false -> repository.deleteFavorite(id)
+        }
       }
     }
-
   }
 }

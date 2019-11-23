@@ -102,7 +102,8 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
                     Gson().toJson(repository.cache(adapter.data)).toByteArray()
                   )
                 }
-              } catch (e: ConcurrentModificationException) {}
+              } catch (e: ConcurrentModificationException) {
+              }
             }
           }
         }

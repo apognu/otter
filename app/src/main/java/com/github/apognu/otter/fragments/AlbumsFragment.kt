@@ -18,12 +18,10 @@ import com.github.apognu.otter.repositories.AlbumsRepository
 import com.github.apognu.otter.utils.*
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_albums.*
-import kotlinx.android.synthetic.main.partial_now_playing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.math.min
 
 class AlbumsFragment : FunkwhaleFragment<Album, AlbumsAdapter>() {
   override val viewRes = R.layout.fragment_albums
