@@ -49,3 +49,9 @@ fun toDurationString(seconds: Long): String {
 
   return ret.toString()
 }
+
+object Settings {
+  fun hasAccessToken() = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).contains("access_token")
+  fun getAccessToken() = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("access_token", "")
+  fun isAnonymous() = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getBoolean("anonymous", false)
+}

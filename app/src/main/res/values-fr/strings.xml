@@ -4,6 +4,7 @@
 
   <string name="login_welcome">Veuillez saisir les détails de votre instance Funkwhale pour accéder à son contenu</string>
   <string name="login_hostname">Nom d\'hôte</string>
+  <string name="login_anonymous">Authentification anonyme</string>
   <string name="login_username">Nom d\'utilisateur</string>
   <string name="login_password">Mot de passe</string>
   <string name="login_submit">Se connecter</string>

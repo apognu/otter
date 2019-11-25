@@ -7,7 +7,6 @@ import com.github.kittinunf.fuel.coroutines.awaitByteArrayResponseResult
 import com.github.kittinunf.fuel.gson.gsonDeserializerOf
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.preference.PowerPreference
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -26,13 +25,16 @@ class FavoritesRepository(override val context: Context?) : Repository<Track, Tr
   }
 
   fun addFavorite(id: Int) {
-    val token = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("access_token")
     val body = mapOf("track" to id)
 
+    val request = Fuel.post(mustNormalizeUrl("/api/v1/favorites/tracks/")).apply {
+      if (!Settings.isAnonymous()) {
+        header("Authorization", "Bearer ${Settings.getAccessToken()}")
+      }
+    }
+
     GlobalScope.launch(IO) {
-      Fuel
-        .post(mustNormalizeUrl("/api/v1/favorites/tracks/"))
-        .header("Authorization", "Bearer $token")
+      request
         .header("Content-Type", "application/json")
         .body(Gson().toJson(body))
         .awaitByteArrayResponseResult()
@@ -40,13 +42,16 @@ class FavoritesRepository(override val context: Context?) : Repository<Track, Tr
   }
 
   fun deleteFavorite(id: Int) {
-    val token = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("access_token")
     val body = mapOf("track" to id)
 
+    val request = Fuel.post(mustNormalizeUrl("/api/v1/favorites/tracks/remove/")).apply {
+      if (!Settings.isAnonymous()) {
+        request.header("Authorization", "Bearer ${Settings.getAccessToken()}")
+      }
+    }
+
     GlobalScope.launch(IO) {
-      Fuel
-        .post(mustNormalizeUrl("/api/v1/favorites/tracks/remove/"))
-        .header("Authorization", "Bearer $token")
+      request
         .header("Content-Type", "application/json")
         .body(Gson().toJson(body))
         .awaitByteArrayResponseResult()

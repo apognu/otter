@@ -36,12 +36,13 @@ object HTTP {
   }
 
   suspend inline fun <reified T : Any> get(url: String): Result<T, FuelError> {
-    val token = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("access_token")
+    val request = Fuel.get(mustNormalizeUrl(url)).apply {
+      if (!Settings.isAnonymous()) {
+        header("Authorization", "Bearer ${Settings.getAccessToken()}")
+      }
+    }
 
-    val (_, response, result) = Fuel
-      .get(mustNormalizeUrl(url))
-      .header("Authorization", "Bearer $token")
-      .awaitObjectResponseResult(gsonDeserializerOf(T::class.java))
+    val (_, response, result) = request.awaitObjectResponseResult(gsonDeserializerOf(T::class.java))
 
     if (response.statusCode == 401) {
       return retryGet(url)
@@ -52,12 +53,13 @@ object HTTP {
 
   suspend inline fun <reified T : Any> retryGet(url: String): Result<T, FuelError> {
     return if (refresh()) {
-      val token = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("access_token")
+      val request = Fuel.get(mustNormalizeUrl(url)).apply {
+        if (!Settings.isAnonymous()) {
+          header("Authorization", "Bearer ${Settings.getAccessToken()}")
+        }
+      }
 
-      Fuel
-        .get(mustNormalizeUrl(url))
-        .header("Authorization", "Bearer $token")
-        .awaitObjectResult(gsonDeserializerOf(T::class.java))
+      request.awaitObjectResult(gsonDeserializerOf(T::class.java))
     } else {
       Result.Failure(FuelError.wrap(RefreshError))
     }

@@ -57,11 +57,11 @@ class QueueManager(val context: Context) {
   }
 
   private fun factory(): CacheDataSourceFactory {
-    val token = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("access_token")
-
     val http = DefaultHttpDataSourceFactory(Util.getUserAgent(context, context.getString(R.string.app_name))).apply {
       defaultRequestProperties.apply {
-        set("Authorization", "Bearer $token")
+        if (!Settings.isAnonymous()) {
+          set("Authorization", "Bearer ${Settings.getAccessToken()}")
+        }
       }
     }
 

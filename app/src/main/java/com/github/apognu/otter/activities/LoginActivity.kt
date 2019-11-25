@@ -3,6 +3,7 @@ package com.github.apognu.otter.activities
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.LoginDialog
@@ -30,6 +31,16 @@ class LoginActivity : AppCompatActivity() {
   override fun onResume() {
     super.onResume()
 
+    anonymous?.setOnCheckedChangeListener { _, isChecked ->
+      val state = when (isChecked) {
+        true -> View.GONE
+        false -> View.VISIBLE
+      }
+
+      username_field.visibility = state
+      password_field.visibility = state
+    }
+
     login?.setOnClickListener {
       var hostname = hostname.text.toString().trim()
       val username = username.text.toString()
@@ -55,58 +66,106 @@ class LoginActivity : AppCompatActivity() {
 
       hostname_field.error = ""
 
-      val body = mapOf(
-        "username" to username,
-        "password" to password
-      ).toList()
-
-      val dialog = LoginDialog().apply {
-        show(supportFragmentManager, "LoginDialog")
+      when (anonymous.isChecked) {
+        false -> authedLogin(hostname, username, password)
+        true -> anonymousLogin(hostname)
       }
+    }
+  }
 
-      GlobalScope.launch(Main) {
-        try {
-          val (_, response, result) = Fuel.post("$hostname/api/v1/token/", body)
-            .awaitObjectResponseResult(gsonDeserializerOf(FwCredentials::class.java))
+  private fun authedLogin(hostname: String, username: String, password: String) {
+    val body = mapOf(
+      "username" to username,
+      "password" to password
+    ).toList()
 
-          when (result) {
-            is Result.Success -> {
-              PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).apply {
-                setString("hostname", hostname)
-                setString("username", username)
-                setString("password", password)
-                setString("access_token", result.get().token)
-              }
+    val dialog = LoginDialog().apply {
+      show(supportFragmentManager, "LoginDialog")
+    }
 
-              dialog.dismiss()
-              startActivity(Intent(this@LoginActivity, MainActivity::class.java))
-              finish()
+    GlobalScope.launch(Main) {
+      try {
+        val (_, response, result) = Fuel.post("$hostname/api/v1/token/", body)
+          .awaitObjectResponseResult(gsonDeserializerOf(FwCredentials::class.java))
+
+        when (result) {
+          is Result.Success -> {
+            PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).apply {
+              setString("hostname", hostname)
+              setBoolean("anonymous", false)
+              setString("username", username)
+              setString("password", password)
+              setString("access_token", result.get().token)
             }
 
-            is Result.Failure -> {
-              dialog.dismiss()
+            dialog.dismiss()
+            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+            finish()
+          }
 
-              val error = Gson().fromJson(String(response.data), FwCredentials::class.java)
+          is Result.Failure -> {
+            dialog.dismiss()
 
-              hostname_field.error = null
-              username_field.error = null
+            val error = Gson().fromJson(String(response.data), FwCredentials::class.java)
 
-              if (error != null && error.non_field_errors.isNotEmpty()) {
-                username_field.error = error.non_field_errors[0]
-              } else {
-                hostname_field.error = result.error.localizedMessage
-              }
+            hostname_field.error = null
+            username_field.error = null
+
+            if (error != null && error.non_field_errors.isNotEmpty()) {
+              username_field.error = error.non_field_errors[0]
+            } else {
+              hostname_field.error = result.error.localizedMessage
             }
           }
-        } catch (e: Exception) {
-          dialog.dismiss()
-
-          val message =
-            if (e.message?.isEmpty() == true) getString(R.string.login_error_hostname)
-            else e.message
-
-          hostname_field.error = message
         }
+      } catch (e: Exception) {
+        dialog.dismiss()
+
+        val message =
+          if (e.message?.isEmpty() == true) getString(R.string.login_error_hostname)
+          else e.message
+
+        hostname_field.error = message
+      }
+    }
+  }
+
+  private fun anonymousLogin(hostname: String) {
+    val dialog = LoginDialog().apply {
+      show(supportFragmentManager, "LoginDialog")
+    }
+
+    GlobalScope.launch(Main) {
+      try {
+        val (_, _, result) = Fuel.get("$hostname/api/v1/tracks/")
+          .awaitObjectResponseResult(gsonDeserializerOf(FwCredentials::class.java))
+
+        when (result) {
+          is Result.Success -> {
+            PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).apply {
+              setString("hostname", hostname)
+              setBoolean("anonymous", true)
+            }
+
+            dialog.dismiss()
+            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+            finish()
+          }
+
+          is Result.Failure -> {
+            dialog.dismiss()
+
+            hostname_field.error = result.error.localizedMessage
+          }
+        }
+      } catch (e: Exception) {
+        dialog.dismiss()
+
+        val message =
+          if (e.message?.isEmpty() == true) getString(R.string.login_error_hostname)
+          else e.message
+
+        hostname_field.error = message
       }
     }
   }

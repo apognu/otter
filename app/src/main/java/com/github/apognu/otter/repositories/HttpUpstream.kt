@@ -9,7 +9,6 @@ import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
 import com.github.kittinunf.fuel.coroutines.awaitObjectResult
 import com.github.kittinunf.result.Result
 import com.google.gson.Gson
-import com.preference.PowerPreference
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -36,6 +35,8 @@ class HttpUpstream<D : Any, R : FunkwhaleResponse<D>>(val behavior: Behavior, pr
         .appendQueryParameter("page", page.toString())
         .build()
         .toString()
+
+    log(offsetUrl)
 
     get(offsetUrl).fold(
       { response ->
@@ -65,12 +66,13 @@ class HttpUpstream<D : Any, R : FunkwhaleResponse<D>>(val behavior: Behavior, pr
   }
 
   suspend fun get(url: String): Result<R, FuelError> {
-    val token = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("access_token")
+    val request = Fuel.get(mustNormalizeUrl(url)).apply {
+      if (!Settings.isAnonymous()) {
+        header("Authorization", "Bearer ${Settings.isAnonymous()}")
+      }
+    }
 
-    val (_, response, result) = Fuel
-      .get(mustNormalizeUrl(url))
-      .header("Authorization", "Bearer $token")
-      .awaitObjectResponseResult(GenericDeserializer<R>(type))
+    val (_, response, result) = request.awaitObjectResponseResult(GenericDeserializer<R>(type))
 
     if (response.statusCode == 401) {
       return retryGet(url)
@@ -81,12 +83,13 @@ class HttpUpstream<D : Any, R : FunkwhaleResponse<D>>(val behavior: Behavior, pr
 
   private suspend fun retryGet(url: String): Result<R, FuelError> {
     return if (HTTP.refresh()) {
-      val token = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("access_token")
+      val request = Fuel.get(mustNormalizeUrl(url)).apply {
+        if (!Settings.isAnonymous()) {
+          header("Authorization", "Bearer ${Settings.isAnonymous()}")
+        }
+      }
 
-      Fuel
-        .get(mustNormalizeUrl(url))
-        .header("Authorization", "Bearer $token")
-        .awaitObjectResult(GenericDeserializer(type))
+      request.awaitObjectResult(GenericDeserializer(type))
     } else {
       Result.Failure(FuelError.wrap(RefreshError))
     }

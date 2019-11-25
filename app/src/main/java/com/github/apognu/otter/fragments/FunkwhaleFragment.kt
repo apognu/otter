@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.repositories.HttpUpstream
 import com.github.apognu.otter.repositories.Repository
 import com.github.apognu.otter.utils.Cache
-import com.github.apognu.otter.utils.log
 import com.github.apognu.otter.utils.untilNetwork
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_artists.*
