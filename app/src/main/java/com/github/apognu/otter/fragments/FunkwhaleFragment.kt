@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.repositories.HttpUpstream
 import com.github.apognu.otter.repositories.Repository
 import com.github.apognu.otter.utils.Cache
+import com.github.apognu.otter.utils.log
 import com.github.apognu.otter.utils.untilNetwork
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_artists.*
@@ -52,7 +53,11 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
       }
     }
 
-    fetch()
+    fetch(Repository.Origin.Cache.origin)
+
+    if (adapter.data.isEmpty()) {
+      fetch(Repository.Origin.Network.origin)
+    }
   }
 
   override fun onResume() {
@@ -65,10 +70,12 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
 
   open fun onDataFetched(data: List<D>) {}
 
-  private fun fetch(upstreams: Int = (Repository.Origin.Network.origin and Repository.Origin.Cache.origin), size: Int = 0) {
+  private fun fetch(upstreams: Int = Repository.Origin.Network.origin, size: Int = 0) {
     var first = size == 0
 
-    swiper?.isRefreshing = true
+    if (upstreams == Repository.Origin.Network.origin) {
+      swiper?.isRefreshing = true
+    }
 
     repository.fetch(upstreams, size).untilNetwork(IO) { data, isCache, hasMore ->
       GlobalScope.launch(Main) {
@@ -80,8 +87,6 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
         }
 
         if (first && data.isNotEmpty()) {
-          first = false
-
           adapter.data.clear()
         }
 

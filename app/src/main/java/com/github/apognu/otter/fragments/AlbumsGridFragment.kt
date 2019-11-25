@@ -13,7 +13,6 @@ import com.github.apognu.otter.adapters.AlbumsGridAdapter
 import com.github.apognu.otter.repositories.AlbumsRepository
 import com.github.apognu.otter.utils.Album
 import com.github.apognu.otter.utils.AppContext
-import com.github.apognu.otter.utils.onViewPager
 import kotlinx.android.synthetic.main.fragment_albums_grid.*
 
 class AlbumsGridFragment : FunkwhaleFragment<Album, AlbumsGridAdapter>() {
@@ -31,14 +30,12 @@ class AlbumsGridFragment : FunkwhaleFragment<Album, AlbumsGridAdapter>() {
   inner class OnAlbumClickListener : AlbumsGridAdapter.OnAlbumClickListener {
     override fun onClick(view: View?, album: Album) {
       (context as? MainActivity)?.let { activity ->
-        onViewPager {
-          exitTransition = Fade().apply {
-            duration = AppContext.TRANSITION_DURATION
-            interpolator = AccelerateDecelerateInterpolator()
+        exitTransition = Fade().apply {
+          duration = AppContext.TRANSITION_DURATION
+          interpolator = AccelerateDecelerateInterpolator()
 
-            view?.let {
-              addTarget(it)
-            }
+          view?.let {
+            addTarget(it)
           }
         }
 
