@@ -43,6 +43,9 @@
   <string name="settings_experiments_description">Use at your own risks, may freeze or crash the app</string>
   <string name="settings_experiments_restart_title">Restart required</string>
   <string name="settings_experiments_restart_content">Please kill and restart the app in order for this change to take effect</string>
+  <string name="settings_information">Information</string>
+  <string name="settings_information_repository_title">Repository</string>
+  <string name="settings_information_repository_description">Otter by Antoine POPINEAU (apognu)</string>
   <string name="settings_logout">Sign out</string>
 
   <string name="artists">Artists</string>

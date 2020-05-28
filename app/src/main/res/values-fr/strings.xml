@@ -43,6 +43,9 @@
   <string name="settings_experiments_description">Utiliser à vos risques et périls, peut potentiellement ralentir ou crasher l\'application</string>
   <string name="settings_experiments_restart_title">Relancement requis</string>
   <string name="settings_experiments_restart_content">Veuillez tuer puis relancer l\'application afin que ce changement soit pris en compte</string>
+  <string name="settings_information">Information</string>
+  <string name="settings_information_repository_title">Dépôt</string>
+  <string name="settings_information_repository_description">Otter par Antoine POPINEAU (apognu)</string>
   <string name="settings_logout">Déconnexion</string>
 
   <string name="artists">Artistes</string>

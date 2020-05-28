@@ -34,21 +34,37 @@
       android:key="night_mode"
       android:title="@string/settings_night_mode" />
 
-    <Preference
-      android:icon="@drawable/favorite"
-      android:key="oss_licences"
-      android:title="@string/title_oss_licences" />
-
     <CheckBoxPreference
       android:icon="@drawable/experimental"
       android:key="experiments"
-      android:title="@string/settings_experiments"
-      android:summary="@string/settings_experiments_description"/>
+      android:summary="@string/settings_experiments_description"
+      android:title="@string/settings_experiments" />
 
     <Preference
       android:icon="@drawable/logout"
       android:key="logout"
       android:title="@string/settings_logout" />
+
+  </PreferenceCategory>
+
+  <PreferenceCategory android:title="@string/settings_information">
+
+    <Preference
+      android:icon="@drawable/repository"
+      android:key="repository"
+      android:summary="@string/settings_information_repository_description"
+      android:title="@string/settings_information_repository_title">
+
+      <intent
+        android:action="android.intent.action.VIEW"
+        android:data="https://github.com/apognu/otter" />
+
+    </Preference>
+
+    <Preference
+      android:icon="@drawable/favorite"
+      android:key="oss_licences"
+      android:title="@string/title_oss_licences" />
 
   </PreferenceCategory>
 
