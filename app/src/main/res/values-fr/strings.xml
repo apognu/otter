@@ -46,6 +46,9 @@
   <string name="settings_information">Information</string>
   <string name="settings_information_repository_title">Dépôt</string>
   <string name="settings_information_repository_description">Otter par Antoine POPINEAU (apognu)</string>
+  <string name="settings_version_title">Version</string>
+  <string name="settings_information_license_title">Licence</string>
+  <string name="settings_information_license_description">MIT license</string>
   <string name="settings_logout">Déconnexion</string>
 
   <string name="artists">Artistes</string>
