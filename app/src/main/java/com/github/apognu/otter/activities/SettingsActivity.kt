@@ -10,6 +10,7 @@ import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SeekBarPreference
+import com.github.apognu.otter.BuildConfig
 import com.github.apognu.otter.R
 import com.github.apognu.otter.utils.AppContext
 import com.github.apognu.otter.utils.Command
@@ -128,6 +129,10 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
 
       preferenceManager.findPreference<SeekBarPreference>("media_cache_size")?.let {
         it.summary = getString(R.string.settings_media_cache_size_summary, it.value)
+      }
+
+      preferenceManager.findPreference<Preference>("version")?.let {
+        it.summary = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
       }
     }
   }

@@ -66,6 +66,10 @@
       android:key="oss_licences"
       android:title="@string/title_oss_licences" />
 
+    <Preference
+      android:key="version"
+      android:title="Version" />
+
   </PreferenceCategory>
 
 </androidx.preference.PreferenceScreen>
