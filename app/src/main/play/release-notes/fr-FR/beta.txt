@@ -1,1 +1,1 @@
-Nous avons corrigé un bug où l'app crashait après le login.
+De multiples améliorations d'UX et de performances, ajout initial du support du mode paysage, and tri des pistes par leur position dans l'album.

@@ -19,7 +19,7 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-data class FwCredentials(val token: String, val non_field_errors: List<String>)
+data class FwCredentials(val token: String, val non_field_errors: List<String>?)
 
 class LoginActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -111,7 +111,7 @@ class LoginActivity : AppCompatActivity() {
             hostname_field.error = null
             username_field.error = null
 
-            if (error != null && error.non_field_errors.isNotEmpty()) {
+            if (error != null && error.non_field_errors?.isNotEmpty() == true) {
               username_field.error = error.non_field_errors[0]
             } else {
               hostname_field.error = result.error.localizedMessage

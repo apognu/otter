@@ -68,7 +68,7 @@ class HttpUpstream<D : Any, R : FunkwhaleResponse<D>>(val behavior: Behavior, pr
   suspend fun get(url: String): Result<R, FuelError> {
     val request = Fuel.get(mustNormalizeUrl(url)).apply {
       if (!Settings.isAnonymous()) {
-        header("Authorization", "Bearer ${Settings.isAnonymous()}")
+        header("Authorization", "Bearer ${Settings.getAccessToken()}")
       }
     }
 
@@ -85,7 +85,7 @@ class HttpUpstream<D : Any, R : FunkwhaleResponse<D>>(val behavior: Behavior, pr
     return if (HTTP.refresh()) {
       val request = Fuel.get(mustNormalizeUrl(url)).apply {
         if (!Settings.isAnonymous()) {
-          header("Authorization", "Bearer ${Settings.isAnonymous()}")
+          header("Authorization", "Bearer ${Settings.getAccessToken()}")
         }
       }
 

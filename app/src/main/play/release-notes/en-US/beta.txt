@@ -1,1 +1,1 @@
-We fixed a blocking issue that would crash the app right after login.
+Several performance and UX improvements, added preliminary support for landscape mode, and sort track by album position.

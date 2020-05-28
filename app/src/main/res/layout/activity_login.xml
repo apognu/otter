@@ -29,19 +29,20 @@
 
     <com.google.android.material.textfield.TextInputLayout
       android:id="@+id/hostname_field"
-      style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginBottom="8dp"
-      android:hint="@string/login_hostname"
       android:textColorHint="@drawable/login_input"
-      app:boxStrokeColor="@drawable/login_input"
+      app:boxBackgroundColor="@color/controlAccent"
+      app:boxBackgroundMode="filled"
+      app:boxStrokeWidth="0dp"
       app:hintTextColor="@drawable/login_input">
 
       <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/hostname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:hint="@string/login_hostname"
         android:inputType="textUri"
         android:lines="1"
         android:textColor="@android:color/white"
@@ -53,19 +54,21 @@
       android:id="@+id/anonymous"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:text="@string/login_anonymous"
       android:buttonTint="@android:color/white"
-      android:textColor="@android:color/white"/>
+      android:text="@string/login_anonymous"
+      android:textColor="@android:color/white" />
 
     <com.google.android.material.textfield.TextInputLayout
       android:id="@+id/username_field"
-      style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginBottom="8dp"
       android:hint="@string/login_username"
       android:textColorHint="@drawable/login_input"
+      app:boxBackgroundColor="@color/controlAccent"
+      app:boxBackgroundMode="filled"
       app:boxStrokeColor="@drawable/login_input"
+      app:boxStrokeWidth="0dp"
       app:hintTextColor="@drawable/login_input">
 
       <com.google.android.material.textfield.TextInputEditText
@@ -81,13 +84,15 @@
 
     <com.google.android.material.textfield.TextInputLayout
       android:id="@+id/password_field"
-      style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginBottom="8dp"
       android:hint="@string/login_password"
       android:textColorHint="@drawable/login_input"
+      app:boxBackgroundColor="@color/controlAccent"
+      app:boxBackgroundMode="filled"
       app:boxStrokeColor="@drawable/login_input"
+      app:boxStrokeWidth="0dp"
       app:hintTextColor="@drawable/login_input"
       app:passwordToggleEnabled="true">
 

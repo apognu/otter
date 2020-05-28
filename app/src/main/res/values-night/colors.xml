@@ -12,6 +12,7 @@
 
   <color name="controlForeground">#caffffff</color>
   <color name="controlColor">#53bce7</color>
+  <color name="controlAccent">#304A5A</color>
 
   <color name="whiteWhileLight">#000000</color>
   <color name="blackWhileLight">#ffffff</color>

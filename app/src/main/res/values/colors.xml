@@ -15,6 +15,7 @@
 
   <color name="controlForeground">@color/colorPrimary</color>
   <color name="controlColor">@color/colorPrimary</color>
+  <color name="controlAccent">#22648E</color>
 
   <color name="whiteWhileLight">#ffffff</color>
   <color name="blackWhileLight">#000000</color>
