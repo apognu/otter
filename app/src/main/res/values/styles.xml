@@ -59,7 +59,7 @@
   <style name="IconButton" parent="Widget.AppCompat.ActionButton">
     <item name="android:tint">@color/controlForeground</item>
     <item name="android:adjustViewBounds">true</item>
-    <item name="android:scaleType">fitCenter</item>
+    <item name="android:scaleType">centerCrop</item>
   </style>
 
   <style name="AppTheme.AppBar" parent="ThemeOverlay.MaterialComponents.Toolbar.Primary">

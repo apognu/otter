@@ -182,6 +182,8 @@ class PlayerService : Service() {
           is Command.Seek -> progress(message.progress)
 
           is Command.ClearQueue -> queue.clear()
+
+          is Command.SetRepeatMode -> player.repeatMode = message.mode
         }
 
         if (player.playWhenReady) {

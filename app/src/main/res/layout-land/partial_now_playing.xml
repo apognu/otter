@@ -26,6 +26,7 @@
     <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:gravity="center_vertical"
       android:orientation="horizontal">
 
       <FrameLayout
@@ -76,13 +77,15 @@
         style="@style/AppTheme.OutlinedButton"
         android:layout_width="?attr/actionBarSize"
         android:layout_height="match_parent"
+        android:layout_marginEnd="16dp"
         app:icon="@drawable/play" />
 
       <ImageButton
         android:id="@+id/now_playing_next"
         style="@style/IconButton"
-        android:layout_width="?attr/actionBarSize"
-        android:layout_height="match_parent"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="16dp"
         android:contentDescription="@string/control_next"
         android:src="@drawable/next" />
 
@@ -160,8 +163,8 @@
         <ImageButton
           android:id="@+id/now_playing_details_previous"
           style="@style/IconButton"
-          android:layout_width="64dp"
-          android:layout_height="64dp"
+          android:layout_width="48dp"
+          android:layout_height="48dp"
           android:layout_marginEnd="16dp"
           android:contentDescription="@string/control_previous"
           android:src="@drawable/previous" />
@@ -178,8 +181,8 @@
         <ImageButton
           android:id="@+id/now_playing_details_next"
           style="@style/IconButton"
-          android:layout_width="64dp"
-          android:layout_height="64dp"
+          android:layout_width="48dp"
+          android:layout_height="48dp"
           android:layout_marginStart="16dp"
           android:contentDescription="@string/control_next"
           android:src="@drawable/next" />

@@ -14,6 +14,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -26,6 +27,7 @@ import com.github.apognu.otter.repositories.FavoritedRepository
 import com.github.apognu.otter.repositories.FavoritesRepository
 import com.github.apognu.otter.repositories.Repository
 import com.github.apognu.otter.utils.*
+import com.google.android.exoplayer2.Player
 import com.preference.PowerPreference
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
@@ -300,6 +302,16 @@ class MainActivity : AppCompatActivity() {
                 }
               }
 
+              now_playing_details_repeat?.let { now_playing_details_repeat ->
+                changeRepeatMode(Cache.get(this@MainActivity, "repeat")?.readLine()?.toInt() ?: 0)
+
+                now_playing_details_repeat.setOnClickListener {
+                  val current = Cache.get(this@MainActivity, "repeat")?.readLine()?.toInt() ?: 0
+
+                  changeRepeatMode((current + 1) % 3)
+                }
+              }
+
               now_playing_details_info?.let { now_playing_details_info ->
                 now_playing_details_info.setOnClickListener {
                   PopupMenu(this@MainActivity, now_playing_details_info, Gravity.START, R.attr.actionOverflowMenuStyle, 0).apply {
@@ -394,6 +406,42 @@ class MainActivity : AppCompatActivity() {
 
         now_playing_details_progress_current.text = "%02d:%02d".format(currentMins, currentSecs)
         now_playing_details_progress_duration.text = "%02d:%02d".format(durationMins, durationSecs)
+      }
+    }
+  }
+
+  private fun changeRepeatMode(index: Int) {
+    when (index) {
+      // From no repeat to repeat all
+      0 -> {
+        Cache.set(this@MainActivity, "repeat", "0".toByteArray())
+
+        now_playing_details_repeat?.setImageResource(R.drawable.repeat)
+        now_playing_details_repeat?.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+        now_playing_details_repeat?.alpha = 0.4f
+
+        CommandBus.send(Command.SetRepeatMode(Player.REPEAT_MODE_OFF))
+      }
+
+      // From repeat all to repeat one
+      1 -> {
+        Cache.set(this@MainActivity, "repeat", "1".toByteArray())
+
+        now_playing_details_repeat?.setImageResource(R.drawable.repeat)
+        now_playing_details_repeat?.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary))
+        now_playing_details_repeat?.alpha = 1.0f
+
+        CommandBus.send(Command.SetRepeatMode(Player.REPEAT_MODE_ALL))
+      }
+
+      // From repeat one to no repeat
+      2 -> {
+        Cache.set(this@MainActivity, "repeat", "2".toByteArray())
+        now_playing_details_repeat?.setImageResource(R.drawable.repeat_one)
+        now_playing_details_repeat?.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary))
+        now_playing_details_repeat?.alpha = 1.0f
+
+        CommandBus.send(Command.SetRepeatMode(Player.REPEAT_MODE_ONE))
       }
     }
   }

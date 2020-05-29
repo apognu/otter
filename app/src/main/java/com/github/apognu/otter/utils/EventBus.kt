@@ -25,6 +25,8 @@ sealed class Command {
   class MoveFromQueue(val oldPosition: Int, val newPosition: Int) : Command()
   object ClearQueue : Command()
 
+  class SetRepeatMode(val mode: Int) : Command()
+
   class PlayTrack(val index: Int) : Command()
 }
 

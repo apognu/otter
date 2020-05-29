@@ -26,6 +26,7 @@
     <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:gravity="center_vertical"
       android:orientation="horizontal">
 
       <FrameLayout
@@ -81,13 +82,15 @@
         style="@style/AppTheme.OutlinedButton"
         android:layout_width="?attr/actionBarSize"
         android:layout_height="match_parent"
+        android:layout_marginEnd="16dp"
         app:icon="@drawable/play" />
 
       <ImageButton
         android:id="@+id/now_playing_next"
         style="@style/IconButton"
-        android:layout_width="?attr/actionBarSize"
-        android:layout_height="match_parent"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="16dp"
         android:contentDescription="@string/control_next"
         android:src="@drawable/next" />
 
@@ -118,8 +121,8 @@
       <ImageButton
         android:id="@+id/now_playing_details_info"
         style="@style/IconButton"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_gravity="top|end"
         android:layout_margin="8dp"
         android:contentDescription="@string/alt_track_info"
@@ -128,8 +131,8 @@
       <ImageButton
         android:id="@+id/now_playing_details_favorite"
         style="@style/IconButton"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_gravity="bottom|end"
         android:layout_margin="8dp"
         android:contentDescription="@string/alt_album_cover"
@@ -144,7 +147,7 @@
       android:layout_marginStart="32dp"
       android:layout_marginEnd="32dp"
       android:orientation="vertical"
-      android:paddingTop="32dp">
+      android:paddingTop="16dp">
 
       <TextView
         android:id="@+id/now_playing_details_title"
@@ -173,7 +176,7 @@
       <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="0dp"
         android:orientation="horizontal">
 
         <TextView
@@ -194,15 +197,15 @@
       <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="64dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="8dp"
         android:gravity="center"
         android:orientation="horizontal">
 
         <ImageButton
           android:id="@+id/now_playing_details_previous"
           style="@style/IconButton"
-          android:layout_width="64dp"
-          android:layout_height="64dp"
+          android:layout_width="48dp"
+          android:layout_height="48dp"
           android:layout_marginEnd="16dp"
           android:contentDescription="@string/control_previous"
           android:src="@drawable/previous" />
@@ -219,11 +222,28 @@
         <ImageButton
           android:id="@+id/now_playing_details_next"
           style="@style/IconButton"
-          android:layout_width="64dp"
-          android:layout_height="64dp"
+          android:layout_width="48dp"
+          android:layout_height="48dp"
           android:layout_marginStart="16dp"
           android:contentDescription="@string/control_next"
           android:src="@drawable/next" />
+
+      </LinearLayout>
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageButton
+          android:id="@+id/now_playing_details_repeat"
+          style="@style/IconButton"
+          android:layout_width="28dp"
+          android:layout_height="28dp"
+          android:contentDescription="@string/control_next"
+          android:src="@drawable/repeat" />
 
       </LinearLayout>
 
