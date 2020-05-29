@@ -50,24 +50,38 @@ data class Covers(val original: String)
 
 typealias AlbumList = List<Album>
 
+interface SearchResult {
+  fun cover(): String?
+  fun title(): String
+  fun subtitle(): String
+}
+
 data class Album(
   val id: Int,
   val artist: Artist,
   val title: String,
   val cover: Covers
-) {
+) : SearchResult {
   data class Artist(val name: String)
+
+  override fun cover() = cover.original
+  override fun title() = title
+  override fun subtitle() = artist.name
 }
 
 data class Artist(
   val id: Int,
   val name: String,
   val albums: List<Album>?
-) {
+) : SearchResult {
   data class Album(
     val title: String,
     val cover: Covers
   )
+
+  override fun cover() = albums?.getOrNull(0)?.cover?.original
+  override fun title() = name
+  override fun subtitle() = "Artist"
 }
 
 data class Track(
@@ -77,7 +91,7 @@ data class Track(
   val album: Album,
   val position: Int,
   val uploads: List<Upload>
-) {
+) : SearchResult {
   var current: Boolean = false
   var favorite: Boolean = false
 
@@ -103,6 +117,10 @@ data class Track(
       else -> uploads.maxBy { it.bitrate } ?: uploads[0]
     }
   }
+
+  override fun cover() = album.cover.original
+  override fun title() = title
+  override fun subtitle() = artist.name
 }
 
 data class Favorited(val track: Int)

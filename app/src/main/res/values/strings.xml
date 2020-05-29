@@ -53,6 +53,7 @@
 
   <string name="artists">Artists</string>
   <string name="albums">Albums</string>
+  <string name="tracks">Tracks</string>
   <string name="playlists">Playlists</string>
   <string name="favorites">Favorites</string>
 
