@@ -13,14 +13,13 @@ import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.github.apognu.otter.R
-import com.github.apognu.otter.fragments.BrowseFragment
-import com.github.apognu.otter.fragments.LandscapeQueueFragment
-import com.github.apognu.otter.fragments.QueueFragment
+import com.github.apognu.otter.fragments.*
 import com.github.apognu.otter.playback.MediaControlsManager
 import com.github.apognu.otter.playback.PlayerService
 import com.github.apognu.otter.repositories.FavoritedRepository
@@ -297,6 +296,27 @@ class MainActivity : AppCompatActivity() {
 
                   withContext(Main) {
                     now_playing_details.background = backgroundCover
+                  }
+                }
+              }
+
+              now_playing_details_info?.let { now_playing_details_info ->
+                now_playing_details_info.setOnClickListener {
+                  PopupMenu(this@MainActivity, now_playing_details_info, Gravity.START, R.attr.actionOverflowMenuStyle, 0).apply {
+                    inflate(R.menu.track_info)
+
+                    setOnMenuItemClickListener {
+                      when (it.itemId) {
+                        R.id.go_to_artist -> ArtistsFragment.openAlbums(this@MainActivity, track.artist, art = track.album.cover.original)
+                        R.id.go_to_album -> AlbumsFragment.openTracks(this@MainActivity, track.album)
+                      }
+
+                      now_playing.close()
+
+                      true
+                    }
+
+                    show()
                   }
                 }
               }

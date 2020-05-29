@@ -36,7 +36,7 @@ class AlbumsGridAdapter(val context: Context?, private val listener: OnAlbumClic
       .maybeLoad(maybeNormalizeUrl(album.cover.original))
       .fit()
       .placeholder(R.drawable.cover)
-      .transform(RoundedCornersTransformation(24, 0))
+      .transform(RoundedCornersTransformation(16, 0))
       .into(holder.cover)
 
     holder.title.text = album.title

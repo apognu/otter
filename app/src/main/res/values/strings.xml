@@ -84,6 +84,10 @@
   <string name="alt_artist_art">Artist art</string>
   <string name="alt_album_cover">Album cover</string>
   <string name="alt_more_options">More options</string>
+  <string name="alt_track_info">Information about track</string>
+
+  <string name="go_to_artist">Go to artist</string>
+  <string name="go_to_album">Go to album</string>
 
   <string name="logout_title">Sign out</string>
   <string name="logout_content">Are you sure you want to sign out of your Funkwhale instance?</string>

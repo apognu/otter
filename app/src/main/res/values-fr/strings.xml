@@ -84,6 +84,10 @@
   <string name="alt_artist_art">Image de l\'artiste</string>
   <string name="alt_album_cover">Couverture de l\'album</string>
   <string name="alt_more_options">Plus d\'options</string>
+  <string name="alt_track_info">Informations sur cette piste</string>
+
+  <string name="go_to_artist">Voir l\'artist</string>
+  <string name="go_to_album">Voir l\'album</string>
 
   <string name="logout_title">Déconnexion</string>
   <string name="logout_content">Etes-vous certains de vouloir vous déconnecter de votre instance Funkwhale ?</string>

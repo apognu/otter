@@ -1,5 +1,6 @@
 package com.github.apognu.otter.fragments
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -8,6 +9,7 @@ import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.Fade
 import androidx.transition.Slide
@@ -32,13 +34,45 @@ class AlbumsFragment : FunkwhaleFragment<Album, AlbumsAdapter>() {
   var artistArt = ""
 
   companion object {
-    fun new(artist: Artist): AlbumsFragment {
+    fun new(artist: Artist, art: String? = null): AlbumsFragment {
+      val art = art ?: if (artist.albums?.isNotEmpty() == true) artist.albums[0].cover.original else ""
+
       return AlbumsFragment().apply {
         arguments = bundleOf(
           "artistId" to artist.id,
           "artistName" to artist.name,
-          "artistArt" to if (artist.albums?.isNotEmpty() == true) artist.albums[0].cover.original else ""
+          "artistArt" to art
         )
+      }
+    }
+
+    fun openTracks(context: Context?, album: Album, fragment: Fragment? = null) {
+      (context as? MainActivity)?.let { activity ->
+        fragment?.let { fragment ->
+          fragment.onViewPager {
+            exitTransition = Fade().apply {
+              duration = AppContext.TRANSITION_DURATION
+              interpolator = AccelerateDecelerateInterpolator()
+
+              view?.let {
+                addTarget(it)
+              }
+            }
+          }
+        }
+
+        val fragment = TracksFragment.new(album).apply {
+          enterTransition = Slide().apply {
+            duration = AppContext.TRANSITION_DURATION
+            interpolator = AccelerateDecelerateInterpolator()
+          }
+        }
+
+        activity.supportFragmentManager
+          .beginTransaction()
+          .replace(R.id.container, fragment)
+          .addToBackStack(null)
+          .commit()
       }
     }
   }
@@ -97,29 +131,7 @@ class AlbumsFragment : FunkwhaleFragment<Album, AlbumsAdapter>() {
 
   inner class OnAlbumClickListener : AlbumsAdapter.OnAlbumClickListener {
     override fun onClick(view: View?, album: Album) {
-      (context as? MainActivity)?.let { activity ->
-        exitTransition = Fade().apply {
-          duration = AppContext.TRANSITION_DURATION
-          interpolator = AccelerateDecelerateInterpolator()
-
-          view?.let {
-            addTarget(it)
-          }
-        }
-
-        val fragment = TracksFragment.new(album).apply {
-          enterTransition = Slide().apply {
-            duration = AppContext.TRANSITION_DURATION
-            interpolator = AccelerateDecelerateInterpolator()
-          }
-        }
-
-        activity.supportFragmentManager
-          .beginTransaction()
-          .replace(R.id.container, fragment)
-          .addToBackStack(null)
-          .commit()
-      }
+      openTracks(context, album, fragment = this@AlbumsFragment)
     }
   }
 }

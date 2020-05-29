@@ -36,7 +36,7 @@ class AlbumsAdapter(val context: Context?, val listener: OnAlbumClickListener) :
     Picasso.get()
       .maybeLoad(maybeNormalizeUrl(album.cover.original))
       .fit()
-      .transform(RoundedCornersTransformation(16, 0))
+      .transform(RoundedCornersTransformation(8, 0))
       .into(holder.art)
 
     holder.title.text = album.title

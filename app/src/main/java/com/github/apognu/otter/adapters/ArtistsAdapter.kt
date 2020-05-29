@@ -39,7 +39,7 @@ class ArtistsAdapter(val context: Context?, private val listener: OnArtistClickL
         Picasso.get()
           .maybeLoad(maybeNormalizeUrl(albums[0].cover.original))
           .fit()
-          .transform(RoundedCornersTransformation(16, 0))
+          .transform(RoundedCornersTransformation(8, 0))
           .into(holder.art)
       }
     }

@@ -58,7 +58,7 @@ class TracksAdapter(private val context: Context?, private val favoriteListener:
     Picasso.get()
       .maybeLoad(maybeNormalizeUrl(track.album.cover.original))
       .fit()
-      .transform(RoundedCornersTransformation(16, 0))
+      .transform(RoundedCornersTransformation(8, 0))
       .into(holder.cover)
 
     holder.title.text = track.title

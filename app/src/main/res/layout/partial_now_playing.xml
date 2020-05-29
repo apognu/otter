@@ -116,6 +116,16 @@
         tools:src="@tools:sample/avatars" />
 
       <ImageButton
+        android:id="@+id/now_playing_details_info"
+        style="@style/IconButton"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="8dp"
+        android:contentDescription="@string/alt_track_info"
+        android:src="@drawable/more" />
+
+      <ImageButton
         android:id="@+id/now_playing_details_favorite"
         style="@style/IconButton"
         android:layout_width="56dp"
