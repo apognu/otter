@@ -106,7 +106,14 @@ class PlayerService : Service() {
 
     if (queue.current > -1) {
       player.prepare(queue.datasources, true, true)
-      player.seekTo(queue.current, 0)
+
+      Cache.get(this, "progress")?.let { progress ->
+        player.seekTo(queue.current, progress.readLine().toLong())
+
+        val (current, duration, percent) = progress(true)
+
+        ProgressBus.send(current, duration, percent)
+      }
     }
 
     registerReceiver(headphonesUnpluggedReceiver, IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY))
@@ -257,6 +264,16 @@ class PlayerService : Service() {
 
   @SuppressLint("NewApi")
   private fun state(state: Boolean) {
+    if (!state) {
+      val (progress, _, _) = progress()
+
+      Cache.set(
+        this@PlayerService,
+        "progress",
+        progress.toString().toByteArray()
+      )
+    }
+
     if (state && player.playbackState == Player.STATE_IDLE) {
       player.prepare(queue.datasources)
     }
@@ -305,8 +322,8 @@ class PlayerService : Service() {
     player.previous()
   }
 
-  private fun progress(): Triple<Int, Int, Int> {
-    if (!player.playWhenReady) return progressCache
+  private fun progress(force: Boolean = false): Triple<Int, Int, Int> {
+    if (!player.playWhenReady && !force) return progressCache
 
     return queue.current()?.bestUpload()?.let { upload ->
       val current = player.currentPosition

@@ -20,7 +20,7 @@
     android:layout_margin="8dp"
     android:alpha="0"
     android:visibility="gone"
-    app:cardCornerRadius="8dp"
+    app:cardCornerRadius="3dp"
     app:cardElevation="12dp"
     app:layout_dodgeInsetEdges="bottom"
     tools:alpha="1"

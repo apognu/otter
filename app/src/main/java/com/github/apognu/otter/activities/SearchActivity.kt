@@ -38,6 +38,8 @@ class SearchActivity : AppCompatActivity() {
 
     search.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
       override fun onQueryTextSubmit(query: String?): Boolean {
+        search.clearFocus()
+
         query?.let {
           val query = URLEncoder.encode(it, "UTF-8")
 

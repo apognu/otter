@@ -261,12 +261,10 @@ class MainActivity : AppCompatActivity() {
               now_playing_title.text = track.title
               now_playing_album.text = track.artist.name
               now_playing_toggle.icon = getDrawable(R.drawable.pause)
-              now_playing_progress.progress = 0
 
               now_playing_details_title.text = track.title
               now_playing_details_artist.text = track.artist.name
               now_playing_details_toggle.icon = getDrawable(R.drawable.pause)
-              now_playing_details_progress.progress = 0
 
               Picasso.get()
                 .maybeLoad(maybeNormalizeUrl(track.album.cover.original))
