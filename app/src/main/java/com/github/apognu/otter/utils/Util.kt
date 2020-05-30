@@ -16,6 +16,10 @@ fun Any.log(message: String) {
   Log.d("FUNKWHALE", "${this.javaClass.simpleName}: $message")
 }
 
+fun Any.log() {
+  Log.d("FUNKWHALE", this.toString())
+}
+
 fun maybeNormalizeUrl(url: String?): String? {
   if (url == null || url.isEmpty()) return null
 
@@ -56,4 +60,5 @@ object Settings {
   fun hasAccessToken() = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).contains("access_token")
   fun getAccessToken(): String = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("access_token", "")
   fun isAnonymous() = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getBoolean("anonymous", false)
+  fun areExperimentsEnabled() = PowerPreference.getDefaultFile().getBoolean("experiments", false)
 }

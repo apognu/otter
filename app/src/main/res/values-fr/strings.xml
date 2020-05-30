@@ -55,6 +55,7 @@
   <string name="albums">Albums</string>
   <string name="tracks">Pistes</string>
   <string name="playlists">Playlists</string>
+  <string name="radios">Radios</string>
   <string name="favorites">Favoris</string>
 
   <string name="playback_media_controls">Contrôle de lecture</string>
@@ -98,6 +99,8 @@
   <string name="track_info_details_track_position">Position dans l\'album</string>
   <string name="track_info_details_track_bitrate">Bitrate</string>
   <string name="track_info_details_track_instance">Instance Funkwhale</string>
+
+  <string name="radio_playback_error">Une erreur s\'est produite lors de la lecture de cette radio</string>
 
   <string name="logout_title">Déconnexion</string>
   <string name="logout_content">Etes-vous certains de vouloir vous déconnecter de votre instance Funkwhale ?</string>

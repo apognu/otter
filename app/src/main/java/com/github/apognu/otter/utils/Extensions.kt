@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.BrowseFragment
 import com.github.apognu.otter.repositories.Repository
+import com.github.kittinunf.fuel.core.Request
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.RequestCreator
 import kotlinx.coroutines.Dispatchers.Main
@@ -69,4 +70,12 @@ fun <T> T.applyOnApi(api: Int, block: T.() -> T): T {
 fun Picasso.maybeLoad(url: String?): RequestCreator {
   if (url == null) return load(R.drawable.cover)
   else return load(url)
+}
+
+fun Request.authorize(): Request {
+  return this.apply {
+    if (!Settings.isAnonymous()) {
+      header("Authorization", "Bearer ${Settings.getAccessToken()}")
+    }
+  }
 }

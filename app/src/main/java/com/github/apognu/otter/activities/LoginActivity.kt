@@ -54,7 +54,7 @@ class LoginActivity : AppCompatActivity() {
             throw Exception(getString(R.string.login_error_hostname_https))
           }
 
-          if (scheme == null) hostname = "https://${hostname}"
+          if (scheme == null) hostname = "https://$hostname"
         }
       } catch (e: Exception) {
         val message =

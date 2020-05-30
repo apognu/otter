@@ -15,7 +15,7 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.row_album.view.*
 import kotlinx.android.synthetic.main.row_artist.view.art
 
-class AlbumsAdapter(val context: Context?, val listener: OnAlbumClickListener) : FunkwhaleAdapter<Album, AlbumsAdapter.ViewHolder>() {
+class AlbumsAdapter(val context: Context?, private val listener: OnAlbumClickListener) : FunkwhaleAdapter<Album, AlbumsAdapter.ViewHolder>() {
   interface OnAlbumClickListener {
     fun onClick(view: View?, album: Album)
   }

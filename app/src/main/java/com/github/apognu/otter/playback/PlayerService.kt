@@ -18,6 +18,7 @@ import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -43,6 +44,8 @@ class PlayerService : Service() {
 
   private var progressCache = Triple(0, 0, 0)
 
+  private lateinit var radioPlayer: RadioPlayer
+
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
     watchEventBus()
 
@@ -53,6 +56,7 @@ class PlayerService : Service() {
     super.onCreate()
 
     queue = QueueManager(this)
+    radioPlayer = RadioPlayer(this)
 
     audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
@@ -142,6 +146,8 @@ class PlayerService : Service() {
           }
 
           is Command.ReplaceQueue -> {
+            if (!message.fromRadio) radioPlayer.stop()
+
             queue.replace(message.queue)
             player.prepare(queue.datasources, true, true)
 
@@ -187,6 +193,11 @@ class PlayerService : Service() {
           is Command.Seek -> progress(message.progress)
 
           is Command.ClearQueue -> queue.clear()
+
+          is Command.PlayRadio -> {
+            queue.clear()
+            radioPlayer.play(message.radio)
+          }
 
           is Command.SetRepeatMode -> player.repeatMode = message.mode
         }
@@ -414,6 +425,15 @@ class PlayerService : Service() {
 
       queue.current = player.currentWindowIndex
       mediaControlsManager.updateNotification(queue.current(), player.playWhenReady)
+
+      if (queue.get().isNotEmpty() && queue.current() == queue.get().last() && radioPlayer.isActive()) {
+        GlobalScope.launch(IO) {
+          if (radioPlayer.lock.tryAcquire()) {
+            radioPlayer.prepareNextTrack()
+            radioPlayer.lock.release()
+          }
+        }
+      }
 
       Cache.set(
         this@PlayerService,

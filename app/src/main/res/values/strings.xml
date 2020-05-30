@@ -55,6 +55,7 @@
   <string name="albums">Albums</string>
   <string name="tracks">Tracks</string>
   <string name="playlists">Playlists</string>
+  <string name="radios">Radios</string>
   <string name="favorites">Favorites</string>
 
   <string name="playback_media_controls">Media controls</string>
@@ -98,6 +99,8 @@
   <string name="track_info_details_track_position">Album position</string>
   <string name="track_info_details_track_bitrate">Bitrate</string>
   <string name="track_info_details_track_instance">Funkwhale instance</string>
+
+  <string name="radio_playback_error">There was an error while trying to play this radio</string>
 
   <string name="logout_title">Sign out</string>
   <string name="logout_content">Are you sure you want to sign out of your Funkwhale instance?</string>

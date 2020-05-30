@@ -1,7 +1,6 @@
 package com.github.apognu.otter.utils
 
 import android.content.Context
-import android.util.Log
 import com.github.apognu.otter.activities.FwCredentials
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.FuelError

@@ -74,7 +74,6 @@ class TracksAdapter(private val context: Context?, private val favoriteListener:
         holder.artist.typeface = Typeface.create(holder.artist.typeface, Typeface.NORMAL)
       })
 
-
     if (track == currentTrack || track.current) {
       holder.title.setTypeface(holder.title.typeface, Typeface.BOLD)
       holder.artist.setTypeface(holder.artist.typeface, Typeface.BOLD)

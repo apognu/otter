@@ -108,7 +108,7 @@ class SearchAdapter(private val context: Context?, private val listener: OnSearc
           }
         }
 
-        if (position == (artists.size + albums.size + 2)){
+        if (position == (artists.size + albums.size + 2)) {
           holder.title.text = context.getString(R.string.tracks)
           holder.itemView.visibility = View.VISIBLE
 

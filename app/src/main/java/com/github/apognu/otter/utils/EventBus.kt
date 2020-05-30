@@ -20,10 +20,11 @@ sealed class Command {
 
   class AddToQueue(val tracks: List<Track>) : Command()
   class PlayNext(val track: Track) : Command()
-  class ReplaceQueue(val queue: List<Track>) : Command()
+  class ReplaceQueue(val queue: List<Track>, val fromRadio: Boolean = false) : Command()
   class RemoveFromQueue(val track: Track) : Command()
   class MoveFromQueue(val oldPosition: Int, val newPosition: Int) : Command()
   object ClearQueue : Command()
+  class PlayRadio(val radio: Radio) : Command()
 
   class SetRepeatMode(val mode: Int) : Command()
 

@@ -75,7 +75,6 @@ class PlaylistTracksAdapter(private val context: Context?, private val favoriteL
         holder.artist.setTypeface(holder.artist.typeface, Typeface.NORMAL)
       })
 
-
     if (track.track == currentTrack) {
       holder.title.setTypeface(holder.title.typeface, Typeface.BOLD)
       holder.artist.setTypeface(holder.artist.typeface, Typeface.BOLD)
@@ -145,7 +144,7 @@ class PlaylistTracksAdapter(private val context: Context?, private val favoriteL
     CommandBus.send(Command.MoveFromQueue(oldPosition, newPosition))
   }
 
-  inner class ViewHolder(view: View, val context: Context?) : RecyclerView.ViewHolder(view), View.OnClickListener  {
+  inner class ViewHolder(view: View, val context: Context?) : RecyclerView.ViewHolder(view), View.OnClickListener {
     val handle = view.handle
     val cover = view.cover
     val title = view.title
