@@ -6,6 +6,9 @@
   style="@style/AppTheme.Fragment"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
+  android:background="?attr/colorSurface"
+  android:clipChildren="false"
+  android:clipToPadding="false"
   android:transitionGroup="true">
 
   <androidx.core.widget.NestedScrollView

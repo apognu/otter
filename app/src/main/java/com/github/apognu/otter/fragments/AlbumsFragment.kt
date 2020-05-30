@@ -7,6 +7,7 @@ import android.util.DisplayMetrics
 import android.view.Gravity
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -60,7 +61,9 @@ class AlbumsFragment : FunkwhaleFragment<Album, AlbumsAdapter>() {
             }
           }
         }
+      }
 
+      (context as? AppCompatActivity)?.let { activity ->
         val fragment = TracksFragment.new(album).apply {
           enterTransition = Slide().apply {
             duration = AppContext.TRANSITION_DURATION

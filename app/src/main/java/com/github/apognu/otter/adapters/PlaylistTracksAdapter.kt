@@ -145,7 +145,7 @@ class PlaylistTracksAdapter(private val context: Context?, private val favoriteL
     CommandBus.send(Command.MoveFromQueue(oldPosition, newPosition))
   }
 
-  inner class ViewHolder(view: View, val context: Context?) : RecyclerView.ViewHolder(view), View.OnClickListener {
+  inner class ViewHolder(view: View, val context: Context?) : RecyclerView.ViewHolder(view), View.OnClickListener  {
     val handle = view.handle
     val cover = view.cover
     val title = view.title

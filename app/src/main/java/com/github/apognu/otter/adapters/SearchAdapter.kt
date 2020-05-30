@@ -16,7 +16,12 @@ import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.row_track.view.*
 
-class SearchAdapter(private val context: Context?, private val favoriteListener: OnFavoriteListener? = null) : RecyclerView.Adapter<SearchAdapter.ViewHolder>() {
+class SearchAdapter(private val context: Context?, private val listener: OnSearchResultClickListener? = null, private val favoriteListener: OnFavoriteListener? = null) : RecyclerView.Adapter<SearchAdapter.ViewHolder>() {
+  interface OnSearchResultClickListener {
+    fun onArtistClick(holder: View?, artist: Artist)
+    fun onAlbumClick(holder: View?, album: Album)
+  }
+
   interface OnFavoriteListener {
     fun onToggleFavorite(id: Int, state: Boolean)
   }
@@ -188,6 +193,18 @@ class SearchAdapter(private val context: Context?, private val favoriteListener:
 
     override fun onClick(view: View?) {
       when (getItemViewType(layoutPosition)) {
+        ResultType.Artist.ordinal -> {
+          val position = layoutPosition - 1
+
+          listener?.onArtistClick(view, artists[position])
+        }
+
+        ResultType.Album.ordinal -> {
+          val position = layoutPosition - artists.size - 2
+
+          listener?.onAlbumClick(view, albums[position])
+        }
+
         ResultType.Track.ordinal -> {
           val position = layoutPosition - artists.size - albums.size - SECTION_COUNT
 

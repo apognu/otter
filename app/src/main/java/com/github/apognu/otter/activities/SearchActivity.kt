@@ -6,7 +6,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.apognu.otter.R
 import com.github.apognu.otter.adapters.SearchAdapter
+import com.github.apognu.otter.fragments.AlbumsFragment
+import com.github.apognu.otter.fragments.ArtistsFragment
 import com.github.apognu.otter.repositories.*
+import com.github.apognu.otter.utils.Album
+import com.github.apognu.otter.utils.Artist
 import com.github.apognu.otter.utils.untilNetwork
 import kotlinx.android.synthetic.main.activity_search.*
 import java.net.URLEncoder
@@ -26,7 +30,7 @@ class SearchActivity : AppCompatActivity() {
 
     setContentView(R.layout.activity_search)
 
-    adapter = SearchAdapter(this, FavoriteListener()).also {
+    adapter = SearchAdapter(this, SearchResultClickListener(), FavoriteListener()).also {
       results.layoutManager = LinearLayoutManager(this)
       results.adapter = it
     }
@@ -93,6 +97,16 @@ class SearchActivity : AppCompatActivity() {
 
       override fun onQueryTextChange(newText: String?) = true
     })
+  }
+
+  inner class SearchResultClickListener : SearchAdapter.OnSearchResultClickListener {
+    override fun onArtistClick(holder: View?, artist: Artist) {
+      ArtistsFragment.openAlbums(this@SearchActivity, artist)
+    }
+
+    override fun onAlbumClick(holder: View?, album: Album) {
+      AlbumsFragment.openTracks(this@SearchActivity, album)
+    }
   }
 
   inner class FavoriteListener : SearchAdapter.OnFavoriteListener {

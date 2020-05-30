@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.Fade
@@ -36,7 +37,9 @@ class ArtistsFragment : FunkwhaleFragment<Artist, ArtistsAdapter>() {
             }
           }
         }
+      }
 
+      (context as? AppCompatActivity)?.let { activity ->
         val fragment = AlbumsFragment.new(artist, art).apply {
           enterTransition = Slide().apply {
             duration = AppContext.TRANSITION_DURATION
