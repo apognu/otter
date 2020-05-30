@@ -1,1 +1,1 @@
-De multiples améliorations d'UX et de performances, ajout initial du support du mode paysage, and tri des pistes par leur position dans l'album.
+../../../../../../fastlane/metadata/android/fr-FR/changelogs/10000016.txt

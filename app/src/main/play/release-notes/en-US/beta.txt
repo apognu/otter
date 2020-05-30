@@ -1,1 +1,1 @@
-Several performance and UX improvements, added preliminary support for landscape mode, and sort track by album position.
+../../../../../../fastlane/metadata/android/en-US/changelogs/10000016.txt
