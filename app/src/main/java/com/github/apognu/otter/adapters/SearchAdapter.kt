@@ -90,9 +90,32 @@ class SearchAdapter(private val context: Context?, private val listener: OnSearc
 
     if (resultType == ResultType.Header.ordinal) {
       context?.let { context ->
-        if (position == 0) holder.title.text = context.getString(R.string.artists)
-        if (position == (artists.size + 1)) holder.title.text = context.getString(R.string.albums)
-        if (position == (artists.size + albums.size + 2)) holder.title.text = context.getString(R.string.tracks)
+        if (position == 0) {
+          holder.title.text = context.getString(R.string.artists)
+          holder.itemView.visibility = View.VISIBLE
+
+          if (artists.isEmpty()) {
+            holder.itemView.visibility = View.GONE
+          }
+        }
+
+        if (position == (artists.size + 1)) {
+          holder.title.text = context.getString(R.string.albums)
+          holder.itemView.visibility = View.VISIBLE
+
+          if (albums.isEmpty()) {
+            holder.itemView.visibility = View.GONE
+          }
+        }
+
+        if (position == (artists.size + albums.size + 2)){
+          holder.title.text = context.getString(R.string.tracks)
+          holder.itemView.visibility = View.VISIBLE
+
+          if (tracks.isEmpty()) {
+            holder.itemView.visibility = View.GONE
+          }
+        }
       }
 
       return
