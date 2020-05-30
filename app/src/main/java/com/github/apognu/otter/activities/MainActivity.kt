@@ -319,8 +319,9 @@ class MainActivity : AppCompatActivity() {
 
                     setOnMenuItemClickListener {
                       when (it.itemId) {
-                        R.id.go_to_artist -> ArtistsFragment.openAlbums(this@MainActivity, track.artist, art = track.album.cover.original)
-                        R.id.go_to_album -> AlbumsFragment.openTracks(this@MainActivity, track.album)
+                        R.id.track_info_artist -> ArtistsFragment.openAlbums(this@MainActivity, track.artist, art = track.album.cover.original)
+                        R.id.track_info_album -> AlbumsFragment.openTracks(this@MainActivity, track.album)
+                        R.id.track_info_details -> TrackInfoDetailsFragment.new(track).show(supportFragmentManager, "dialog")
                       }
 
                       now_playing.close()

@@ -2,11 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
   <item
-    android:id="@+id/go_to_artist"
-    android:title="@string/go_to_artist" />
+    android:id="@+id/track_info_artist"
+    android:title="@string/track_info_artist" />
 
   <item
-    android:id="@+id/go_to_album"
-    android:title="@string/go_to_album" />
+    android:id="@+id/track_info_album"
+    android:title="@string/track_info_album" />
+
+  <item
+    android:id="@+id/track_info_details"
+    android:title="@string/track_info_details" />
 
 </menu>

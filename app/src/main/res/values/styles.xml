@@ -78,4 +78,12 @@
     <item name="android:background">@android:color/transparent</item>
   </style>
 
+  <style name="AppTheme.TrackDetailsLabel" parent="TextAppearance.MaterialComponents.Overline">
+    <item name="android:textSize">12sp</item>
+  </style>
+
+  <style name="AppTheme.TrackDetailsValue">
+    <item name="android:textSize">16sp</item>
+  </style>
+
 </resources>

@@ -86,8 +86,18 @@
   <string name="alt_more_options">Plus d\'options</string>
   <string name="alt_track_info">Informations sur cette piste</string>
 
-  <string name="go_to_artist">Voir l\'artist</string>
-  <string name="go_to_album">Voir l\'album</string>
+  <string name="track_info_artist">Voir l\'artist</string>
+  <string name="track_info_album">Voir l\'album</string>
+  <string name="track_info_details">Informations</string>
+
+  <string name="track_info_details_title">Détails de la piste</string>
+  <string name="track_info_details_artist">Artiste</string>
+  <string name="track_info_details_album">Album</string>
+  <string name="track_info_details_track_title">Nom de piste</string>
+  <string name="track_info_details_track_duration">Durée</string>
+  <string name="track_info_details_track_position">Position dans l\'album</string>
+  <string name="track_info_details_track_bitrate">Bitrate</string>
+  <string name="track_info_details_track_instance">Instance Funkwhale</string>
 
   <string name="logout_title">Déconnexion</string>
   <string name="logout_content">Etes-vous certains de vouloir vous déconnecter de votre instance Funkwhale ?</string>

@@ -96,7 +96,7 @@ play {
 dependencies {
   implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
-  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.60")
+  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.61")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.2")
 
@@ -111,7 +111,7 @@ dependencies {
 
   implementation("com.google.android.exoplayer:exoplayer:2.10.5")
   implementation("com.google.android.exoplayer:extension-mediasession:2.10.6")
-  implementation("com.google.android.exoplayer:extension-cast:2.10.6")
+  // implementation("com.google.android.exoplayer:extension-cast:2.10.6")
   implementation("com.github.PaulWoitaschek.ExoPlayer-Extensions:extension-flac:2.10.5") {
     isTransitive = false
   }

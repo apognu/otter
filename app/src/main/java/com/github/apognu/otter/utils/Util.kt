@@ -36,16 +36,18 @@ fun mustNormalizeUrl(url: String): String {
   }.toString()
 }
 
-fun toDurationString(seconds: Long): String {
-  val days = (seconds / 86400)
-  val hours = (seconds % 86400) / 3600
-  val minutes = (seconds % 86400 % 3600) / 60
+fun toDurationString(duration: Long, showSeconds: Boolean = false): String {
+  val days = (duration / 86400)
+  val hours = (duration % 86400) / 3600
+  val minutes = (duration % 86400 % 3600) / 60
+  val seconds = duration % 86400 % 3600 % 60
 
   val ret = StringBuilder()
 
-  if (days > 0) ret.append("${days}d")
-  if (hours > 0) ret.append(" ${hours}h")
-  if (minutes > 0) ret.append(" ${minutes}m")
+  if (days > 0) ret.append("${days}d ")
+  if (hours > 0) ret.append("${hours}h ")
+  if (minutes > 0) ret.append("${minutes}m ")
+  if (showSeconds && seconds > 0) ret.append("${seconds}s")
 
   return ret.toString()
 }
