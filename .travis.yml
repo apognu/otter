@@ -20,9 +20,11 @@ cache:
 
 before_install:
   - yes | sdkmanager ndk-bundle
+  - openssl aes-256-cbc -K $encrypted_532b6bc7108c_key -iv $encrypted_532b6bc7108c_iv -in dist/apognu.jks.enc -out dist/apognu.jks -d
+  - echo -e "signing.store=/home/travis/build/apognu/otter/dist/apognu.jks\nsigning.key_passphrase=${keystore_passphrase}\nsigning.alias=release\nsigning.store_passphrase=${keystore_passphrase}" > local.properties
 
 script:
-  - "./gradlew app:assembleDebug"
+  - "./gradlew app:assembleRelease"
 
 before_deploy:
   - RELEASE_MESSAGE="$(git tag -ln --format '%(subject)' $TRAVIS_TAG)"
