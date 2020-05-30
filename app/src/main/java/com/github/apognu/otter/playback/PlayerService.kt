@@ -177,7 +177,12 @@ class PlayerService : Service() {
           is Command.ToggleState -> toggle()
           is Command.SetState -> state(message.state)
 
-          is Command.NextTrack -> player.next()
+          is Command.NextTrack -> {
+            player.next()
+
+            Cache.set(this@PlayerService, "progress", "0".toByteArray())
+            ProgressBus.send(0, 0, 0)
+          }
           is Command.PreviousTrack -> previousTrack()
           is Command.Seek -> progress(message.progress)
 
