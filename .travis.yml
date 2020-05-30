@@ -19,7 +19,7 @@ cache:
     - "$HOME/.android/build-cache"
 
 before_install:
-  - echo y | sdkmanager ndk-bundle
+  - yes | sdkmanager ndk-bundle
 
 script:
   - "./gradlew app:assembleDebug"
