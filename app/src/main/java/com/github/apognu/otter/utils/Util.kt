@@ -5,6 +5,7 @@ import android.widget.Toast
 import com.google.android.exoplayer2.util.Log
 import com.preference.PowerPreference
 import java.net.URI
+import java.net.URL
 
 fun Context?.toast(message: String, length: Int = Toast.LENGTH_SHORT) {
   if (this != null) {
@@ -20,23 +21,18 @@ fun Any.log() {
   Log.d("FUNKWHALE", this.toString())
 }
 
-fun maybeNormalizeUrl(url: String?): String? {
-  if (url == null || url.isEmpty()) return null
+fun maybeNormalizeUrl(rawUrl: String?): String? {
+  if (rawUrl == null || rawUrl.isEmpty()) return null
 
-  val fallbackHost = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("hostname")
-  val uri = URI(url).takeIf { it.host != null } ?: URI("$fallbackHost$url")
-
-  return uri.run {
-    URI("https", host, path, query, null)
-  }.toString()
+  return mustNormalizeUrl(rawUrl)
 }
 
-fun mustNormalizeUrl(url: String): String {
+fun mustNormalizeUrl(rawUrl: String): String {
   val fallbackHost = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("hostname")
-  val uri = URI(url).takeIf { it.host != null } ?: URI("$fallbackHost$url")
+  val uri = URI(rawUrl).takeIf { it.host != null } ?: URI("$fallbackHost$rawUrl")
 
-  return uri.run {
-    URI("https", host, path, query, null)
+  return uri.toURL().run {
+    URL("https", host, file)
   }.toString()
 }
 
