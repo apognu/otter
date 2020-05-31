@@ -89,4 +89,10 @@ object Cache {
       return null
     }
   }
+
+  fun delete(context: Context?, key: String) = context?.let {
+    with(File(it.cacheDir, key(key))) {
+      delete()
+    }
+  }
 }

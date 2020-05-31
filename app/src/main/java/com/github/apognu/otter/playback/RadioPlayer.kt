@@ -2,6 +2,8 @@ package com.github.apognu.otter.playback
 
 import android.content.Context
 import com.github.apognu.otter.R
+import com.github.apognu.otter.repositories.FavoritedRepository
+import com.github.apognu.otter.repositories.Repository
 import com.github.apognu.otter.utils.*
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitObjectResult
@@ -10,6 +12,8 @@ import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.withContext
@@ -26,6 +30,17 @@ class RadioPlayer(val context: Context) {
   private var currentRadio: Radio? = null
   private var session: Int? = null
 
+  private val favoritedRepository = FavoritedRepository(context)
+
+  init {
+    Cache.get(context, "radio_id")?.readLine()?.toInt()?.let { radio_id ->
+      Cache.get(context, "radio_session")?.readLine()?.toInt()?.let { radio_session ->
+        currentRadio = Radio(radio_id, "", "")
+        session = radio_session
+      }
+    }
+  }
+
   fun play(radio: Radio) {
     currentRadio = radio
     session = null
@@ -38,6 +53,9 @@ class RadioPlayer(val context: Context) {
   fun stop() {
     currentRadio = null
     session = null
+
+    Cache.delete(context, "radio_id")
+    Cache.delete(context, "radio_session")
   }
 
   fun isActive() = currentRadio != null && session != null
@@ -53,6 +71,9 @@ class RadioPlayer(val context: Context) {
             .awaitObjectResult(gsonDeserializerOf(RadioSession::class.java))
 
           session = result.get().id
+
+          Cache.set(context, "radio_id", radio.id.toString().toByteArray())
+          Cache.set(context, "radio_session", session.toString().toByteArray())
 
           prepareNextTrack(true)
         } catch (e: Exception) {
@@ -73,14 +94,23 @@ class RadioPlayer(val context: Context) {
           .body(body)
           .awaitObjectResult(gsonDeserializerOf(RadioTrack::class.java))
 
-        val track = Fuel.get(mustNormalizeUrl("/api/v1/tracks/${result.get().track.id}/"))
+        val trackResponse = Fuel.get(mustNormalizeUrl("/api/v1/tracks/${result.get().track.id}/"))
           .authorize()
           .awaitObjectResult(gsonDeserializerOf(Track::class.java))
 
+        val favorites = FavoritedRepository(context).fetch(Repository.Origin.Network.origin)
+          .map { it.data }
+          .toList()
+          .flatten()
+
+        val track = trackResponse.get().apply {
+          favorite = favorites.contains(id)
+        }
+
         if (first) {
-          CommandBus.send(Command.ReplaceQueue(listOf(track.get()), true))
+          CommandBus.send(Command.ReplaceQueue(listOf(track), true))
         } else {
-          CommandBus.send(Command.AddToQueue(listOf(track.get())))
+          CommandBus.send(Command.AddToQueue(listOf(track)))
         }
       } catch (e: Exception) {
         withContext(Main) {
