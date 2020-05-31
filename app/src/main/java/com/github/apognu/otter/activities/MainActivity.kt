@@ -418,8 +418,8 @@ class MainActivity : AppCompatActivity() {
         Cache.set(this@MainActivity, "repeat", "0".toByteArray())
 
         now_playing_details_repeat?.setImageResource(R.drawable.repeat)
-        now_playing_details_repeat?.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimaryDark))
-        now_playing_details_repeat?.alpha = 0.4f
+        now_playing_details_repeat?.setColorFilter(ContextCompat.getColor(this, R.color.controlForeground))
+        now_playing_details_repeat?.alpha = 0.2f
 
         CommandBus.send(Command.SetRepeatMode(Player.REPEAT_MODE_OFF))
       }
@@ -429,7 +429,7 @@ class MainActivity : AppCompatActivity() {
         Cache.set(this@MainActivity, "repeat", "1".toByteArray())
 
         now_playing_details_repeat?.setImageResource(R.drawable.repeat)
-        now_playing_details_repeat?.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary))
+        now_playing_details_repeat?.setColorFilter(ContextCompat.getColor(this, R.color.controlForeground))
         now_playing_details_repeat?.alpha = 1.0f
 
         CommandBus.send(Command.SetRepeatMode(Player.REPEAT_MODE_ALL))
@@ -439,7 +439,7 @@ class MainActivity : AppCompatActivity() {
       2 -> {
         Cache.set(this@MainActivity, "repeat", "2".toByteArray())
         now_playing_details_repeat?.setImageResource(R.drawable.repeat_one)
-        now_playing_details_repeat?.setColorFilter(ContextCompat.getColor(this, R.color.colorPrimary))
+        now_playing_details_repeat?.setColorFilter(ContextCompat.getColor(this, R.color.controlForeground))
         now_playing_details_repeat?.alpha = 1.0f
 
         CommandBus.send(Command.SetRepeatMode(Player.REPEAT_MODE_ONE))
