@@ -1,7 +1,6 @@
 package com.github.apognu.otter.playback
 
 import android.annotation.SuppressLint
-import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -9,10 +8,13 @@ import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.os.Build
-import android.os.IBinder
+import android.os.Bundle
+import android.support.v4.media.MediaBrowserCompat
+import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.view.KeyEvent
 import com.github.apognu.otter.Otter
+import androidx.media.MediaBrowserServiceCompat
 import com.github.apognu.otter.R
 import com.github.apognu.otter.utils.*
 import com.google.android.exoplayer2.C
@@ -30,7 +32,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class PlayerService : Service() {
+class PlayerService : MediaBrowserServiceCompat() {
   private lateinit var queue: QueueManager
   private val jobs = mutableListOf<Job>()
 
@@ -83,6 +85,8 @@ class PlayerService : Service() {
     mediaSession = MediaSessionCompat(this, applicationContext.packageName).apply {
       isActive = true
     }
+
+    sessionToken = mediaSession.sessionToken
 
     mediaControlsManager = MediaControlsManager(this, mediaSession)
 
@@ -223,8 +227,6 @@ class PlayerService : Service() {
       }
     })
   }
-
-  override fun onBind(intent: Intent?): IBinder? = null
 
   @SuppressLint("NewApi")
   override fun onDestroy() {
@@ -436,5 +438,21 @@ class PlayerService : Service() {
         }
       }
     }
+  }
+
+  override fun onGetRoot(
+    clientPackageName: String,
+    clientUid: Int,
+    rootHints: Bundle?
+  ): BrowserRoot? {
+    return BrowserRoot("/", null)
+  }
+
+  override fun onLoadChildren(
+    parentId: String,
+    result: Result<List<MediaBrowserCompat.MediaItem>>
+  ) {
+    val list = mutableListOf<MediaBrowserCompat.MediaItem>()
+    result.sendResult(list)
   }
 }
