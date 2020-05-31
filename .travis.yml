@@ -34,7 +34,7 @@ deploy:
   name: $TRAVIS_TAG
   body: $RELEASE_MESSAGE
   prerelease: true
-  file: app/build/outputs/apk/debug/app-debug.apk
+  file: app/build/outputs/apk/release/app-release.apk
   overwrite: true
   skip_cleanup: true
   on:
