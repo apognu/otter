@@ -1,0 +1,9 @@
+Several usability and UX improvements, bug fixes:
+
+ * Playback position is now cached and is persisted between application sessions.
+ * Now Playing view now provide links to current artist, album and track details.
+ * Added support for repeat modes (off/all/one) in Now Playing view.
+ * Search for artists and albums, on top of tracks.
+ * App is now published on IzzySoft's repository, this version adds release signing for those builds.
+ * Experimental radios support (behind Experiments flag)
+ * Fixed an issue with escaped characters in URL parsing

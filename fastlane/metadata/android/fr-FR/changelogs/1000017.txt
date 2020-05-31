@@ -1,0 +1,9 @@
+Plusieurs améliorations d'usage et UX, ainsi que de corrections de bug :
+
+ * La position de lecture est maintenant mise en cache et persiste entre deux sessions.
+ * La vue Lecteur fournit maintenant des liens vers l'artiste, l'album et les détails de la piste.
+ * Ajout du support des modes de répétition (désactivé/toutes/une) dans la vue Lecteur.
+ * La recherche affiche les artistes et albums, en plus des pistes.
+ * L'app est maintenant publiée sur le dépôt d'IzzySoft, cette version ajoute la signature de l'APK en mode release.
+ * Support expérimental des radios
+ * Correction d'un bug lié aux caractères échapées lors du parsing des URL.
