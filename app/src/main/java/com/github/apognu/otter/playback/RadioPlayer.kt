@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.withContext
 
-data class RadioSessionBody(val radio_type: String, val custom_radio: Int)
+data class RadioSessionBody(val radio_type: String, var custom_radio: Int? = null)
 data class RadioSession(val id: Int)
 data class RadioTrackBody(val session: Int)
 data class RadioTrack(val position: Int, val track: RadioTrackID)
@@ -33,10 +33,12 @@ class RadioPlayer(val context: Context) {
   private val favoritedRepository = FavoritedRepository(context)
 
   init {
-    Cache.get(context, "radio_id")?.readLine()?.toInt()?.let { radio_id ->
-      Cache.get(context, "radio_session")?.readLine()?.toInt()?.let { radio_session ->
-        currentRadio = Radio(radio_id, "", "")
-        session = radio_session
+    Cache.get(context, "radio_type")?.readLine()?.let { radio_type ->
+      Cache.get(context, "radio_id")?.readLine()?.toInt()?.let { radio_id ->
+        Cache.get(context, "radio_session")?.readLine()?.toInt()?.let { radio_session ->
+          currentRadio = Radio(radio_id, radio_type, "", "")
+          session = radio_session
+        }
       }
     }
   }
@@ -54,6 +56,7 @@ class RadioPlayer(val context: Context) {
     currentRadio = null
     session = null
 
+    Cache.delete(context, "radio_type")
     Cache.delete(context, "radio_id")
     Cache.delete(context, "radio_session")
   }
@@ -61,27 +64,34 @@ class RadioPlayer(val context: Context) {
   fun isActive() = currentRadio != null && session != null
 
   private suspend fun createSession() {
-      currentRadio?.let { radio ->
-        try {
-          val body = Gson().toJson(RadioSessionBody("custom", radio.id))
-          val result = Fuel.post(mustNormalizeUrl("/api/v1/radios/sessions/"))
-            .authorize()
-            .header("Content-Type", "application/json")
-            .body(body)
-            .awaitObjectResult(gsonDeserializerOf(RadioSession::class.java))
-
-          session = result.get().id
-
-          Cache.set(context, "radio_id", radio.id.toString().toByteArray())
-          Cache.set(context, "radio_session", session.toString().toByteArray())
-
-          prepareNextTrack(true)
-        } catch (e: Exception) {
-          withContext(Main) {
-            context.toast(context.getString(R.string.radio_playback_error))
+    currentRadio?.let { radio ->
+      try {
+        val request = RadioSessionBody(radio.radio_type).apply {
+          if (radio_type == "custom") {
+            custom_radio = radio.id
           }
         }
+
+        val body = Gson().toJson(request)
+        val result = Fuel.post(mustNormalizeUrl("/api/v1/radios/sessions/"))
+          .authorize()
+          .header("Content-Type", "application/json")
+          .body(body)
+          .awaitObjectResult(gsonDeserializerOf(RadioSession::class.java))
+
+        session = result.get().id
+
+        Cache.set(context, "radio_type", radio.radio_type.toByteArray())
+        Cache.set(context, "radio_id", radio.id.toString().toByteArray())
+        Cache.set(context, "radio_session", session.toString().toByteArray())
+
+        prepareNextTrack(true)
+      } catch (e: Exception) {
+        withContext(Main) {
+          context.toast(context.getString(R.string.radio_playback_error))
+        }
       }
+    }
   }
 
   suspend fun prepareNextTrack(first: Boolean = false) {
@@ -98,7 +108,7 @@ class RadioPlayer(val context: Context) {
           .authorize()
           .awaitObjectResult(gsonDeserializerOf(Track::class.java))
 
-        val favorites = FavoritedRepository(context).fetch(Repository.Origin.Network.origin)
+        val favorites = favoritedRepository.fetch(Repository.Origin.Network.origin)
           .map { it.data }
           .toList()
           .flatten()

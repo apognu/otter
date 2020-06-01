@@ -101,6 +101,10 @@
   <string name="track_info_details_track_instance">Funkwhale instance</string>
 
   <string name="radio_playback_error">There was an error while trying to play this radio</string>
+  <string name="radio_random_title">Random</string>
+  <string name="radio_random_description">Totally random picks, maybe you\'ll discover new things?</string>
+  <string name="radio_less_listened_title">Less listened</string>
+  <string name="radio_less_listened_description">Listen to tracks you usually don\'t. It\'s time to restore some balance.</string>
 
   <string name="logout_title">Sign out</string>
   <string name="logout_content">Are you sure you want to sign out of your Funkwhale instance?</string>

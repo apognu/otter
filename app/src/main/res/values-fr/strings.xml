@@ -101,6 +101,10 @@
   <string name="track_info_details_track_instance">Instance Funkwhale</string>
 
   <string name="radio_playback_error">Une erreur s\'est produite lors de la lecture de cette radio</string>
+  <string name="radio_random_title">Aléatoire</string>
+  <string name="radio_random_description">Choix de pistes totalement aléatoires, vous découvrirez peut-être quelque chose ?</string>
+  <string name="radio_less_listened_title">Moins écoutées</string>
+  <string name="radio_less_listened_description">Découvrez les morceaux que vous n\'écoutez généralement pas. Il est temps de rétablir un équilibre.</string>
 
   <string name="logout_title">Déconnexion</string>
   <string name="logout_content">Etes-vous certains de vouloir vous déconnecter de votre instance Funkwhale ?</string>

@@ -32,9 +32,25 @@ class RadiosAdapter(val context: Context?, private val listener: OnRadioClickLis
 
     holder.name.text = radio.name
     holder.description.text = radio.description
+
+    context?.let { context ->
+      when (radio.radio_type) {
+        "random" -> {
+          holder.art.setImageDrawable(context.getDrawable(R.drawable.shuffle))
+          holder.art.alpha = 0.7f
+          holder.art.setColorFilter(context.getColor(R.color.controlForeground))
+        }
+        "less-listened" -> {
+          holder.art.setImageDrawable(context.getDrawable(R.drawable.sad))
+          holder.art.alpha = 0.7f
+          holder.art.setColorFilter(context.getColor(R.color.controlForeground))
+        }
+      }
+    }
   }
 
-  inner class ViewHolder(view: View, val listener: OnRadioClickListener) : RecyclerView.ViewHolder(view), View.OnClickListener {
+  inner class ViewHolder(view: View, private val listener: OnRadioClickListener) : RecyclerView.ViewHolder(view), View.OnClickListener {
+    val art = view.art
     val name = view.name
     val description = view.description
 

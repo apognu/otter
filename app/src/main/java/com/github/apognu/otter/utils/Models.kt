@@ -142,6 +142,7 @@ data class PlaylistTrack(val track: Track)
 
 data class Radio(
   val id: Int,
+  var radio_type: String,
   val name: String,
   val description: String
 )
