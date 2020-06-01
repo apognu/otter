@@ -91,6 +91,7 @@ class QueueFragment : BottomSheetDialogFragment() {
       EventBus.get().collect { message ->
         when (message) {
           is Event.TrackPlayed -> refresh()
+          is Event.RefreshTrack -> refresh()
           is Event.QueueChanged -> refresh()
         }
       }

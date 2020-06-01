@@ -163,7 +163,7 @@ class PlayerService : Service() {
 
             state(true)
 
-            EventBus.send(Event.RefreshTrack(queue.current(),true))
+            EventBus.send(Event.RefreshTrack(queue.current(), true))
           }
 
           is Command.ToggleState -> toggle()
@@ -259,7 +259,7 @@ class PlayerService : Service() {
     if (!state) {
       val (progress, _, _) = progress()
 
-      Cache.set(this@PlayerService,"progress", progress.toString().toByteArray())
+      Cache.set(this@PlayerService, "progress", progress.toString().toByteArray())
     }
 
     if (state && player.playbackState == Player.STATE_IDLE) {
@@ -380,9 +380,9 @@ class PlayerService : Service() {
         }
       }
 
-      Cache.set(this@PlayerService,"current", queue.current.toString().toByteArray()      )
+      Cache.set(this@PlayerService, "current", queue.current.toString().toByteArray())
 
-      EventBus.send(Event.RefreshTrack(queue.current(),true)      )
+      EventBus.send(Event.RefreshTrack(queue.current(), true))
     }
 
     override fun onPositionDiscontinuity(reason: Int) {

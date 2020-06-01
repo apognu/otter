@@ -288,7 +288,7 @@ class MainActivity : AppCompatActivity() {
   }
 
   private fun refreshCurrentTrack(track: Track?) {
-    track?.let { track ->
+    track?.let {
       if (now_playing.visibility == View.GONE) {
         now_playing.visibility = View.VISIBLE
         now_playing.alpha = 0f
@@ -455,7 +455,7 @@ class MainActivity : AppCompatActivity() {
   }
 
   private fun incrementListenCount(track: Track?) {
-    track?.let { track ->
+    track?.let {
       GlobalScope.launch(IO) {
         Fuel
           .post(mustNormalizeUrl("/api/v1/history/listenings/"))

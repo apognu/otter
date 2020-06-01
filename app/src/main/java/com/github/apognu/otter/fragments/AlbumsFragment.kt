@@ -35,8 +35,8 @@ class AlbumsFragment : FunkwhaleFragment<Album, AlbumsAdapter>() {
   var artistArt = ""
 
   companion object {
-    fun new(artist: Artist, art: String? = null): AlbumsFragment {
-      val art = art ?: if (artist.albums?.isNotEmpty() == true) artist.albums[0].cover.original else ""
+    fun new(artist: Artist, _art: String? = null): AlbumsFragment {
+      val art = _art ?: if (artist.albums?.isNotEmpty() == true) artist.albums[0].cover.original else ""
 
       return AlbumsFragment().apply {
         arguments = bundleOf(
@@ -48,7 +48,7 @@ class AlbumsFragment : FunkwhaleFragment<Album, AlbumsAdapter>() {
     }
 
     fun openTracks(context: Context?, album: Album, fragment: Fragment? = null) {
-      (context as? MainActivity)?.let { activity ->
+      (context as? MainActivity)?.let {
         fragment?.let { fragment ->
           fragment.onViewPager {
             exitTransition = Fade().apply {
@@ -64,7 +64,7 @@ class AlbumsFragment : FunkwhaleFragment<Album, AlbumsAdapter>() {
       }
 
       (context as? AppCompatActivity)?.let { activity ->
-        val fragment = TracksFragment.new(album).apply {
+        val nextFragment = TracksFragment.new(album).apply {
           enterTransition = Slide().apply {
             duration = AppContext.TRANSITION_DURATION
             interpolator = AccelerateDecelerateInterpolator()
@@ -73,7 +73,7 @@ class AlbumsFragment : FunkwhaleFragment<Album, AlbumsAdapter>() {
 
         activity.supportFragmentManager
           .beginTransaction()
-          .replace(R.id.container, fragment)
+          .replace(R.id.container, nextFragment)
           .addToBackStack(null)
           .commit()
       }
@@ -105,7 +105,7 @@ class AlbumsFragment : FunkwhaleFragment<Album, AlbumsAdapter>() {
         .into(cover)
     }
 
-    cover_background?.let {
+    cover_background?.let { background ->
       activity?.let { activity ->
         GlobalScope.launch(Dispatchers.IO) {
           val width = DisplayMetrics().apply {
@@ -116,14 +116,14 @@ class AlbumsFragment : FunkwhaleFragment<Album, AlbumsAdapter>() {
             .maybeLoad(maybeNormalizeUrl(artistArt))
             .get()
             .run { Bitmap.createScaledBitmap(this, width, width, false) }
-            .run { Bitmap.createBitmap(this, 0, 0, width, cover_background.height).toDrawable(resources) }
+            .run { Bitmap.createBitmap(this, 0, 0, width, background.height).toDrawable(resources) }
             .apply {
               alpha = 20
               gravity = Gravity.CENTER
             }
 
           withContext(Dispatchers.Main) {
-            cover_background.background = backgroundCover
+            background.background = backgroundCover
           }
         }
       }

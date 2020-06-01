@@ -114,15 +114,18 @@ class PlaylistTracksFragment : FunkwhaleFragment<PlaylistTrack, PlaylistTracksAd
     GlobalScope.launch(Main) {
       EventBus.get().collect { message ->
         when (message) {
-          is Event.TrackPlayed -> {
-            GlobalScope.launch(Main) {
-              RequestBus.send(Request.GetCurrentTrack).wait<Response.CurrentTrack>()?.let { response ->
-                adapter.currentTrack = response.track
-                adapter.notifyDataSetChanged()
-              }
-            }
-          }
+          is Event.TrackPlayed -> refreshCurrentTrack()
+          is Event.RefreshTrack -> refreshCurrentTrack()
         }
+      }
+    }
+  }
+
+  private fun refreshCurrentTrack() {
+    GlobalScope.launch(Main) {
+      RequestBus.send(Request.GetCurrentTrack).wait<Response.CurrentTrack>()?.let { response ->
+        adapter.currentTrack = response.track
+        adapter.notifyDataSetChanged()
       }
     }
   }

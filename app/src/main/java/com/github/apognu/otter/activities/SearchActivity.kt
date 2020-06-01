@@ -42,10 +42,10 @@ class SearchActivity : AppCompatActivity() {
     search.requestFocus()
 
     search.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
-      override fun onQueryTextSubmit(query: String?): Boolean {
+      override fun onQueryTextSubmit(rawQuery: String?): Boolean {
         search.clearFocus()
 
-        query?.let {
+        rawQuery?.let {
           val query = URLEncoder.encode(it, "UTF-8")
 
           tracksRepository = TracksSearchRepository(this@SearchActivity, query.toLowerCase(Locale.ROOT))

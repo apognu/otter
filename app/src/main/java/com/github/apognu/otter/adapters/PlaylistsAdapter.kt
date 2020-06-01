@@ -33,7 +33,7 @@ class PlaylistsAdapter(val context: Context?, private val listener: OnPlaylistCl
     val playlist = data[position]
 
     holder.name.text = playlist.name
-    holder.summary.text = context?.getString(R.string.playlist_description, playlist.tracks_count, toDurationString(playlist.duration.toLong())) ?: ""
+    holder.summary.text = context?.resources?.getQuantityString(R.plurals.playlist_description, playlist.tracks_count, playlist.tracks_count, toDurationString(playlist.duration.toLong())) ?: ""
 
     playlist.album_covers.shuffled().take(4).forEachIndexed { index, url ->
       val imageView = when (index) {

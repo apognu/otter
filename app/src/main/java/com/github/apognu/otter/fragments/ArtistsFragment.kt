@@ -24,7 +24,7 @@ class ArtistsFragment : FunkwhaleFragment<Artist, ArtistsAdapter>() {
 
   companion object {
     fun openAlbums(context: Context?, artist: Artist, fragment: Fragment? = null, art: String? = null) {
-      (context as? MainActivity)?.let { activity ->
+      (context as? MainActivity)?.let {
         fragment?.let { fragment ->
           fragment.onViewPager {
             exitTransition = Fade().apply {
@@ -40,7 +40,7 @@ class ArtistsFragment : FunkwhaleFragment<Artist, ArtistsAdapter>() {
       }
 
       (context as? AppCompatActivity)?.let { activity ->
-        val fragment = AlbumsFragment.new(artist, art).apply {
+        val nextFragment = AlbumsFragment.new(artist, art).apply {
           enterTransition = Slide().apply {
             duration = AppContext.TRANSITION_DURATION
             interpolator = AccelerateDecelerateInterpolator()
@@ -49,7 +49,7 @@ class ArtistsFragment : FunkwhaleFragment<Artist, ArtistsAdapter>() {
 
         activity.supportFragmentManager
           .beginTransaction()
-          .replace(R.id.container, fragment)
+          .replace(R.id.container, nextFragment)
           .addToBackStack(null)
           .commit()
       }

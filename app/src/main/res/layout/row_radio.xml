@@ -18,6 +18,7 @@
     android:layout_width="48dp"
     android:layout_height="32dp"
     android:layout_marginEnd="16dp"
+    android:contentDescription="@string/alt_album_cover"
     android:scaleType="fitCenter"
     android:src="@drawable/cover"
     android:visibility="gone"

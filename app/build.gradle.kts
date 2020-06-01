@@ -15,8 +15,7 @@ plugins {
 }
 
 val props = Properties().apply {
-  try { load(FileInputStream(rootProject.file("local.properties"))) }
-  catch(e: Exception) {}
+  try { load(FileInputStream(rootProject.file("local.properties"))) } catch (e: Exception) {}
 }
 
 androidGitVersion {

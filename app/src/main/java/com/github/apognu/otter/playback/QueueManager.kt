@@ -88,9 +88,9 @@ class QueueManager(val context: Context) {
 
   fun append(tracks: List<Track>) {
     val factory = factory()
-    val tracks = tracks.filter { metadata.indexOf(it) == -1 }
+    val missingTracks = tracks.filter { metadata.indexOf(it) == -1 }
 
-    val sources = tracks.map { track ->
+    val sources = missingTracks.map { track ->
       val url = mustNormalizeUrl(track.bestUpload()?.listen_url ?: "")
 
       ProgressiveMediaSource.Factory(factory).createMediaSource(Uri.parse(url))

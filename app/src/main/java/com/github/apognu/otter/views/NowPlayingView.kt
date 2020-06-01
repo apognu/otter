@@ -52,7 +52,7 @@ class NowPlayingView : MaterialCardView {
 
             if (motionEvent.actionMasked == MotionEvent.ACTION_UP) {
               if (gestureDetectorCallback?.isScrolling == true) {
-                gestureDetectorCallback?.onUp(motionEvent)
+                gestureDetectorCallback?.onUp()
               }
             }
 
@@ -105,7 +105,7 @@ class NowPlayingView : MaterialCardView {
       return true
     }
 
-    fun onUp(event: MotionEvent): Boolean {
+    fun onUp(): Boolean {
       isScrolling = false
 
       layoutParams.let {

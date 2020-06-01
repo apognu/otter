@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="app_name">Otter</string>
+  <string name="app_name" translatable="false">Otter</string>
 
   <string name="login_welcome">Please enter the details of your Funkwhale instance to access its content</string>
   <string name="login_hostname">Host name</string>
@@ -13,7 +13,6 @@
   <string name="login_error_hostname">This could not be understood as a valid URL</string>
   <string name="login_error_hostname_https">The Funkwhale hostname should be secure through HTTPS</string>
 
-  <string name="toolbar_cast">Cast</string>
   <string name="toolbar_search">Search</string>
 
   <string name="title_settings">Settings</string>
@@ -67,7 +66,6 @@
   <string name="playback_queue_add_item">Add to queue</string>
   <string name="playback_queue_play_next">Play next</string>
 
-  <string name="manage_add_to_playlist">Add to playlist</string>
   <string name="manage_add_to_favorites">Ajouter aux favoris</string>
 
   <string name="control_toggle">Toggle playback</string>
@@ -109,5 +107,8 @@
   <string name="logout_title">Sign out</string>
   <string name="logout_content">Are you sure you want to sign out of your Funkwhale instance?</string>
 
-  <string name="playlist_description">%d tracks • %s"</string>
+  <plurals name="playlist_description">
+    <item quantity="one">%1$d track • %2$s"</item>
+    <item quantity="other">%1$d tracks • %2$s"</item>
+  </plurals>
 </resources>

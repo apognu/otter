@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="app_name">Otter</string>
-
   <string name="login_welcome">Veuillez saisir les détails de votre instance Funkwhale pour accéder à son contenu</string>
   <string name="login_hostname">Nom d\'hôte</string>
   <string name="login_anonymous">Authentification anonyme</string>
@@ -13,7 +11,6 @@
   <string name="login_error_hostname">Cela ne semble pas être un nom d\hôte valide</string>
   <string name="login_error_hostname_https">Le nom d\'hôte Funkwhale devrait être sécurisé à travers HTTPS</string>
 
-  <string name="toolbar_cast">Cast</string>
   <string name="toolbar_search">Rechercher</string>
 
   <string name="title_settings">Paramètres</string>
@@ -48,7 +45,7 @@
   <string name="settings_information_repository_description">Otter par Antoine POPINEAU (apognu)</string>
   <string name="settings_version_title">Version</string>
   <string name="settings_information_license_title">Licence</string>
-  <string name="settings_information_license_description">MIT license</string>
+  <string name="settings_information_license_description">Licence MIT</string>
   <string name="settings_logout">Déconnexion</string>
 
   <string name="artists">Artistes</string>
@@ -67,7 +64,6 @@
   <string name="playback_queue_add_item">Ajouter à la liste de lecture</string>
   <string name="playback_queue_play_next">Prochaine écoute</string>
 
-  <string name="manage_add_to_playlist">Ajouter à une playlist</string>
   <string name="manage_add_to_favorites">Add to favorites</string>
 
   <string name="control_toggle">Lecture / pause</string>
@@ -109,5 +105,8 @@
   <string name="logout_title">Déconnexion</string>
   <string name="logout_content">Etes-vous certains de vouloir vous déconnecter de votre instance Funkwhale ?</string>
 
-  <string name="playlist_description">%d tracks • %s"</string>
+  <plurals name="playlist_description">
+    <item quantity="one">%1$d pistes • %2$s"</item>
+    <item quantity="other">%1$d pistes • %2$s"</item>
+  </plurals>
 </resources>
