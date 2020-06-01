@@ -27,7 +27,10 @@ import com.github.apognu.otter.repositories.FavoritedRepository
 import com.github.apognu.otter.repositories.FavoritesRepository
 import com.github.apognu.otter.repositories.Repository
 import com.github.apognu.otter.utils.*
+import com.github.kittinunf.fuel.Fuel
+import com.github.kittinunf.fuel.coroutines.awaitStringResponse
 import com.google.android.exoplayer2.Player
+import com.google.gson.Gson
 import com.preference.PowerPreference
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
@@ -236,136 +239,9 @@ class MainActivity : AppCompatActivity() {
             }
           }
 
-          is Event.TrackPlayed -> {
-            message.track?.let { track ->
-              if (now_playing.visibility == View.GONE) {
-                now_playing.visibility = View.VISIBLE
-                now_playing.alpha = 0f
-
-                now_playing.animate()
-                  .alpha(1.0f)
-                  .setDuration(400)
-                  .setListener(null)
-                  .start()
-
-                (container.layoutParams as? ViewGroup.MarginLayoutParams)?.let {
-                  it.bottomMargin = it.bottomMargin * 2
-                }
-
-                landscape_queue?.let { landscape_queue ->
-                  (landscape_queue.layoutParams as? ViewGroup.MarginLayoutParams)?.let {
-                    it.bottomMargin = it.bottomMargin * 2
-                  }
-                }
-              }
-
-              now_playing_title.text = track.title
-              now_playing_album.text = track.artist.name
-              now_playing_toggle.icon = getDrawable(R.drawable.pause)
-
-              now_playing_details_title.text = track.title
-              now_playing_details_artist.text = track.artist.name
-              now_playing_details_toggle.icon = getDrawable(R.drawable.pause)
-
-              Picasso.get()
-                .maybeLoad(maybeNormalizeUrl(track.album.cover.original))
-                .fit()
-                .centerCrop()
-                .into(now_playing_cover)
-
-              now_playing_details_cover?.let { now_playing_details_cover ->
-                Picasso.get()
-                  .maybeLoad(maybeNormalizeUrl(track.album.cover.original))
-                  .fit()
-                  .centerCrop()
-                  .into(now_playing_details_cover)
-              }
-
-              if (now_playing_details_cover == null) {
-                GlobalScope.launch(IO) {
-                  val width = DisplayMetrics().apply {
-                    windowManager.defaultDisplay.getMetrics(this)
-                  }.widthPixels
-
-                  val backgroundCover = Picasso.get()
-                    .maybeLoad(maybeNormalizeUrl(track.album.cover.original))
-                    .get()
-                    .run { Bitmap.createScaledBitmap(this, width, width, false).toDrawable(resources) }
-                    .apply {
-                      alpha = 20
-                      gravity = Gravity.CENTER
-                    }
-
-                  withContext(Main) {
-                    now_playing_details.background = backgroundCover
-                  }
-                }
-              }
-
-              now_playing_details_repeat?.let { now_playing_details_repeat ->
-                changeRepeatMode(Cache.get(this@MainActivity, "repeat")?.readLine()?.toInt() ?: 0)
-
-                now_playing_details_repeat.setOnClickListener {
-                  val current = Cache.get(this@MainActivity, "repeat")?.readLine()?.toInt() ?: 0
-
-                  changeRepeatMode((current + 1) % 3)
-                }
-              }
-
-              now_playing_details_info?.let { now_playing_details_info ->
-                now_playing_details_info.setOnClickListener {
-                  PopupMenu(this@MainActivity, now_playing_details_info, Gravity.START, R.attr.actionOverflowMenuStyle, 0).apply {
-                    inflate(R.menu.track_info)
-
-                    setOnMenuItemClickListener {
-                      when (it.itemId) {
-                        R.id.track_info_artist -> ArtistsFragment.openAlbums(this@MainActivity, track.artist, art = track.album.cover.original)
-                        R.id.track_info_album -> AlbumsFragment.openTracks(this@MainActivity, track.album)
-                        R.id.track_info_details -> TrackInfoDetailsFragment.new(track).show(supportFragmentManager, "dialog")
-                      }
-
-                      now_playing.close()
-
-                      true
-                    }
-
-                    show()
-                  }
-                }
-              }
-
-              now_playing_details_favorite?.let { now_playing_details_favorite ->
-                favoriteCheckRepository.fetch().untilNetwork(IO) { favorites, _, _ ->
-                  GlobalScope.launch(Main) {
-                    track.favorite = favorites.contains(track.id)
-
-                    when (track.favorite) {
-                      true -> now_playing_details_favorite.setColorFilter(getColor(R.color.colorFavorite))
-                      false -> now_playing_details_favorite.setColorFilter(getColor(R.color.controlForeground))
-                    }
-                  }
-                }
-
-                now_playing_details_favorite.setOnClickListener {
-                  when (track.favorite) {
-                    true -> {
-                      favoriteRepository.deleteFavorite(track.id)
-                      now_playing_details_favorite.setColorFilter(getColor(R.color.controlForeground))
-                    }
-
-                    false -> {
-                      favoriteRepository.addFavorite(track.id)
-                      now_playing_details_favorite.setColorFilter(getColor(R.color.colorFavorite))
-                    }
-                  }
-
-                  track.favorite = !track.favorite
-
-                  favoriteRepository.fetch(Repository.Origin.Network.origin)
-                }
-              }
-            }
-          }
+          is Event.TrackPlayed -> refreshCurrentTrack(message.track)
+          is Event.RefreshTrack -> refreshCurrentTrack(message.track)
+          is Event.TrackFinished -> incrementListenCount(message.track)
 
           is Event.StateChanged -> {
             when (message.playing) {
@@ -411,6 +287,137 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
+  private fun refreshCurrentTrack(track: Track?) {
+    track?.let { track ->
+      if (now_playing.visibility == View.GONE) {
+        now_playing.visibility = View.VISIBLE
+        now_playing.alpha = 0f
+
+        now_playing.animate()
+          .alpha(1.0f)
+          .setDuration(400)
+          .setListener(null)
+          .start()
+
+        (container.layoutParams as? ViewGroup.MarginLayoutParams)?.let {
+          it.bottomMargin = it.bottomMargin * 2
+        }
+
+        landscape_queue?.let { landscape_queue ->
+          (landscape_queue.layoutParams as? ViewGroup.MarginLayoutParams)?.let {
+            it.bottomMargin = it.bottomMargin * 2
+          }
+        }
+      }
+
+      now_playing_title.text = track.title
+      now_playing_album.text = track.artist.name
+      now_playing_toggle.icon = getDrawable(R.drawable.pause)
+
+      now_playing_details_title.text = track.title
+      now_playing_details_artist.text = track.artist.name
+      now_playing_details_toggle.icon = getDrawable(R.drawable.pause)
+
+      Picasso.get()
+        .maybeLoad(maybeNormalizeUrl(track.album.cover.original))
+        .fit()
+        .centerCrop()
+        .into(now_playing_cover)
+
+      now_playing_details_cover?.let { now_playing_details_cover ->
+        Picasso.get()
+          .maybeLoad(maybeNormalizeUrl(track.album.cover.original))
+          .fit()
+          .centerCrop()
+          .into(now_playing_details_cover)
+      }
+
+      if (now_playing_details_cover == null) {
+        GlobalScope.launch(IO) {
+          val width = DisplayMetrics().apply {
+            windowManager.defaultDisplay.getMetrics(this)
+          }.widthPixels
+
+          val backgroundCover = Picasso.get()
+            .maybeLoad(maybeNormalizeUrl(track.album.cover.original))
+            .get()
+            .run { Bitmap.createScaledBitmap(this, width, width, false).toDrawable(resources) }
+            .apply {
+              alpha = 20
+              gravity = Gravity.CENTER
+            }
+
+          withContext(Main) {
+            now_playing_details.background = backgroundCover
+          }
+        }
+      }
+
+      now_playing_details_repeat?.let { now_playing_details_repeat ->
+        changeRepeatMode(Cache.get(this@MainActivity, "repeat")?.readLine()?.toInt() ?: 0)
+
+        now_playing_details_repeat.setOnClickListener {
+          val current = Cache.get(this@MainActivity, "repeat")?.readLine()?.toInt() ?: 0
+
+          changeRepeatMode((current + 1) % 3)
+        }
+      }
+
+      now_playing_details_info?.let { now_playing_details_info ->
+        now_playing_details_info.setOnClickListener {
+          PopupMenu(this@MainActivity, now_playing_details_info, Gravity.START, R.attr.actionOverflowMenuStyle, 0).apply {
+            inflate(R.menu.track_info)
+
+            setOnMenuItemClickListener {
+              when (it.itemId) {
+                R.id.track_info_artist -> ArtistsFragment.openAlbums(this@MainActivity, track.artist, art = track.album.cover.original)
+                R.id.track_info_album -> AlbumsFragment.openTracks(this@MainActivity, track.album)
+                R.id.track_info_details -> TrackInfoDetailsFragment.new(track).show(supportFragmentManager, "dialog")
+              }
+
+              now_playing.close()
+
+              true
+            }
+
+            show()
+          }
+        }
+      }
+
+      now_playing_details_favorite?.let { now_playing_details_favorite ->
+        favoriteCheckRepository.fetch().untilNetwork(IO) { favorites, _, _ ->
+          GlobalScope.launch(Main) {
+            track.favorite = favorites.contains(track.id)
+
+            when (track.favorite) {
+              true -> now_playing_details_favorite.setColorFilter(getColor(R.color.colorFavorite))
+              false -> now_playing_details_favorite.setColorFilter(getColor(R.color.controlForeground))
+            }
+          }
+        }
+
+        now_playing_details_favorite.setOnClickListener {
+          when (track.favorite) {
+            true -> {
+              favoriteRepository.deleteFavorite(track.id)
+              now_playing_details_favorite.setColorFilter(getColor(R.color.controlForeground))
+            }
+
+            false -> {
+              favoriteRepository.addFavorite(track.id)
+              now_playing_details_favorite.setColorFilter(getColor(R.color.colorFavorite))
+            }
+          }
+
+          track.favorite = !track.favorite
+
+          favoriteRepository.fetch(Repository.Origin.Network.origin)
+        }
+      }
+    }
+  }
+
   private fun changeRepeatMode(index: Int) {
     when (index) {
       // From no repeat to repeat all
@@ -443,6 +450,19 @@ class MainActivity : AppCompatActivity() {
         now_playing_details_repeat?.alpha = 1.0f
 
         CommandBus.send(Command.SetRepeatMode(Player.REPEAT_MODE_ONE))
+      }
+    }
+  }
+
+  private fun incrementListenCount(track: Track?) {
+    track?.let { track ->
+      GlobalScope.launch(IO) {
+        Fuel
+          .post(mustNormalizeUrl("/api/v1/history/listenings/"))
+          .authorize()
+          .header("Content-Type", "application/json")
+          .body(Gson().toJson(mapOf("track" to track.id)))
+          .awaitStringResponse()
       }
     }
   }

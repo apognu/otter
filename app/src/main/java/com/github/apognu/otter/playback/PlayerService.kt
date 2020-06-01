@@ -131,17 +131,8 @@ class PlayerService : Service() {
             EventBus.send(Event.QueueChanged)
 
             if (queue.metadata.isNotEmpty()) {
-              EventBus.send(
-                Event.TrackPlayed(
-                  queue.current(),
-                  player.playWhenReady
-                )
-              )
-              EventBus.send(
-                Event.StateChanged(
-                  player.playWhenReady
-                )
-              )
+              EventBus.send(Event.RefreshTrack(queue.current(), player.playWhenReady))
+              EventBus.send(Event.StateChanged(player.playWhenReady))
             }
           }
 
@@ -154,7 +145,7 @@ class PlayerService : Service() {
             state(true)
 
             EventBus.send(
-              Event.TrackPlayed(
+              Event.RefreshTrack(
                 queue.current(),
                 true
               )
@@ -172,12 +163,7 @@ class PlayerService : Service() {
 
             state(true)
 
-            EventBus.send(
-              Event.TrackPlayed(
-                queue.current(),
-                true
-              )
-            )
+            EventBus.send(Event.RefreshTrack(queue.current(),true))
           }
 
           is Command.ToggleState -> toggle()
@@ -211,21 +197,9 @@ class PlayerService : Service() {
     jobs.add(GlobalScope.launch(Main) {
       RequestBus.get().collect { request ->
         when (request) {
-          is Request.GetCurrentTrack -> request.channel?.offer(
-            Response.CurrentTrack(
-              queue.current()
-            )
-          )
-          is Request.GetState -> request.channel?.offer(
-            Response.State(
-              player.playWhenReady
-            )
-          )
-          is Request.GetQueue -> request.channel?.offer(
-            Response.Queue(
-              queue.get()
-            )
-          )
+          is Request.GetCurrentTrack -> request.channel?.offer(Response.CurrentTrack(queue.current()))
+          is Request.GetState -> request.channel?.offer(Response.State(player.playWhenReady))
+          is Request.GetQueue -> request.channel?.offer(Response.Queue(queue.get()))
         }
       }
     })
@@ -285,11 +259,7 @@ class PlayerService : Service() {
     if (!state) {
       val (progress, _, _) = progress()
 
-      Cache.set(
-        this@PlayerService,
-        "progress",
-        progress.toString().toByteArray()
-      )
+      Cache.set(this@PlayerService,"progress", progress.toString().toByteArray())
     }
 
     if (state && player.playbackState == Player.STATE_IDLE) {
@@ -365,52 +335,27 @@ class PlayerService : Service() {
     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
       super.onPlayerStateChanged(playWhenReady, playbackState)
 
-      EventBus.send(
-        Event.StateChanged(
-          playWhenReady
-        )
-      )
+      EventBus.send(Event.StateChanged(playWhenReady))
 
       if (queue.current == -1) {
-        EventBus.send(
-          Event.TrackPlayed(
-            queue.current(),
-            playWhenReady
-          )
-        )
+        EventBus.send(Event.TrackPlayed(queue.current(), playWhenReady))
       }
 
       when (playWhenReady) {
         true -> {
           when (playbackState) {
             Player.STATE_READY -> mediaControlsManager.updateNotification(queue.current(), true)
-            Player.STATE_BUFFERING -> EventBus.send(
-              Event.Buffering(
-                true
-              )
-            )
+            Player.STATE_BUFFERING -> EventBus.send(Event.Buffering(true))
             Player.STATE_IDLE -> state(false)
             Player.STATE_ENDED -> EventBus.send(Event.PlaybackStopped)
           }
 
-          if (playbackState != Player.STATE_BUFFERING) EventBus.send(
-            Event.Buffering(
-              false
-            )
-          )
+          if (playbackState != Player.STATE_BUFFERING) EventBus.send(Event.Buffering(false))
         }
 
         false -> {
-          EventBus.send(
-            Event.StateChanged(
-              false
-            )
-          )
-          EventBus.send(
-            Event.Buffering(
-              false
-            )
-          )
+          EventBus.send(Event.StateChanged(false))
+          EventBus.send(Event.Buffering(false))
 
           if (playbackState == Player.STATE_READY) {
             mediaControlsManager.updateNotification(queue.current(), false)
@@ -435,26 +380,21 @@ class PlayerService : Service() {
         }
       }
 
-      Cache.set(
-        this@PlayerService,
-        "current",
-        queue.current.toString().toByteArray()
-      )
+      Cache.set(this@PlayerService,"current", queue.current.toString().toByteArray()      )
 
-      EventBus.send(
-        Event.TrackPlayed(
-          queue.current(),
-          true
-        )
-      )
+      EventBus.send(Event.RefreshTrack(queue.current(),true)      )
+    }
+
+    override fun onPositionDiscontinuity(reason: Int) {
+      super.onPositionDiscontinuity(reason)
+
+      if (reason == Player.DISCONTINUITY_REASON_PERIOD_TRANSITION) {
+        EventBus.send(Event.TrackFinished(queue.current()))
+      }
     }
 
     override fun onPlayerError(error: ExoPlaybackException?) {
-      EventBus.send(
-        Event.PlaybackError(
-          getString(R.string.error_playback)
-        )
-      )
+      EventBus.send(Event.PlaybackError(getString(R.string.error_playback)))
 
       player.next()
       player.playWhenReady = true

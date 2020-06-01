@@ -36,8 +36,6 @@ class HttpUpstream<D : Any, R : FunkwhaleResponse<D>>(val behavior: Behavior, pr
         .build()
         .toString()
 
-    log(offsetUrl)
-
     get(offsetUrl).fold(
       { response ->
         val data = response.getData()

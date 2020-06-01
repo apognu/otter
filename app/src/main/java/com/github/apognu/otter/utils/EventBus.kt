@@ -38,6 +38,8 @@ sealed class Event {
   object PlaybackStopped : Event()
   class Buffering(val value: Boolean) : Event()
   class TrackPlayed(val track: Track?, val play: Boolean) : Event()
+  class TrackFinished(val track: Track?) : Event()
+  class RefreshTrack(val track: Track?, val play: Boolean) : Event()
   class StateChanged(val playing: Boolean) : Event()
   object QueueChanged : Event()
 }
