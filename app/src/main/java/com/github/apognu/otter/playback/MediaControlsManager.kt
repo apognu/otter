@@ -61,6 +61,7 @@ class MediaControlsManager(val context: Service, private val mediaSession: Media
           AppContext.NOTIFICATION_CHANNEL_MEDIA_CONTROL
         )
           .setShowWhen(false)
+          .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
           .setStyle(
             MediaStyle()
               .setMediaSession(mediaSession.sessionToken)
