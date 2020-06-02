@@ -13,23 +13,12 @@
   android:transitionGroup="true"
   tools:showIn="@layout/fragment_radios">
 
-  <ImageView
-    android:id="@+id/native_art"
-    android:layout_width="48dp"
-    android:layout_height="32dp"
-    android:layout_marginEnd="16dp"
-    android:contentDescription="@string/alt_album_cover"
-    android:scaleType="fitCenter"
-    android:src="@drawable/cover"
-    android:visibility="gone"
-    tools:src="@tools:sample/avatars" />
-
   <com.github.apognu.otter.views.SquareImageView
     android:id="@+id/art"
     android:layout_width="48dp"
     android:layout_height="wrap_content"
     android:layout_marginEnd="16dp"
-    android:scaleType="centerCrop"
+    android:scaleType="centerInside"
     android:src="@drawable/cover"
     tools:src="@tools:sample/avatars" />
 

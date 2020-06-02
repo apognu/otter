@@ -39,6 +39,40 @@
           android:gravity="center_vertical"
           android:orientation="vertical">
 
+          <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+              android:id="@+id/cover"
+              android:layout_width="match_parent"
+              android:layout_height="100dp"
+              android:contentDescription="@string/alt_artist_art"
+              android:scaleType="centerCrop"
+              app:layout_constraintBottom_toBottomOf="parent"
+              app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintTop_toTopOf="parent"
+              app:layout_constraintVertical_bias="0"
+              tools:src="@tools:sample/avatars" />
+
+            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+              android:id="@+id/play"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:backgroundTint="@color/colorPrimary"
+              android:elevation="10dp"
+              android:text="@string/playback_shuffle"
+              android:textColor="@android:color/white"
+              app:icon="@drawable/play"
+              app:iconTint="@android:color/white"
+              app:layout_constraintBottom_toBottomOf="@id/cover"
+              app:layout_constraintLeft_toLeftOf="@id/cover"
+              app:layout_constraintRight_toRightOf="@id/cover"
+              app:layout_constraintTop_toBottomOf="@id/cover" />
+
+          </androidx.constraintlayout.widget.ConstraintLayout>
+
           <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

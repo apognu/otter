@@ -126,6 +126,8 @@ class RadioPlayer(val context: Context) {
         withContext(Main) {
           context.toast(context.getString(R.string.radio_playback_error))
         }
+      } finally {
+        EventBus.send(Event.RadioStarted)
       }
     }
   }

@@ -42,6 +42,7 @@ sealed class Event {
   class RefreshTrack(val track: Track?, val play: Boolean) : Event()
   class StateChanged(val playing: Boolean) : Event()
   object QueueChanged : Event()
+  object RadioStarted : Event()
 }
 
 sealed class Request(var channel: Channel<Response>? = null) {

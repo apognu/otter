@@ -18,17 +18,26 @@ import com.github.apognu.otter.R
 import com.github.apognu.otter.activities.MainActivity
 import com.github.apognu.otter.adapters.AlbumsAdapter
 import com.github.apognu.otter.repositories.AlbumsRepository
+import com.github.apognu.otter.repositories.ArtistTracksRepository
+import com.github.apognu.otter.repositories.Repository
 import com.github.apognu.otter.utils.*
+import com.github.apognu.otter.views.LoadingFlotingActionButton
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_albums.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class AlbumsFragment : FunkwhaleFragment<Album, AlbumsAdapter>() {
   override val viewRes = R.layout.fragment_albums
   override val recycler: RecyclerView get() = albums
+
+  lateinit var artistTracksRepository: ArtistTracksRepository
 
   var artistId = 0
   var artistName = ""
@@ -91,6 +100,7 @@ class AlbumsFragment : FunkwhaleFragment<Album, AlbumsAdapter>() {
 
     adapter = AlbumsAdapter(context, OnAlbumClickListener())
     repository = AlbumsRepository(context, artistId)
+    artistTracksRepository = ArtistTracksRepository(context, artistId)
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -107,7 +117,7 @@ class AlbumsFragment : FunkwhaleFragment<Album, AlbumsAdapter>() {
 
     cover_background?.let { background ->
       activity?.let { activity ->
-        GlobalScope.launch(Dispatchers.IO) {
+        GlobalScope.launch(IO) {
           val width = DisplayMetrics().apply {
             activity.windowManager.defaultDisplay.getMetrics(this)
           }.widthPixels
@@ -130,6 +140,25 @@ class AlbumsFragment : FunkwhaleFragment<Album, AlbumsAdapter>() {
     }
 
     artist.text = artistName
+
+    play.setOnClickListener {
+      val loaderAnimation = LoadingFlotingActionButton.start(play)
+
+      GlobalScope.launch(IO) {
+        artistTracksRepository.fetch(Repository.Origin.Network.origin)
+          .map { it.data }
+          .toList()
+          .flatten()
+          .shuffled()
+          .also {
+            CommandBus.send(Command.ReplaceQueue(it))
+
+            withContext(Main) {
+              LoadingFlotingActionButton.stop(play, loaderAnimation)
+            }
+          }
+      }
+    }
   }
 
   inner class OnAlbumClickListener : AlbumsAdapter.OnAlbumClickListener {

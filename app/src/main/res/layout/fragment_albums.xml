@@ -53,34 +53,56 @@
               app:layout_constraintVertical_bias="0"
               tools:src="@tools:sample/avatars" />
 
+            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+              android:id="@+id/play"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:backgroundTint="@color/colorPrimary"
+              android:elevation="10dp"
+              android:text="@string/playback_shuffle"
+              android:textColor="@android:color/white"
+              app:icon="@drawable/play"
+              app:iconTint="@android:color/white"
+              app:layout_constraintBottom_toBottomOf="@id/cover"
+              app:layout_constraintLeft_toLeftOf="@id/cover"
+              app:layout_constraintRight_toRightOf="@id/cover"
+              app:layout_constraintTop_toBottomOf="@id/cover" />
+
           </androidx.constraintlayout.widget.ConstraintLayout>
 
           <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:baselineAligned="false"
             android:gravity="center_vertical"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
-            <TextView
-              android:layout_width="match_parent"
+            <LinearLayout
+              android:layout_width="0dp"
               android:layout_height="wrap_content"
-              android:layout_marginStart="16dp"
-              android:layout_marginTop="16dp"
-              android:layout_marginEnd="16dp"
-              android:text="@string/albums"
-              android:textAllCaps="true"
-              android:textSize="14sp" />
+              android:layout_weight="1"
+              android:orientation="vertical">
 
-            <TextView
-              android:id="@+id/artist"
-              style="@style/AppTheme.Title"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginStart="16dp"
-              android:layout_marginEnd="16dp"
-              android:layout_marginBottom="16dp"
-              tools:text="Muse" />
+              <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/albums"
+                android:textAllCaps="true"
+                android:textSize="14sp" />
+
+              <TextView
+                android:id="@+id/artist"
+                style="@style/AppTheme.Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                tools:text="Muse" />
+
+            </LinearLayout>
 
           </LinearLayout>
 
