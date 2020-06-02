@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Otter</string>
+    
+    <string name="login_welcome">Bitte gib die Anmeldedaten deiner Funkwhale-Instanz ein, um auf den Inhalt zuzugreifen</string>
+    <string name="login_hostname">Servername</string>
+    <string name="login_anonymous">Anonyme Anmeldung</string>
+    <string name="login_username">Nutzername</string>
+    <string name="login_password">Password</string>
+    <string name="login_submit">Anmelden</string>
+    <string name="login_logging_in">Einloggen</string>
+    
+    <string name="login_error_hostname">Dies konnte nicht als eine URL verstanden werden</string>
+    <string name="login_error_hostname_https">Der Zugriff auf die Funkwhale Server sollte über https erfolgen</string>
+    
+    <string name="toolbar_search">Suche</string>
+    
+    <string name="title_settings">Einstellungen</string>
+    <string name="title_oss_licences">Open Source Lizenz</string>
+    
+    <string name="search_welcome">Gib deine Suchekritieren oben ein und drücke Enter um deine Musikbibliothek zu durchsuchen</string>
+    <string name="search_placeholder">Durchsuche Künstler, Alben und Songs</string>
+    <string name="search_no_results">Keine Ergebnisse wurden anhand deiner Suchkritieren gefunden</string>
+    
+    <string name="settings_general">Generell</string>
+    <string name="settings_media_quality">Medienqualität</string>
+    <string name="settings_media_quality_quality">Beste Qualität</string>
+    <string name="settings_media_quality_size">Kleine Dateigröße</string>
+    <string name="settings_media_quality_summary_quality">Songs mit größerer Dateigröße werden verwendet</string>
+    <string name="settings_media_quality_summary_size">Songs mit kleinerer Dateigröße werden verwendet</string>
+    <string name="settings_media_cache_size">Zwischenspeichergröße</string>
+    <string name="settings_media_cache_size_summary">%d GB werden für Songs verwendet, welche Offline abspielbar sind</string>
+    <string name="settings_other">Andere</string>
+    <string name="settings_night_mode">Nachtmodus</string>
+    <string name="settings_night_mode_on">Immer eingeschaltet (Dunkelmodus)</string>
+    <string name="settings_night_mode_on_summary">Nachtmodus wird bevorzugt</string>
+    <string name="settings_night_mode_off">Immer ausgeschaltet (Heller Modus)</string>
+    <string name="settings_night_mode_off_summary">Heller Modus wird bevorzugt</string>
+    <string name="settings_night_mode_system">Folge den Systemeinstellungen</string>
+    <string name="settings_night_mode_system_summary">Der Nachtmodus wird den Systemeinstellungen folgen</string>
+    <string name="settings_experiments">Experimentielle Funktionen aktivieren</string>
+    <string name="settings_experiments_description">Nutze auf eigenes Risiko, die App kann abstützen oder einfrieren</string>
+    <string name="settings_experiments_restart_title">Neustart erforderlich</string>
+    <string name="settings_experiments_restart_content">Bitte beende die App und starte sie dann neu, um die Einstellungen zu übernehmen</string>
+    <string name="settings_information">Information</string>
+    <string name="settings_version_title">Version</string>
+    <string name="settings_information_repository_description">Otter von Antoine POPINEAU (apognu)</string>
+    <string name="settings_information_repository_title">Repository</string>
+    <string name="settings_information_license_title">Lizenz</string>
+    <string name="settings_information_license_description">MIT Lizenz</string>
+    <string name="settings_logout">Abmelden</string>
+    
+    <string name="artists">Künstler</string>
+    <string name="albums">Alben</string>
+    <string name="tracks">Songs</string>
+    <string name="playlists">Playlisten</string>
+    <string name="radios">Sender</string>
+    <string name="favorites">Favoriten</string>
+    
+    <string name="playback_media_controls">Mediansteuerung</string>
+    <string name="playback_media_controls_description">Medienwiedergabe steuern</string>
+    <string name="playback_shuffle">Zufallswiedergabe</string>
+    <string name="playback_queue">Warteschlange</string>
+    <string name="playback_queue_empty">Deine Warteschlange ist leer</string>
+    <string name="playback_queue_remove_item">Entfernen</string>
+    <string name="playback_queue_add_item">Zur Warteschlange hinzufügen</string>
+    <string name="playback_queue_play_next">Als nächstes spielen</string>
+    
+    <string name="manage_add_to_playlist">Zur Playliste hinzufügen</string>
+    <string name="manage_add_to_favorites">Als Favorit hinzufügen</string>
+    
+    <string name="control_toggle">Abspielen / Pause</string>
+    <string name="control_previous">Vorheriger Song</string>
+    <string name="control_next">Nächster Song</string>
+    
+    <string name="error_playback">Dieser Song kann nicht abgespielt werden</string>
+    
+    <plurals name="album_count">
+        <item quantity="one">%d Album</item>
+        <item quantity="other">%d Alben</item>
+    </plurals>
+    
+    <string name="alt_app_logo">Applogo</string>
+    <string name="alt_artist_art">Künstlerbild</string>
+    <string name="alt_album_cover">Albumcover</string>
+    <string name="alt_more_options">Weitere Optionen</string>
+    <string name="alt_track_info">Informationen über den Song</string>
+    
+    <string name="track_info_artist">Gehe zum Künstler</string>
+    <string name="track_info_album">Gehe zum Album</string>
+    <string name="track_info_details">Informationen</string>
+    
+    <string name="track_info_details_title">Songdetails</string>
+    <string name="track_info_details_artist">Künstler</string>
+    <string name="track_info_details_album">Album</string>
+    <string name="track_info_details_track_title">Songtitle</string>
+    <string name="track_info_details_track_duration">Dauer</string>
+    <string name="track_info_details_track_position">Album Position</string>
+    <string name="track_info_details_track_bitrate">Bitrate</string>
+    <string name="track_info_details_track_instance">Funkwhale Instanz</string>
+   
+    <string name="radio_playback_error">Ein Fehler ist beim Abspielen des Radios aufgetreten</string>
+    <string name="radio_random_title">Zufällig</string>
+    <string name="radio_random_description">Zufällig ausgewählte Songs, vielleicht entdeckt du neue Musik?</string>
+    <string name="radio_less_listened_title">Weniger angehört</string>
+    <string name="radio_less_listened_description">Höre Songs, welche du nicht oft hörst. Perfekt, um ein Gleichgewicht herzustellen.</string>
+    
+    <string name="logout_title">Abmelden</string>
+    <string name="logout_content">Bist du dir sicher, dass du dich aus deiner Funkwhale Instanz abmelden möchtest?</string>
+    
+    <plurals name="playlist_description">
+        <item quantity="one">%1$d Songs • %2$s"</item>
+        <item quantity="other">%1$d Songs • %2$s"</item>
+    </plurals>
+</resources>
