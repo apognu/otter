@@ -66,7 +66,7 @@
   <string name="playback_queue_add_item">Add to queue</string>
   <string name="playback_queue_play_next">Play next</string>
 
-  <string name="manage_add_to_favorites">Ajouter aux favoris</string>
+  <string name="manage_add_to_favorites">Add to favorites</string>
 
   <string name="control_toggle">Toggle playback</string>
   <string name="control_previous">Previous track</string>

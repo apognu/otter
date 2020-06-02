@@ -65,8 +65,7 @@
     <string name="playback_queue_remove_item">Entfernen</string>
     <string name="playback_queue_add_item">Zur Warteschlange hinzufügen</string>
     <string name="playback_queue_play_next">Als nächstes spielen</string>
-    
-    <string name="manage_add_to_playlist">Zur Playliste hinzufügen</string>
+
     <string name="manage_add_to_favorites">Als Favorit hinzufügen</string>
     
     <string name="control_toggle">Abspielen / Pause</string>
