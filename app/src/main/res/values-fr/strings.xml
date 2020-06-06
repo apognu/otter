@@ -26,9 +26,9 @@
     <string name="settings_other">Autres</string>
     <string name="settings_night_mode">Mode nuit</string>
     <string name="settings_night_mode_on">Toujours activé (mode sombre)</string>
-    <string name="settings_night_mode_on_summary">Le mode nuit sera toujours préféré</string>
+    <string name="settings_night_mode_on_summary">Le mode nuit sera toujours activé</string>
     <string name="settings_night_mode_off">Toujours désactivé (mode clair)</string>
-    <string name="settings_night_mode_off_summary">Le mode jour sera toujours préféré</string>
+    <string name="settings_night_mode_off_summary">Le mode jour sera toujours activé</string>
     <string name="settings_night_mode_system">Suivre les préférences du système</string>
     <string name="settings_night_mode_system_summary">Le mode nuit suivra les préférence système</string>
     <string name="settings_experiments">Activer les fonctionnalité expérimentales</string>
@@ -90,7 +90,7 @@
     <string name="radio_less_listened_title">Moins écoutées</string>
     <string name="radio_less_listened_description">Découvrez les morceaux que vous n\'écoutez généralement pas. Il est temps de rétablir un équilibre.</string>
     <string name="logout_title">Déconnexion</string>
-    <string name="logout_content">Etes-vous certains de vouloir vous déconnecter de votre instance Funkwhale ?</string>
+    <string name="logout_content">Etes-vous certains de vouloir vous déconnecter de cette instance Funkwhale \?</string>
     <plurals name="playlist_description">
         <item quantity="one">%1$d piste • %2$s</item>
         <item quantity="other">%1$d pistes • %2$s</item>
