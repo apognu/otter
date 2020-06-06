@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="app_name" translatable="false">Otter</string>
-
   <string name="login_welcome">Please enter the details of your Funkwhale instance to access its content</string>
   <string name="login_hostname">Host name</string>
   <string name="login_anonymous">Anonymous authentication</string>
@@ -9,33 +8,28 @@
   <string name="login_password">Password</string>
   <string name="login_submit">Log in</string>
   <string name="login_logging_in">Logging in</string>
-
   <string name="login_error_hostname">This could not be understood as a valid URL</string>
   <string name="login_error_hostname_https">The Funkwhale hostname should be secure through HTTPS</string>
-
   <string name="toolbar_search">Search</string>
-
   <string name="title_settings">Settings</string>
   <string name="title_oss_licences">Open source licences</string>
-
   <string name="search_placeholder">Search artists, albums and tracks</string>
   <string name="search_welcome">Enter your search terms above and hit enter to search your collection</string>
   <string name="search_no_results">No results were found for your query</string>
-
   <string name="settings_general">General</string>
   <string name="settings_media_quality">Media quality</string>
   <string name="settings_media_quality_quality">Best quality</string>
   <string name="settings_media_quality_size">Smallest size</string>
-  <string name="settings_media_quality_summary_quality">Best available track will be played</string>
+  <string name="settings_media_quality_summary_quality">Best available version will be played</string>
   <string name="settings_media_quality_summary_size">Smallest available track will be played</string>
   <string name="settings_media_cache_size">Media cache size</string>
   <string name="settings_media_cache_size_summary">%d GB will be used to store tracks for offline playback</string>
   <string name="settings_other">Other</string>
-  <string name="settings_night_mode">Night mode</string>
+  <string name="settings_night_mode">Dark mode</string>
   <string name="settings_night_mode_on">Always on (dark mode)</string>
-  <string name="settings_night_mode_on_summary">Night mode will always be preferred</string>
+  <string name="settings_night_mode_on_summary">Dark mode will always be on</string>
   <string name="settings_night_mode_off">Always off (light mode)</string>
-  <string name="settings_night_mode_off_summary">Light mode will always be preferred</string>
+  <string name="settings_night_mode_off_summary">Light mode will always be on</string>
   <string name="settings_night_mode_system">Follow system settings</string>
   <string name="settings_night_mode_system_summary">Night mode will follow system settings</string>
   <string name="settings_experiments">Enable experimental features</string>
@@ -52,14 +46,12 @@
   <string name="settings_crash_report_description">Only Otter\'s logs from the last 5 minutes up until the crash will be collected</string>
   <string name="settings_crash_report_copied">Last crash report was copied to your clipboard</string>
   <string name="settings_logout">Sign out</string>
-
   <string name="artists">Artists</string>
   <string name="albums">Albums</string>
   <string name="tracks">Tracks</string>
   <string name="playlists">Playlists</string>
   <string name="radios">Radios</string>
   <string name="favorites">Favorites</string>
-
   <string name="playback_media_controls">Media controls</string>
   <string name="playback_media_controls_description">Control media playback</string>
   <string name="playback_shuffle">Shuffle</string>
@@ -68,30 +60,23 @@
   <string name="playback_queue_remove_item">Remove</string>
   <string name="playback_queue_add_item">Add to queue</string>
   <string name="playback_queue_play_next">Play next</string>
-
   <string name="manage_add_to_favorites">Add to favorites</string>
-
   <string name="control_toggle">Toggle playback</string>
   <string name="control_previous">Previous track</string>
   <string name="control_next">Next track</string>
-
   <string name="error_playback">This track could not be played</string>
-
   <plurals name="album_count">
     <item quantity="one">%d album</item>
     <item quantity="other">%d albums</item>
   </plurals>
-
   <string name="alt_app_logo">Application logo</string>
   <string name="alt_artist_art">Artist art</string>
   <string name="alt_album_cover">Album cover</string>
   <string name="alt_more_options">More options</string>
   <string name="alt_track_info">Information about track</string>
-
   <string name="track_info_artist">Go to artist</string>
   <string name="track_info_album">Go to album</string>
   <string name="track_info_details">Information</string>
-
   <string name="track_info_details_title">Track details</string>
   <string name="track_info_details_artist">Artist</string>
   <string name="track_info_details_album">Album</string>
@@ -100,16 +85,13 @@
   <string name="track_info_details_track_position">Album position</string>
   <string name="track_info_details_track_bitrate">Bitrate</string>
   <string name="track_info_details_track_instance">Funkwhale instance</string>
-
   <string name="radio_playback_error">There was an error while trying to play this radio</string>
   <string name="radio_random_title">Random</string>
   <string name="radio_random_description">Totally random picks, maybe you\'ll discover new things?</string>
   <string name="radio_less_listened_title">Less listened</string>
   <string name="radio_less_listened_description">Listen to tracks you usually don\'t. It\'s time to restore some balance.</string>
-
   <string name="logout_title">Sign out</string>
-  <string name="logout_content">Are you sure you want to sign out of your Funkwhale instance?</string>
-
+  <string name="logout_content">Are you sure you want to sign out of this Funkwhale instance\?</string>
   <plurals name="playlist_description">
     <item quantity="one">%1$d track • %2$s"</item>
     <item quantity="other">%1$d tracks • %2$s"</item>
