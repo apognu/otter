@@ -41,6 +41,9 @@
     <string name="settings_version_title">Version</string>
     <string name="settings_information_license_title">Licence</string>
     <string name="settings_information_license_description">Licence MIT</string>
+    <string name="settings_crash_report_title">Copier les journaux de crash</string>
+    <string name="settings_crash_report_description">Seuls les journaux d`Otter des 5 dernières minutes jusqu\'au crash seront collectés</string>
+    <string name="settings_crash_report_copied">Les journaux d\'événements ont été copiés dans votre presse-papier</string>
     <string name="settings_logout">Déconnexion</string>
     <string name="artists">Artistes</string>
     <string name="albums">Albums</string>

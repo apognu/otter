@@ -79,6 +79,7 @@ class MainActivity : AppCompatActivity() {
 
     now_playing_toggle.setOnClickListener {
       CommandBus.send(Command.ToggleState)
+      throw Exception("coucou")
     }
 
     now_playing_next.setOnClickListener {

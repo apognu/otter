@@ -1,8 +1,8 @@
 package com.github.apognu.otter.activities
 
-import android.content.Intent
-import android.content.SharedPreferences
+import android.content.*
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -12,9 +12,7 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SeekBarPreference
 import com.github.apognu.otter.BuildConfig
 import com.github.apognu.otter.R
-import com.github.apognu.otter.utils.AppContext
-import com.github.apognu.otter.utils.Command
-import com.github.apognu.otter.utils.CommandBus
+import com.github.apognu.otter.utils.*
 import com.preference.PowerPreference
 
 class SettingsActivity : AppCompatActivity() {
@@ -59,6 +57,18 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
             .setMessage(context.getString(R.string.settings_experiments_restart_content))
             .setPositiveButton(android.R.string.yes) { _, _ -> }
             .show()
+        }
+      }
+
+      "crash" -> {
+        activity?.let { activity ->
+          (activity.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager)?.also { clip ->
+            Cache.get(activity, "crashdump")?.readLines()?.joinToString("\n").also {
+              clip.setPrimaryClip(ClipData.newPlainText("Otter logs", it))
+
+              Toast.makeText(activity, activity.getString(R.string.settings_crash_report_copied), Toast.LENGTH_SHORT).show()
+            }
+          }
         }
       }
 

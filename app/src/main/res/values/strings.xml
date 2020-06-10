@@ -48,6 +48,9 @@
   <string name="settings_version_title">Version</string>
   <string name="settings_information_license_title">License</string>
   <string name="settings_information_license_description">MIT license</string>
+  <string name="settings_crash_report_title">Copy crash logs</string>
+  <string name="settings_crash_report_description">Only Otter\'s logs from the last 5 minutes up until the crash will be collected</string>
+  <string name="settings_crash_report_copied">Last crash report was copied to your clipboard</string>
   <string name="settings_logout">Sign out</string>
 
   <string name="artists">Artists</string>

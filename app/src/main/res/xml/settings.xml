@@ -41,6 +41,12 @@
       android:title="@string/settings_experiments" />
 
     <Preference
+      android:icon="@drawable/bug"
+      android:key="crash"
+      android:summary="@string/settings_crash_report_description"
+      android:title="@string/settings_crash_report_title" />
+
+    <Preference
       android:icon="@drawable/logout"
       android:key="logout"
       android:title="@string/settings_logout" />
