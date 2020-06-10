@@ -396,8 +396,10 @@ class PlayerService : Service() {
     override fun onPlayerError(error: ExoPlaybackException?) {
       EventBus.send(Event.PlaybackError(getString(R.string.error_playback)))
 
-      player.next()
-      player.playWhenReady = true
+      queue.current()?.let {
+        queue.remove(it)
+        player.prepare(queue.datasources)
+      }
     }
   }
 
