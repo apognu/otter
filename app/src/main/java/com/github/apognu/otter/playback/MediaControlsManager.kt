@@ -52,8 +52,7 @@ class MediaControlsManager(val context: Service, private val mediaSession: Media
           putLong(MediaMetadata.METADATA_KEY_DURATION, (track.bestUpload()?.duration?.toLong() ?: 0L) * 1000)
 
           cover?.let {
-            try { putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, it.get()) }
-            catch (_: Exception) {}
+            try { putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, it.get()) } catch (_: Exception) {}
           }
         }.build())
 
@@ -71,12 +70,10 @@ class MediaControlsManager(val context: Service, private val mediaSession: Media
           .setSmallIcon(R.drawable.ottericon)
           .run {
             if (cover != null) {
-              try { setLargeIcon(cover.get()) }
-              catch (_: Exception) {}
+              try { setLargeIcon(cover.get()) } catch (_: Exception) {}
 
               this
-            }
-            else this
+            } else this
           }
           .setContentTitle(track.title)
           .setContentText(track.artist.name)

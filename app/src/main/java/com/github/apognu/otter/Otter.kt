@@ -2,13 +2,15 @@ package com.github.apognu.otter
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import com.github.apognu.otter.utils.*
+import com.github.apognu.otter.utils.Cache
+import com.github.apognu.otter.utils.Command
+import com.github.apognu.otter.utils.Event
+import com.github.apognu.otter.utils.Request
 import com.preference.PowerPreference
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import java.text.SimpleDateFormat
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 class Otter : Application() {
