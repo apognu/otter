@@ -4,7 +4,7 @@
 [![](https://img.shields.io/travis/apognu/otter/master?style=flat-square)](https://travis-ci.org/apognu/otter)
 [![](https://img.shields.io/badge/Play%20Store-otter-informational?style=flat-square)](https://play.google.com/store/apps/details?id=com.github.apognu.otter)
 [![](https://img.shields.io/badge/IzzySoft-otter-informational?style=flat-square)](https://apt.izzysoft.de/fdroid/index/apk/com.github.apognu.otter)
-[![](https://img.shields.io/badge/APK-otter-informational?style=flat-square)](https://github.com/apognu/otter/releases)
+[![](https://img.shields.io/badge/APK-otter-informational?style=flat-square)](https://github.com/apognu/otter/releases) [![](https://translate.funkwhale.audio/widgets/otter/-/android/svg-badge.svg)](https://translate.funkwhale.audio/projects/otter/android/)
 
 Otter is a native Android music player for [Funkwhale](https://funkwhale.audio), native to both Android (developed in Kotlin) and to Funkwhale (uses its native API instead of Subsonic).
 
@@ -27,11 +27,8 @@ Otter's features, as of this writing, are the following:
 
 Otter will try to behave as you would expect a mobile music player to, meaning integrating with the OS's media controls (including headset controls) or pause on incoming calls. If there is anything you would like it to do, please [open an issue](https://github.com/apognu/otter/issues/new).
 
-## Roadmap
+## Translation
 
-Here is a (non-binding, unfinished) list of what we would like Otter to be able to do - _eventually_:
+Otter is being translated by the community through [Weblate](https://translate.funkwhale.audio/projects/otter/android/). If you would like to contribute to its localization or add a new language, you can help out there.
 
- * F-Droid listing
- * Playlist management (including creation and adding/removing of tracks)
- * Chromecast support
- * Download ("pin in cache") tracks
+Thanks to the Funkwhale project for hosting us on their instance.
