@@ -45,6 +45,15 @@
 
     <service android:name="com.github.apognu.otter.playback.PlayerService" />
 
+    <service
+      android:name=".playback.PinService"
+      android:exported="false">
+      <intent-filter>
+        <action android:name="com.google.android.exoplayer.downloadService.action.RESTART" />
+        <category android:name="android.intent.category.DEFAULT" />
+      </intent-filter>
+    </service>
+
     <receiver android:name="com.github.apognu.otter.playback.MediaControlActionReceiver" />
 
   </application>

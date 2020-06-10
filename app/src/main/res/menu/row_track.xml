@@ -9,4 +9,8 @@
     android:id="@+id/track_play_next"
     android:title="@string/playback_queue_play_next" />
 
+  <item
+    android:id="@+id/track_pin"
+    android:title="Pin to cache" />
+
 </menu>

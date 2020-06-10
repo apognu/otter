@@ -6,6 +6,9 @@ import com.github.apognu.otter.utils.Cache
 import com.github.apognu.otter.utils.Command
 import com.github.apognu.otter.utils.Event
 import com.github.apognu.otter.utils.Request
+import com.google.android.exoplayer2.database.ExoDatabaseProvider
+import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
+import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.preference.PowerPreference
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
@@ -27,6 +30,9 @@ class Otter : Application() {
   val requestBus: BroadcastChannel<Request> = BroadcastChannel(10)
   val progressBus: BroadcastChannel<Triple<Int, Int, Int>> = ConflatedBroadcastChannel()
 
+  var exoCache: SimpleCache? = null
+  var exoDatabase: ExoDatabaseProvider? = null
+
   override fun onCreate() {
     super.onCreate()
 
@@ -35,6 +41,15 @@ class Otter : Application() {
     Thread.setDefaultUncaughtExceptionHandler(CrashReportHandler())
 
     instance = this
+    exoDatabase = ExoDatabaseProvider(this)
+
+    PowerPreference.getDefaultFile().getInt("media_cache_size", 1).toLong().also {
+      exoCache = SimpleCache(
+        cacheDir.resolve("media"),
+        LeastRecentlyUsedCacheEvictor(it * 1024 * 1024 * 1024),
+        exoDatabase
+      )
+    }
 
     when (PowerPreference.getDefaultFile().getString("night_mode")) {
       "on" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)

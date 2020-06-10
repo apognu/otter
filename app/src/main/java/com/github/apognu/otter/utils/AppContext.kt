@@ -16,7 +16,9 @@ object AppContext {
   const val PREFS_CREDENTIALS = "credentials"
 
   const val NOTIFICATION_MEDIA_CONTROL = 1
+  const val NOTIFICATION_DOWNLOADS = 2
   const val NOTIFICATION_CHANNEL_MEDIA_CONTROL = "mediacontrols"
+  const val NOTIFICATION_CHANNEL_DOWNLOADS = "downloads"
 
   const val PAGE_SIZE = 50
   const val TRANSITION_DURATION = 300L
@@ -53,6 +55,24 @@ object AppContext {
           NotificationManager.IMPORTANCE_LOW
         ).run {
           description = context.getString(R.string.playback_media_controls_description)
+
+          enableLights(false)
+          enableVibration(false)
+          setSound(null, null)
+
+          manager.createNotificationChannel(this)
+        }
+      }
+    }
+
+    Build.VERSION_CODES.O.onApi {
+      (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).let { manager ->
+        NotificationChannel(
+          NOTIFICATION_CHANNEL_DOWNLOADS,
+          "Downloads",
+          NotificationManager.IMPORTANCE_LOW
+        ).run {
+          description = "Downloads"
 
           enableLights(false)
           enableVibration(false)

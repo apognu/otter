@@ -105,6 +105,7 @@ class TracksAdapter(private val context: Context?, private val favoriteListener:
             when (it.itemId) {
               R.id.track_add_to_queue -> CommandBus.send(Command.AddToQueue(listOf(track)))
               R.id.track_play_next -> CommandBus.send(Command.PlayNext(track))
+              R.id.track_pin -> CommandBus.send(Command.PinTrack(track))
               R.id.queue_remove -> CommandBus.send(Command.RemoveFromQueue(track))
             }
 

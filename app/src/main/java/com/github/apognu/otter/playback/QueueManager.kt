@@ -2,6 +2,7 @@ package com.github.apognu.otter.playback
 
 import android.content.Context
 import android.net.Uri
+import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
 import com.github.apognu.otter.utils.*
 import com.github.kittinunf.fuel.gson.gsonDeserializerOf
@@ -9,31 +10,34 @@ import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory
-import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
-import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.android.exoplayer2.util.Util
 import com.google.gson.Gson
-import com.preference.PowerPreference
 
 class QueueManager(val context: Context) {
-  var cache: SimpleCache
   var metadata: MutableList<Track> = mutableListOf()
   val datasources = ConcatenatingMediaSource()
   var current = -1
 
-  init {
-    PowerPreference.getDefaultFile().getInt("media_cache_size", 1).toLong().also {
-      cache = SimpleCache(
-        context.cacheDir.resolve("media"),
-        LeastRecentlyUsedCacheEvictor(it * 1024 * 1024 * 1024)
-      )
-    }
+  companion object {
+    fun factory(context: Context): CacheDataSourceFactory {
+      val http = DefaultHttpDataSourceFactory(Util.getUserAgent(context, context.getString(R.string.app_name))).apply {
+        defaultRequestProperties.apply {
+          if (!Settings.isAnonymous()) {
+            set("Authorization", "Bearer ${Settings.getAccessToken()}")
+          }
+        }
+      }
 
+      return CacheDataSourceFactory(Otter.get().exoCache, http)
+    }
+  }
+
+  init {
     Cache.get(context, "queue")?.let { json ->
       gsonDeserializerOf(QueueCache::class.java).deserialize(json)?.let { cache ->
         metadata = cache.data.toMutableList()
 
-        val factory = factory()
+        val factory = factory(context)
 
         datasources.addMediaSources(metadata.map { track ->
           val url = mustNormalizeUrl(track.bestUpload()?.listen_url ?: "")
@@ -56,20 +60,8 @@ class QueueManager(val context: Context) {
     )
   }
 
-  private fun factory(): CacheDataSourceFactory {
-    val http = DefaultHttpDataSourceFactory(Util.getUserAgent(context, context.getString(R.string.app_name))).apply {
-      defaultRequestProperties.apply {
-        if (!Settings.isAnonymous()) {
-          set("Authorization", "Bearer ${Settings.getAccessToken()}")
-        }
-      }
-    }
-
-    return CacheDataSourceFactory(cache, http)
-  }
-
   fun replace(tracks: List<Track>) {
-    val factory = factory()
+    val factory = factory(context)
 
     val sources = tracks.map { track ->
       val url = mustNormalizeUrl(track.bestUpload()?.listen_url ?: "")
@@ -87,7 +79,7 @@ class QueueManager(val context: Context) {
   }
 
   fun append(tracks: List<Track>) {
-    val factory = factory()
+    val factory = factory(context)
     val missingTracks = tracks.filter { metadata.indexOf(it) == -1 }
 
     val sources = missingTracks.map { track ->
@@ -105,7 +97,7 @@ class QueueManager(val context: Context) {
   }
 
   fun insertNext(track: Track) {
-    val factory = factory()
+    val factory = factory(context)
     val url = mustNormalizeUrl(track.bestUpload()?.listen_url ?: "")
 
     if (metadata.indexOf(track) == -1) {

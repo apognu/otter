@@ -22,6 +22,7 @@ import androidx.fragment.app.FragmentManager
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.*
 import com.github.apognu.otter.playback.MediaControlsManager
+import com.github.apognu.otter.playback.PinService
 import com.github.apognu.otter.playback.PlayerService
 import com.github.apognu.otter.repositories.FavoritedRepository
 import com.github.apognu.otter.repositories.FavoritesRepository

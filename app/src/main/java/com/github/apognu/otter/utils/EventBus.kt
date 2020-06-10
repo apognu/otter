@@ -29,6 +29,7 @@ sealed class Command {
   class SetRepeatMode(val mode: Int) : Command()
 
   class PlayTrack(val index: Int) : Command()
+  class PinTrack(val track: Track) : Command()
 }
 
 sealed class Event {

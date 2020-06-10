@@ -8,14 +8,19 @@ import android.content.IntentFilter
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
+import android.net.Uri
 import android.os.Build
 import android.os.IBinder
 import android.support.v4.media.session.MediaSessionCompat
 import android.view.KeyEvent
+import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
 import com.github.apognu.otter.utils.*
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
+import com.google.android.exoplayer2.offline.DownloadRequest
+import com.google.android.exoplayer2.offline.DownloadService
+import com.google.android.exoplayer2.offline.DownloadService.sendAddDownload
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import kotlinx.coroutines.Dispatchers.IO
@@ -25,6 +30,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.util.*
 
 class PlayerService : Service() {
   private lateinit var queue: QueueManager
@@ -186,6 +192,16 @@ class PlayerService : Service() {
           }
 
           is Command.SetRepeatMode -> player.repeatMode = message.mode
+
+          is Command.PinTrack -> {
+            message.track.bestUpload()?.let { upload ->
+              val url = mustNormalizeUrl(upload.listen_url)
+
+              DownloadRequest(url, DownloadRequest.TYPE_PROGRESSIVE, Uri.parse(url), Collections.emptyList(), null, null).also {
+                DownloadService.sendAddDownload(this@PlayerService, PinService::class.java, it, false)
+              }
+            }
+          }
         }
 
         if (player.playWhenReady) {
@@ -246,7 +262,7 @@ class PlayerService : Service() {
     state(false)
     player.release()
 
-    queue.cache.release()
+    Otter.get().exoCache?.release()
 
     stopForeground(true)
     stopSelf()
