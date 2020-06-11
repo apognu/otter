@@ -27,7 +27,6 @@ script:
   - "./gradlew app:assembleRelease"
 
 before_deploy:
-  - git tag master
   - RELEASE_MESSAGE="$(git tag -ln --format '%(subject)' $TRAVIS_TAG)"
 
 deploy:
