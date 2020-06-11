@@ -40,5 +40,6 @@ deploy:
     skip_cleanup: true
     on:
       tags: true
+      condition: tag != 'tip'
     api_key:
       secure: CIgVCinr1VDsMAAjcU8rxVq5SA0kDK3yTmtZW8Hc5RoOhVlKH24VWzdIjWdPZyW3vEDSPlBehAoSCDFI7oZ8xH/SgeXIdFMFbpCUi7QXp+ZdK8MdduHsXXVsEvVlIKi4R8ZhpFF/oR/yKwUo3zDT3SNv5zKZQvae+OzWIt9hm95gm9A+HexgdG4NjjtaNNp+wmhWEO8BvyZV6ZN05o+Z/qQz5pHc8n/v4sLcaQltnErZBaW4wBKKIvwZ54TQrWewW2y2m2lARKt8IGcgWW1jwQD7rzP1hzz/UGLF0eMbFCHNm+r8go0YoB7UDXKfmsZuDsFhjqpQuP3rOlavtXdBB1wAfsbJB3u1mso54w9/M9r1hRK2oClmhLOKU4wYzHLhwwa658qcbTDCJ2+Zwf81/D2YADj3hAkCdpoc0hJoEKQXRdhnQ0yiqYy4p/3RYh7WqSsU7iwUCqyDVHVprv89Qh5iPdbxezYpXQVWyeLpy4+4cYWqjggyxBy0wz7LUu9uClg2M2uaFZ/Ud1FOqtHeDP+Q8hW0DcArYPHXVAySyiuNXAhS/SWFnmpuCtzCs5NmnYA9lmYr33u3+rDJ9+LHArFXTVdfxU2xaSsG0kyjNVxKa3UXEoz0tqBJpeihkWGtjq04sK2AeEEw8lAt6wafFY6jMra23qPQRTCBNPuUsqk=
