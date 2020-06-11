@@ -37,9 +37,11 @@ class RadiosFragment : FunkwhaleFragment<Radio, RadiosAdapter>() {
       GlobalScope.launch(Main) {
         EventBus.get().collect { message ->
           when (message) {
-            is Event.RadioStarted -> recycler.forEach {
-              it.isEnabled = true
-              it.isClickable = true
+            is Event.RadioStarted ->
+              if (radios != null) { recycler.forEach {
+                it.isEnabled = true
+                it.isClickable = true
+              }
             }
           }
         }
