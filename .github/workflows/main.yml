@@ -15,7 +15,10 @@ jobs:
       with:
         java-version: 1.8
     - name: Build with Gradle
-      run: ./gradlew assembleDebug
+      run: |
+        mkdir -p /home/runner/.android && touch /home/runner/.android/repositories.cfg
+        echo y | sudo ${ANDROID_HOME}/tools/bin/sdkmanager ndk-bundle 'ndk;21.3.6528147'
+        ./gradlew assembleDebug
     - name: Create release
       uses: eine/tip@gha-tip
       with:
