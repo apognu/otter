@@ -96,4 +96,5 @@
     <item quantity="one">%1$d track • %2$s"</item>
     <item quantity="other">%1$d tracks • %2$s"</item>
   </plurals>
+  <string name="only_my_music">Only my music</string>
 </resources>

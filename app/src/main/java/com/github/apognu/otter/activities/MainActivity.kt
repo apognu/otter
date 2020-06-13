@@ -129,6 +129,10 @@ class MainActivity : AppCompatActivity() {
 
     // CastButtonFactory.setUpMediaRouteButton(this, menu, R.id.cast)
 
+    menu?.let {
+      menu.findItem(R.id.nav_only_my_music).isChecked = Settings.getScope() == "me"
+    }
+
     return true
   }
 
@@ -148,6 +152,14 @@ class MainActivity : AppCompatActivity() {
 
       R.id.nav_queue -> launchDialog(QueueFragment())
       R.id.nav_search -> startActivity(Intent(this, SearchActivity::class.java))
+      R.id.nav_only_my_music -> {
+        item.isChecked = !item.isChecked
+
+        when (item.isChecked) {
+          true -> PowerPreference.getDefaultFile().set("scope", "me")
+          false -> PowerPreference.getDefaultFile().set("scope", "all")
+        }
+      }
       R.id.settings -> startActivityForResult(Intent(this, SettingsActivity::class.java), 0)
     }
 

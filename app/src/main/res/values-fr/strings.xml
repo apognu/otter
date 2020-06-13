@@ -95,4 +95,5 @@
         <item quantity="one">%1$d piste • %2$s</item>
         <item quantity="other">%1$d pistes • %2$s</item>
     </plurals>
+    <string name="only_my_music">Ma musique seulement</string>
 </resources>

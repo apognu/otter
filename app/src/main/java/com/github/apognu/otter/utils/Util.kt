@@ -57,4 +57,5 @@ object Settings {
   fun getAccessToken(): String = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("access_token", "")
   fun isAnonymous() = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getBoolean("anonymous", false)
   fun areExperimentsEnabled() = PowerPreference.getDefaultFile().getBoolean("experiments", false)
+  fun getScope() = PowerPreference.getDefaultFile().getString("scope", "all")
 }
