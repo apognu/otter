@@ -159,6 +159,8 @@ class MainActivity : AppCompatActivity() {
           true -> PowerPreference.getDefaultFile().set("scope", "me")
           false -> PowerPreference.getDefaultFile().set("scope", "all")
         }
+
+        EventBus.send(Event.ListingsChanged)
       }
       R.id.settings -> startActivityForResult(Intent(this, SettingsActivity::class.java), 0)
     }

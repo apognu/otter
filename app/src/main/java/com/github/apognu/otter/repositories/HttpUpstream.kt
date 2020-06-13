@@ -28,15 +28,16 @@ class HttpUpstream<D : Any, R : FunkwhaleResponse<D>>(val behavior: Behavior, pr
 
     val page = ceil(size / AppContext.PAGE_SIZE.toDouble()).toInt() + 1
 
-    val offsetUrl =
+    val url =
       Uri.parse(url)
         .buildUpon()
         .appendQueryParameter("page_size", AppContext.PAGE_SIZE.toString())
         .appendQueryParameter("page", page.toString())
+        .appendQueryParameter("scope", Settings.getScope())
         .build()
         .toString()
 
-    get(offsetUrl).fold(
+    get(url).fold(
       { response ->
         val data = response.getData()
 

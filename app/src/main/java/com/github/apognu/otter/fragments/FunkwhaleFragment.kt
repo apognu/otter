@@ -9,14 +9,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.repositories.HttpUpstream
 import com.github.apognu.otter.repositories.Repository
-import com.github.apognu.otter.utils.Cache
-import com.github.apognu.otter.utils.untilNetwork
+import com.github.apognu.otter.utils.*
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_artists.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 abstract class FunkwhaleAdapter<D, VH : RecyclerView.ViewHolder> : RecyclerView.Adapter<VH>() {
   var data: MutableList<D> = mutableListOf()
@@ -31,6 +33,7 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
   lateinit var adapter: A
 
   private var initialFetched = false
+  private var listener: Job? = null
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
     return inflater.inflate(viewRes, container, false)
@@ -64,6 +67,19 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
 
     swiper?.setOnRefreshListener {
       fetch(Repository.Origin.Network.origin)
+    }
+
+    if (listener == null) {
+      listener = GlobalScope.launch(IO) {
+        EventBus.get().collect { event ->
+          if (event is Event.ListingsChanged) {
+            withContext(Main) {
+              swiper?.isRefreshing = true
+              fetch(Repository.Origin.Network.origin)
+            }
+          }
+        }
+      }
     }
   }
 
