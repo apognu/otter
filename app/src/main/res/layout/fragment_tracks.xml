@@ -183,16 +183,14 @@
 
             </LinearLayout>
 
-            <com.google.android.material.button.MaterialButton
-              android:id="@+id/queue"
-              style="@style/AppTheme.OutlinedButton"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_gravity="center"
-              android:layout_marginStart="16dp"
+            <ImageButton
+              android:id="@+id/actions"
+              style="@style/IconButton"
+              android:layout_width="24dp"
+              android:layout_height="24dp"
               android:layout_marginEnd="16dp"
-              android:text="@string/playback_queue"
-              app:icon="@drawable/add" />
+              android:contentDescription="@string/alt_more_options"
+              android:src="@drawable/more" />
 
           </LinearLayout>
 

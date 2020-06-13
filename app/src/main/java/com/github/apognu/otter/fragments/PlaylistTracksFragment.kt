@@ -1,7 +1,9 @@
 package com.github.apognu.otter.fragments
 
 import android.os.Bundle
+import android.view.Gravity
 import android.view.View
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
@@ -84,10 +86,28 @@ class PlaylistTracksFragment : FunkwhaleFragment<PlaylistTrack, PlaylistTracksAd
       context.toast("All tracks were added to your queue")
     }
 
-    queue.setOnClickListener {
-      CommandBus.send(Command.AddToQueue(adapter.data.map { it.track }))
+    context?.let { context ->
+      actions.setOnClickListener {
+        PopupMenu(context, actions, Gravity.START, R.attr.actionOverflowMenuStyle, 0).apply {
+          inflate(R.menu.album)
 
-      context.toast("All tracks were added to your queue")
+          setOnMenuItemClickListener {
+            when (it.itemId) {
+              R.id.add_to_queue -> {
+                CommandBus.send(Command.AddToQueue(adapter.data.map { it.track }))
+
+                context.toast("All tracks were added to your queue")
+              }
+
+              R.id.download -> CommandBus.send(Command.PinTracks(adapter.data.map { it.track }))
+            }
+
+            true
+          }
+
+          show()
+        }
+      }
     }
   }
 

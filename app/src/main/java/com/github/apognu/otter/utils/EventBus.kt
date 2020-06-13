@@ -31,6 +31,7 @@ sealed class Command {
 
   class PlayTrack(val index: Int) : Command()
   class PinTrack(val track: Track) : Command()
+  class PinTracks(val tracks: List<Track>) : Command()
 }
 
 sealed class Event {

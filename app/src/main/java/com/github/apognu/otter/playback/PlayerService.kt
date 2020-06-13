@@ -193,23 +193,8 @@ class PlayerService : Service() {
 
           is Command.SetRepeatMode -> player.repeatMode = message.mode
 
-          is Command.PinTrack -> {
-            message.track.bestUpload()?.let { upload ->
-              val url = mustNormalizeUrl(upload.listen_url)
-              val data = Gson().toJson(
-                DownloadInfo(
-                  url,
-                  message.track.title,
-                  message.track.artist.name,
-                  null
-                )
-              ).toByteArray()
-
-              DownloadRequest(url, DownloadRequest.TYPE_PROGRESSIVE, Uri.parse(url), Collections.emptyList(), null, data).also {
-                sendAddDownload(this@PlayerService, PinService::class.java, it, false)
-              }
-            }
-          }
+          is Command.PinTrack -> download(message.track)
+          is Command.PinTracks -> message.tracks.forEach { download(it) }
         }
 
         if (player.playWhenReady) {
@@ -353,6 +338,24 @@ class PlayerService : Service() {
     progressCache = Triple(duration.toInt(), queue.current()?.bestUpload()?.duration ?: 0, value)
 
     player.seekTo(duration.toLong())
+  }
+
+  private fun download(track: Track) {
+    track.bestUpload()?.let { upload ->
+      val url = mustNormalizeUrl(upload.listen_url)
+      val data = Gson().toJson(
+        DownloadInfo(
+          url,
+          track.title,
+          track.artist.name,
+          null
+        )
+      ).toByteArray()
+
+      DownloadRequest(url, DownloadRequest.TYPE_PROGRESSIVE, Uri.parse(url), Collections.emptyList(), null, data).also {
+        sendAddDownload(this@PlayerService, PinService::class.java, it, false)
+      }
+    }
   }
 
   inner class PlayerEventListener : Player.EventListener {
