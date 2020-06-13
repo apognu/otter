@@ -1,12 +1,20 @@
 package com.github.apognu.otter.playback
 
 import android.app.Notification
+import android.content.Intent
 import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
 import com.github.apognu.otter.utils.AppContext
+import com.github.apognu.otter.utils.Request
+import com.github.apognu.otter.utils.RequestBus
+import com.github.apognu.otter.utils.Response
 import com.google.android.exoplayer2.offline.*
 import com.google.android.exoplayer2.scheduler.Scheduler
 import com.google.android.exoplayer2.ui.DownloadNotificationHelper
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class PinService : DownloadService(AppContext.NOTIFICATION_DOWNLOADS) {
   private val manager by lazy {
@@ -17,13 +25,27 @@ class PinService : DownloadService(AppContext.NOTIFICATION_DOWNLOADS) {
     DownloadManager(this, DefaultDownloadIndex(database), DefaultDownloaderFactory(helper))
   }
 
+  override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    buildResumeDownloadsIntent(this, PinService::class.java, true)
+
+    GlobalScope.launch(Main) {
+      RequestBus.get().collect { request ->
+        when (request) {
+          is Request.GetDownloads -> request.channel?.offer(Response.Downloads(getDownloads()))
+        }
+      }
+    }
+
+    return super.onStartCommand(intent, flags, startId)
+  }
+
   override fun getDownloadManager() = manager
 
   override fun getScheduler(): Scheduler? = null
 
   override fun getForegroundNotification(downloads: MutableList<Download>?): Notification {
-    return DownloadNotificationHelper(this, AppContext.NOTIFICATION_CHANNEL_DOWNLOADS).buildProgressNotification(R.drawable.ottershape, null, null, downloads)
+    return DownloadNotificationHelper(this, AppContext.NOTIFICATION_CHANNEL_DOWNLOADS).buildProgressNotification(R.drawable.downloads, null, "Hello, world", downloads)
   }
 
-  fun getDownloads() = manager.downloadIndex.getDownloads()
+  private fun getDownloads() = manager.downloadIndex.getDownloads()
 }

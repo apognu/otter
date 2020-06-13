@@ -1,5 +1,6 @@
 package com.github.apognu.otter.utils
 
+import com.google.android.exoplayer2.offline.Download
 import com.preference.PowerPreference
 
 sealed class CacheItem<D : Any>(val data: List<D>)
@@ -146,3 +147,9 @@ data class Radio(
   val name: String,
   val description: String
 )
+
+data class DownloadInfo(
+  val id: String,
+  val title: String,
+  val artist: String,
+  var download: Download?)

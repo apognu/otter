@@ -28,6 +28,12 @@
     app:showAsAction="never" />
 
   <item
+    android:id="@+id/nav_downloads"
+    android:icon="@drawable/downloads"
+    android:title="@string/title_downloads"
+    app:showAsAction="never" />
+
+  <item
     android:id="@+id/settings"
     android:icon="@drawable/settings"
     android:iconTint="@android:color/white"

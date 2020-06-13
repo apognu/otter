@@ -10,6 +10,7 @@
     <string name="login_error_hostname">Cela ne semble pas être un nom d\hôte valide</string>
     <string name="login_error_hostname_https">Le nom d\'hôte Funkwhale devrait être sécurisé à travers HTTPS</string>
     <string name="toolbar_search">Rechercher</string>
+    <string name="title_downloads">Téléchargements</string>
     <string name="title_settings">Paramètres</string>
     <string name="title_oss_licences">Licences open source</string>
     <string name="search_placeholder">Recherchez des artistes, albums ou morceaux</string>
@@ -59,6 +60,7 @@
     <string name="playback_queue_remove_item">Retirer</string>
     <string name="playback_queue_add_item">Ajouter à la liste de lecture</string>
     <string name="playback_queue_play_next">Prochaine écoute</string>
+    <string name="playback_queue_download">Télécharger</string>
     <string name="manage_add_to_favorites">Ajouter aux favoris</string>
     <string name="control_toggle">Lecture / pause</string>
     <string name="control_previous">Piste précédente</string>

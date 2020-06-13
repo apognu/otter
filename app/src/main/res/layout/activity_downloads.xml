@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@color/surface"
+  android:fillViewport="true">
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+      style="@style/AppTheme.Title"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="16dp"
+      android:layout_marginTop="16dp"
+      android:layout_marginEnd="16dp"
+      android:layout_marginBottom="16dp"
+      android:text="@string/title_downloads" />
+
+    <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/downloads"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      tools:itemCount="10"
+      tools:listitem="@layout/row_download" />
+
+  </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

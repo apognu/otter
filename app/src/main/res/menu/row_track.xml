@@ -11,6 +11,6 @@
 
   <item
     android:id="@+id/track_pin"
-    android:title="Pin to cache" />
+    android:title="@string/playback_queue_download" />
 
 </menu>

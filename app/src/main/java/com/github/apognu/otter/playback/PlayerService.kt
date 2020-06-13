@@ -19,10 +19,10 @@ import com.github.apognu.otter.utils.*
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.offline.DownloadRequest
-import com.google.android.exoplayer2.offline.DownloadService
 import com.google.android.exoplayer2.offline.DownloadService.sendAddDownload
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
+import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
@@ -196,9 +196,17 @@ class PlayerService : Service() {
           is Command.PinTrack -> {
             message.track.bestUpload()?.let { upload ->
               val url = mustNormalizeUrl(upload.listen_url)
+              val data = Gson().toJson(
+                DownloadInfo(
+                  url,
+                  message.track.title,
+                  message.track.artist.name,
+                  null
+                )
+              ).toByteArray()
 
-              DownloadRequest(url, DownloadRequest.TYPE_PROGRESSIVE, Uri.parse(url), Collections.emptyList(), null, null).also {
-                DownloadService.sendAddDownload(this@PlayerService, PinService::class.java, it, false)
+              DownloadRequest(url, DownloadRequest.TYPE_PROGRESSIVE, Uri.parse(url), Collections.emptyList(), null, data).also {
+                sendAddDownload(this@PlayerService, PinService::class.java, it, false)
               }
             }
           }

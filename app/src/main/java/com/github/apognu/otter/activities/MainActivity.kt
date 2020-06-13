@@ -31,6 +31,7 @@ import com.github.apognu.otter.utils.*
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitStringResponse
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.offline.DownloadService
 import com.google.gson.Gson
 import com.preference.PowerPreference
 import com.squareup.picasso.Picasso
@@ -78,6 +79,7 @@ class MainActivity : AppCompatActivity() {
     super.onResume()
 
     startService(Intent(this, PlayerService::class.java))
+    DownloadService.start(this, PinService::class.java)
 
     now_playing_toggle.setOnClickListener {
       CommandBus.send(Command.ToggleState)
@@ -163,6 +165,7 @@ class MainActivity : AppCompatActivity() {
 
         EventBus.send(Event.ListingsChanged)
       }
+      R.id.nav_downloads -> startActivity(Intent(this, DownloadsActivity::class.java))
       R.id.settings -> startActivityForResult(Intent(this, SettingsActivity::class.java), 0)
     }
 

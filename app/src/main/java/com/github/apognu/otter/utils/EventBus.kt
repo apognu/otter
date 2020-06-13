@@ -1,6 +1,7 @@
 package com.github.apognu.otter.utils
 
 import com.github.apognu.otter.Otter
+import com.google.android.exoplayer2.offline.DownloadCursor
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
@@ -51,12 +52,14 @@ sealed class Request(var channel: Channel<Response>? = null) {
   object GetState : Request()
   object GetQueue : Request()
   object GetCurrentTrack : Request()
+  object GetDownloads : Request()
 }
 
 sealed class Response {
   class State(val playing: Boolean) : Response()
   class Queue(val queue: List<Track>) : Response()
   class CurrentTrack(val track: Track?) : Response()
+  class Downloads(val cursor: DownloadCursor) : Response()
 }
 
 object EventBus {
