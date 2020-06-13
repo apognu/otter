@@ -15,8 +15,7 @@
     <item name="colorError">@color/colorError</item>
   </style>
 
-  <style name="AppTheme.Fragment">
-  </style>
+  <style name="AppTheme.Fragment"></style>
 
   <style name="AppTheme.ButtonStyle" parent="Widget.MaterialComponents.Button">
     <item name="materialThemeOverlay">@style/AppTheme.ButtonStyleTextColor</item>
@@ -37,6 +36,7 @@
   <style name="AppTheme.ItemTitle">
     <item name="android:textSize">16sp</item>
     <item name="android:textColor">@color/itemTitle</item>
+    <item name="android:fontFamily">sans-serif-medium</item>
   </style>
 
   <style name="AppTheme.OutlinedButton" parent="Widget.MaterialComponents.Button.OutlinedButton">

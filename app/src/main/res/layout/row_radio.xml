@@ -19,7 +19,8 @@
     android:layout_height="wrap_content"
     android:layout_marginEnd="16dp"
     android:scaleType="centerInside"
-    android:src="@drawable/cover"
+    android:src="@drawable/radio"
+    android:tint="@color/controlForeground"
     tools:src="@tools:sample/avatars" />
 
   <LinearLayout

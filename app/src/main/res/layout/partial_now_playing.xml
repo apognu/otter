@@ -60,11 +60,11 @@
 
         <TextView
           android:id="@+id/now_playing_title"
+          style="@style/AppTheme.ItemTitle"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:ellipsize="end"
           android:lines="1"
-          android:textColor="@color/itemTitle"
           tools:text="Supermassive Black Hole" />
 
         <TextView

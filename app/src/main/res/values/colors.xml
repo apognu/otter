@@ -10,7 +10,7 @@
   <color name="colorSelected">#dadada</color>
   <color name="colorFavorite">#e17055</color>
 
-  <color name="itemTitle">@android:color/black</color>
+  <color name="itemTitle">#222222</color>
 
   <color name="controlForeground">@color/colorPrimary</color>
   <color name="controlColor">@color/colorPrimary</color>
