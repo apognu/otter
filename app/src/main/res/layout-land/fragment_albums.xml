@@ -32,7 +32,6 @@
         android:elevation="1dp">
 
         <LinearLayout
-          android:id="@+id/cover_background"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:baselineAligned="false"
@@ -47,6 +46,7 @@
               android:id="@+id/cover"
               android:layout_width="match_parent"
               android:layout_height="100dp"
+              android:layout_margin="8dp"
               android:contentDescription="@string/alt_artist_art"
               android:scaleType="centerCrop"
               app:layout_constraintBottom_toBottomOf="parent"

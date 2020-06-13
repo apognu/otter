@@ -8,8 +8,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.FunkwhaleAdapter
 import com.github.apognu.otter.utils.Playlist
+import com.github.apognu.otter.utils.log
 import com.github.apognu.otter.utils.toDurationString
 import com.squareup.picasso.Picasso
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.row_playlist.view.*
 
 class PlaylistsAdapter(val context: Context?, private val listener: OnPlaylistClickListener) : FunkwhaleAdapter<Playlist, PlaylistsAdapter.ViewHolder>() {
@@ -44,8 +46,17 @@ class PlaylistsAdapter(val context: Context?, private val listener: OnPlaylistCl
         else -> holder.cover_top_left
       }
 
+      val corner = when (index) {
+        0 -> RoundedCornersTransformation.CornerType.TOP_LEFT
+        1 -> RoundedCornersTransformation.CornerType.TOP_RIGHT
+        2 -> RoundedCornersTransformation.CornerType.BOTTOM_LEFT
+        3 -> RoundedCornersTransformation.CornerType.BOTTOM_RIGHT
+        else -> RoundedCornersTransformation.CornerType.TOP_LEFT
+      }
+
       Picasso.get()
         .load(url)
+        .transform(RoundedCornersTransformation(32, 0, corner))
         .into(imageView)
     }
   }

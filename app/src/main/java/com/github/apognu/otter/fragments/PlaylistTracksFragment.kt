@@ -10,6 +10,7 @@ import com.github.apognu.otter.repositories.FavoritesRepository
 import com.github.apognu.otter.repositories.PlaylistTracksRepository
 import com.github.apognu.otter.utils.*
 import com.squareup.picasso.Picasso
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.fragment_tracks.*
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
@@ -100,10 +101,21 @@ class PlaylistTracksFragment : FunkwhaleFragment<PlaylistTrack, PlaylistTracksAd
         else -> cover_top_left
       }
 
+      val corner = when (index) {
+        0 -> RoundedCornersTransformation.CornerType.TOP_LEFT
+        1 -> RoundedCornersTransformation.CornerType.TOP_RIGHT
+        2 -> RoundedCornersTransformation.CornerType.BOTTOM_LEFT
+        3 -> RoundedCornersTransformation.CornerType.BOTTOM_RIGHT
+        else -> RoundedCornersTransformation.CornerType.TOP_LEFT
+      }
+
       imageView?.let { view ->
         GlobalScope.launch(Main) {
           Picasso.get()
             .maybeLoad(maybeNormalizeUrl(url))
+            .fit()
+            .centerCrop()
+            .transform(RoundedCornersTransformation(16, 0, corner))
             .into(view)
         }
       }

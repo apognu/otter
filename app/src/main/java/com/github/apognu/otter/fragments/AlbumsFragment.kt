@@ -23,6 +23,7 @@ import com.github.apognu.otter.repositories.Repository
 import com.github.apognu.otter.utils.*
 import com.github.apognu.otter.views.LoadingFlotingActionButton
 import com.squareup.picasso.Picasso
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.fragment_albums.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
@@ -112,31 +113,8 @@ class AlbumsFragment : FunkwhaleFragment<Album, AlbumsAdapter>() {
         .noFade()
         .fit()
         .centerCrop()
+        .transform(RoundedCornersTransformation(16, 0))
         .into(cover)
-    }
-
-    cover_background?.let { background ->
-      activity?.let { activity ->
-        GlobalScope.launch(IO) {
-          val width = DisplayMetrics().apply {
-            activity.windowManager.defaultDisplay.getMetrics(this)
-          }.widthPixels
-
-          val backgroundCover = Picasso.get()
-            .maybeLoad(maybeNormalizeUrl(artistArt))
-            .get()
-            .run { Bitmap.createScaledBitmap(this, width, width, false) }
-            .run { Bitmap.createBitmap(this, 0, 0, width, background.height).toDrawable(resources) }
-            .apply {
-              alpha = 20
-              gravity = Gravity.CENTER
-            }
-
-          withContext(Dispatchers.Main) {
-            background.background = backgroundCover
-          }
-        }
-      }
     }
 
     artist.text = artistName

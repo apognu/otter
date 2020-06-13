@@ -13,6 +13,9 @@
     <item name="preferenceTheme">@style/AppTheme.Preference</item>
 
     <item name="colorError">@color/colorError</item>
+
+    <item name="buttonBarNegativeButtonStyle">@style/AppTheme.DialogButtonStyle</item>
+    <item name="buttonBarPositiveButtonStyle">@style/AppTheme.DialogButtonStyle</item>
   </style>
 
   <style name="AppTheme.Fragment"></style>
@@ -84,6 +87,10 @@
 
   <style name="AppTheme.TrackDetailsValue">
     <item name="android:textSize">16sp</item>
+  </style>
+
+  <style name="AppTheme.DialogButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+    <item name="android:textColor">@color/controlColor</item>
   </style>
 
 </resources>

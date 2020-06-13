@@ -10,6 +10,7 @@ import com.github.apognu.otter.repositories.FavoritesRepository
 import com.github.apognu.otter.repositories.TracksRepository
 import com.github.apognu.otter.utils.*
 import com.squareup.picasso.Picasso
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.fragment_tracks.*
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
@@ -65,6 +66,7 @@ class TracksFragment : FunkwhaleFragment<Track, TracksAdapter>() {
       .noFade()
       .fit()
       .centerCrop()
+      .transform(RoundedCornersTransformation(16, 0))
       .into(cover)
 
     artist.text = albumArtist

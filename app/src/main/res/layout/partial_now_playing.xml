@@ -107,7 +107,8 @@
     <FrameLayout
       android:layout_width="match_parent"
       android:layout_height="0dp"
-      android:layout_weight="1">
+      android:layout_weight="1"
+      android:padding="8dp">
 
       <com.github.apognu.otter.views.SquareImageView
         android:id="@+id/now_playing_details_cover"

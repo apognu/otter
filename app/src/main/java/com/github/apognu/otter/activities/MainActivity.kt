@@ -33,6 +33,7 @@ import com.google.android.exoplayer2.Player
 import com.google.gson.Gson
 import com.preference.PowerPreference
 import com.squareup.picasso.Picasso
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.partial_now_playing.*
 import kotlinx.coroutines.Dispatchers.IO
@@ -329,6 +330,7 @@ class MainActivity : AppCompatActivity() {
           .maybeLoad(maybeNormalizeUrl(track.album.cover.original))
           .fit()
           .centerCrop()
+          .transform(RoundedCornersTransformation(16, 0))
           .into(now_playing_details_cover)
       }
 

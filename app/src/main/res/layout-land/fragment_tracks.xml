@@ -41,6 +41,7 @@
               android:id="@+id/cover"
               android:layout_width="match_parent"
               android:layout_height="100dp"
+              android:layout_margin="8dp"
               android:contentDescription="@string/alt_album_cover"
               android:scaleType="centerCrop"
               app:layout_constraintBottom_toBottomOf="parent"
