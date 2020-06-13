@@ -10,6 +10,7 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.io.BufferedReader
 
 class FavoritesRepository(override val context: Context?) : Repository<Track, TracksCache>() {
@@ -19,9 +20,14 @@ class FavoritesRepository(override val context: Context?) : Repository<Track, Tr
   override fun cache(data: List<Track>) = TracksCache(data)
   override fun uncache(reader: BufferedReader) = gsonDeserializerOf(TracksCache::class.java).deserialize(reader)
 
-  override fun onDataFetched(data: List<Track>) = data.map {
-    it.favorite = true
-    it
+  override fun onDataFetched(data: List<Track>): List<Track> = runBlocking {
+    val downloaded = TracksRepository.getDownloadedIds() ?: listOf()
+
+    data.map { track ->
+      track.favorite = true
+      track.downloaded = downloaded.contains(track.id)
+      track
+    }
   }
 
   fun addFavorite(id: Int) {

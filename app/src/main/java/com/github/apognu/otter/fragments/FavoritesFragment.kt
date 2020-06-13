@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.adapters.FavoritesAdapter
 import com.github.apognu.otter.repositories.FavoritesRepository
+import com.github.apognu.otter.repositories.TracksRepository
 import com.github.apognu.otter.utils.*
 import kotlinx.android.synthetic.main.fragment_favorites.*
 import kotlinx.coroutines.Dispatchers.Main
@@ -46,6 +47,16 @@ class FavoritesFragment : FunkwhaleFragment<Track, FavoritesAdapter>() {
         when (message) {
           is Event.TrackPlayed -> refreshCurrentTrack()
           is Event.RefreshTrack -> refreshCurrentTrack()
+          is Event.DownloadChanged -> {
+            val downloaded = TracksRepository.getDownloadedIds() ?: listOf()
+
+            adapter.data = adapter.data.map {
+              it.downloaded = downloaded.contains(it.id)
+              it
+            }.toMutableList()
+
+            adapter.notifyDataSetChanged()
+          }
         }
       }
     }

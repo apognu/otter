@@ -123,16 +123,14 @@ class TracksFragment : FunkwhaleFragment<Track, TracksAdapter>() {
           is Event.TrackPlayed -> refreshCurrentTrack()
           is Event.RefreshTrack -> refreshCurrentTrack()
           is Event.DownloadChanged -> {
-            (repository as? TracksRepository)?.let { repository ->
-              val downloaded = repository.getDownloadedIds() ?: listOf()
+            val downloaded = TracksRepository.getDownloadedIds() ?: listOf()
 
-              adapter.data = adapter.data.map {
-                it.downloaded = downloaded.contains(it.id)
-                it
-              }.toMutableList()
+            adapter.data = adapter.data.map {
+              it.downloaded = downloaded.contains(it.id)
+              it
+            }.toMutableList()
 
-              adapter.notifyDataSetChanged()
-            }
+            adapter.notifyDataSetChanged()
           }
         }
       }

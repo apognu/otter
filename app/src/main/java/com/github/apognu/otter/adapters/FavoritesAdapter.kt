@@ -74,6 +74,11 @@ class FavoritesAdapter(private val context: Context?, private val favoriteListen
         false -> holder.favorite.setColorFilter(context.getColor(R.color.colorSelected))
       }
 
+      when (favorite.downloaded) {
+        true -> holder.title.setCompoundDrawablesWithIntrinsicBounds(R.drawable.downloaded, 0, 0, 0)
+        false -> holder.title.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+      }
+
       holder.favorite.setOnClickListener {
         favoriteListener.onToggleFavorite(favorite.id, !favorite.favorite)
 
@@ -91,6 +96,7 @@ class FavoritesAdapter(private val context: Context?, private val favoriteListen
             when (it.itemId) {
               R.id.track_add_to_queue -> CommandBus.send(Command.AddToQueue(listOf(favorite)))
               R.id.track_play_next -> CommandBus.send(Command.PlayNext(favorite))
+              R.id.track_pin -> CommandBus.send(Command.PinTrack(favorite))
               R.id.queue_remove -> CommandBus.send(Command.RemoveFromQueue(favorite))
             }
 

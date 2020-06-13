@@ -18,6 +18,26 @@ class TracksRepository(override val context: Context?, albumId: Int) : Repositor
   override fun cache(data: List<Track>) = TracksCache(data)
   override fun uncache(reader: BufferedReader) = gsonDeserializerOf(TracksCache::class.java).deserialize(reader)
 
+  companion object {
+    suspend fun getDownloadedIds(): List<Int>? {
+      return RequestBus.send(Request.GetDownloads).wait<com.github.apognu.otter.utils.Response.Downloads>()?.let { response ->
+        val ids: MutableList<Int> = mutableListOf()
+
+        while (response.cursor.moveToNext()) {
+          val download = response.cursor.download
+
+          Gson().fromJson(String(download.request.data), DownloadInfo::class.java)?.let {
+            if (download.state == Download.STATE_COMPLETED) {
+              ids.add(it.id)
+            }
+          }
+        }
+
+        ids
+      }
+    }
+  }
+
   override fun onDataFetched(data: List<Track>): List<Track> = runBlocking {
     val favorites = FavoritedRepository(context).fetch(Origin.Network.origin)
       .map { it.data }
@@ -31,23 +51,5 @@ class TracksRepository(override val context: Context?, albumId: Int) : Repositor
       track.downloaded = downloaded.contains(track.id)
       track
     }.sortedBy { it.position }
-  }
-
-  suspend fun getDownloadedIds(): List<Int>? {
-    return RequestBus.send(Request.GetDownloads).wait<com.github.apognu.otter.utils.Response.Downloads>()?.let { response ->
-      val ids: MutableList<Int> = mutableListOf()
-
-      while (response.cursor.moveToNext()) {
-        val download = response.cursor.download
-
-        Gson().fromJson(String(download.request.data), DownloadInfo::class.java)?.let {
-          if (download.state == Download.STATE_COMPLETED) {
-            ids.add(it.id)
-          }
-        }
-      }
-
-      ids
-    }
   }
 }
