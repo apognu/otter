@@ -22,7 +22,7 @@ Otter's features, as of this writing, are the following:
  * Track search
  * Queue management
  * Caching of played tracks (played tracks work offline)
- * **EXPERIMENTAL:** Radios playback
+ * Radios playback
  * Dark mode! 🎉
 
 Otter will try to behave as you would expect a mobile music player to, meaning integrating with the OS's media controls (including headset controls) or pause on incoming calls. If there is anything you would like it to do, please [open an issue](https://github.com/apognu/otter/issues/new).

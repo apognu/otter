@@ -1,0 +1,8 @@
+Several new features and enhancements, as well as some bug fixes:
+
+ * Promoted radio playback support to stable (default and custom radios)
+ * All tracks from an artist can now be shuffled and played
+ * Played tracks are reported to the Funkwhale instance for accounting
+ * New partial translations (DE and NL)
+ * Media controls notification is now set to public
+ * Added a settings entry to copy recent application logs

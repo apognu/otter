@@ -1,0 +1,8 @@
+De multiples nouvelles fonctionnalités et améliorations, ainsi que quelques corrections de bugs:
+
+ * Le support des radios passe en stable (radios natives et personnalisées)
+ * Toutes les pistes d'un artiste peuvent maintenant être lues
+ * Les pistes jouées sont envoyées à l'instance Funkwhale
+ * Nouvelles traductions partielles (DE et NL)
+ * La notification de contrôle de lecture est maintenant paramétrée en public
+ * Une option pour copier les logs récents a été ajoutée
