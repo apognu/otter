@@ -365,7 +365,7 @@ class PlayerService : Service() {
       }
     }
 
-    override fun onTracksChanged(trackGroups: TrackGroupArray?, trackSelections: TrackSelectionArray?) {
+    override fun onTracksChanged(trackGroups: TrackGroupArray, trackSelections: TrackSelectionArray) {
       super.onTracksChanged(trackGroups, trackSelections)
 
       queue.current = player.currentWindowIndex
@@ -393,7 +393,7 @@ class PlayerService : Service() {
       }
     }
 
-    override fun onPlayerError(error: ExoPlaybackException?) {
+    override fun onPlayerError(error: ExoPlaybackException) {
       EventBus.send(Event.PlaybackError(getString(R.string.error_playback)))
 
       queue.current()?.let {

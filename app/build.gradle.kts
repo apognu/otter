@@ -95,7 +95,7 @@ play {
 }
 
 dependencies {
-  implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+  implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar", "*.aar"))))
 
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.61")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2")
@@ -107,15 +107,12 @@ dependencies {
   implementation("androidx.preference:preference:1.1.1")
   implementation("androidx.recyclerview:recyclerview:1.1.0")
   implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
-  implementation("com.google.android.material:material:1.2.0-alpha06")
+  implementation("com.google.android.material:material:1.3.0-alpha01")
   implementation("com.android.support.constraint:constraint-layout:1.1.3")
 
-  implementation("com.google.android.exoplayer:exoplayer:2.10.5")
-  implementation("com.google.android.exoplayer:extension-mediasession:2.10.6")
-  // implementation("com.google.android.exoplayer:extension-cast:2.10.6")
-  implementation("com.github.PaulWoitaschek.ExoPlayer-Extensions:extension-flac:2.10.5") {
-    isTransitive = false
-  }
+  implementation("com.google.android.exoplayer:exoplayer-core:2.11.5")
+  implementation("com.google.android.exoplayer:extension-mediasession:2.11.5")
+
   implementation("com.aliassadi:power-preference-lib:1.4.1")
   implementation("com.github.kittinunf.fuel:fuel:2.1.0")
   implementation("com.github.kittinunf.fuel:fuel-coroutines:2.1.0")
