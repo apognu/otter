@@ -60,16 +60,16 @@ class DownloadsAdapter(private val context: Context, private val listener: OnRef
 
       holder.toggle.setOnClickListener {
         if (state.state == Download.STATE_DOWNLOADING) {
-          DownloadService.sendSetStopReason(context, PinService::class.java, download.id, 1, false)
+          DownloadService.sendSetStopReason(context, PinService::class.java, download.contentId, 1, false)
         } else {
-          DownloadService.sendSetStopReason(context, PinService::class.java, download.id, Download.STOP_REASON_NONE, false)
+          DownloadService.sendSetStopReason(context, PinService::class.java, download.contentId, Download.STOP_REASON_NONE, false)
         }
 
         listener.refresh()
       }
 
       holder.delete.setOnClickListener {
-        DownloadService.sendRemoveDownload(context, PinService::class.java, download.id, false)
+        DownloadService.sendRemoveDownload(context, PinService::class.java, download.contentId, false)
 
         listener.refresh()
       }

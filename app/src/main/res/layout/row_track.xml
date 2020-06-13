@@ -39,9 +39,11 @@
     <TextView
       android:id="@+id/title"
       style="@style/AppTheme.ItemTitle"
-      android:layout_width="match_parent"
+      android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginBottom="4dp"
+      android:drawableStart="@drawable/downloaded"
+      android:drawableTint="@color/controlColor"
+      android:drawablePadding="8dp"
       android:ellipsize="end"
       android:lines="1"
       tools:text="Absolution" />

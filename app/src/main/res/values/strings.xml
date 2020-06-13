@@ -99,4 +99,8 @@
     <item quantity="other">%1$d tracks • %2$s"</item>
   </plurals>
   <string name="only_my_music">Only my music</string>
+  <plurals name="downloads_description">
+    <item quantity="one">Downloading %1$d track</item>
+    <item quantity="other">Downloading %1$d tracks</item>
+  </plurals>
 </resources>

@@ -4,10 +4,7 @@ import android.app.Notification
 import android.content.Intent
 import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
-import com.github.apognu.otter.utils.AppContext
-import com.github.apognu.otter.utils.Request
-import com.github.apognu.otter.utils.RequestBus
-import com.github.apognu.otter.utils.Response
+import com.github.apognu.otter.utils.*
 import com.google.android.exoplayer2.offline.*
 import com.google.android.exoplayer2.scheduler.Scheduler
 import com.google.android.exoplayer2.ui.DownloadNotificationHelper
@@ -44,7 +41,16 @@ class PinService : DownloadService(AppContext.NOTIFICATION_DOWNLOADS) {
   override fun getScheduler(): Scheduler? = null
 
   override fun getForegroundNotification(downloads: MutableList<Download>?): Notification {
-    return DownloadNotificationHelper(this, AppContext.NOTIFICATION_CHANNEL_DOWNLOADS).buildProgressNotification(R.drawable.downloads, null, "Hello, world", downloads)
+    val quantity = downloads?.size ?: 0
+    val description = resources.getQuantityString(R.plurals.downloads_description, quantity, quantity)
+
+    return DownloadNotificationHelper(this, AppContext.NOTIFICATION_CHANNEL_DOWNLOADS).buildProgressNotification(R.drawable.downloads, null, description, downloads)
+  }
+
+  override fun onDownloadChanged(download: Download?) {
+    super.onDownloadChanged(download)
+
+    EventBus.send(Event.DownloadChanged)
   }
 
   private fun getDownloads() = manager.downloadIndex.getDownloads()

@@ -94,6 +94,11 @@ class TracksAdapter(private val context: Context?, private val favoriteListener:
           notifyItemChanged(position)
         }
       }
+
+      when (track.downloaded) {
+        true -> holder.title.setCompoundDrawablesWithIntrinsicBounds(R.drawable.downloaded, 0, 0, 0)
+        false -> holder.title.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+      }
     }
 
     holder.actions.setOnClickListener {

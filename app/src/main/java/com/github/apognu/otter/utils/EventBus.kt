@@ -47,6 +47,7 @@ sealed class Event {
   object QueueChanged : Event()
   object RadioStarted : Event()
   object ListingsChanged : Event()
+  object DownloadChanged : Event()
 }
 
 sealed class Request(var channel: Channel<Response>? = null) {

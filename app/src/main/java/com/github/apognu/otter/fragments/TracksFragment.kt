@@ -2,8 +2,6 @@ package com.github.apognu.otter.fragments
 
 import android.os.Bundle
 import android.view.Gravity
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.View
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
@@ -124,6 +122,18 @@ class TracksFragment : FunkwhaleFragment<Track, TracksAdapter>() {
         when (message) {
           is Event.TrackPlayed -> refreshCurrentTrack()
           is Event.RefreshTrack -> refreshCurrentTrack()
+          is Event.DownloadChanged -> {
+            (repository as? TracksRepository)?.let { repository ->
+              val downloaded = repository.getDownloadedIds() ?: listOf()
+
+              adapter.data = adapter.data.map {
+                it.downloaded = downloaded.contains(it.id)
+                it
+              }.toMutableList()
+
+              adapter.notifyDataSetChanged()
+            }
+          }
         }
       }
     }

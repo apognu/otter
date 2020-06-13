@@ -1,11 +1,10 @@
 package com.github.apognu.otter.repositories
 
 import android.content.Context
-import com.github.apognu.otter.utils.FunkwhaleResponse
-import com.github.apognu.otter.utils.Track
-import com.github.apognu.otter.utils.TracksCache
-import com.github.apognu.otter.utils.TracksResponse
+import com.github.apognu.otter.utils.*
 import com.github.kittinunf.fuel.gson.gsonDeserializerOf
+import com.google.android.exoplayer2.offline.Download
+import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
@@ -25,9 +24,30 @@ class TracksRepository(override val context: Context?, albumId: Int) : Repositor
       .toList()
       .flatten()
 
+    val downloaded = getDownloadedIds() ?: listOf()
+
     data.map { track ->
       track.favorite = favorites.contains(track.id)
+      track.downloaded = downloaded.contains(track.id)
       track
     }.sortedBy { it.position }
+  }
+
+  suspend fun getDownloadedIds(): List<Int>? {
+    return RequestBus.send(Request.GetDownloads).wait<com.github.apognu.otter.utils.Response.Downloads>()?.let { response ->
+      val ids: MutableList<Int> = mutableListOf()
+
+      while (response.cursor.moveToNext()) {
+        val download = response.cursor.download
+
+        Gson().fromJson(String(download.request.data), DownloadInfo::class.java)?.let {
+          if (download.state == Download.STATE_COMPLETED) {
+            ids.add(it.id)
+          }
+        }
+      }
+
+      ids
+    }
   }
 }

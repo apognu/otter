@@ -100,6 +100,7 @@ data class Track(
 ) : SearchResult {
   var current: Boolean = false
   var favorite: Boolean = false
+  var downloaded: Boolean = false
 
   data class Upload(
     val listen_url: String,
@@ -149,7 +150,8 @@ data class Radio(
 )
 
 data class DownloadInfo(
-  val id: String,
+  val id: Int,
+  val contentId: String,
   val title: String,
   val artist: String,
   var download: Download?)

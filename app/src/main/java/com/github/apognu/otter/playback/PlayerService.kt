@@ -345,6 +345,7 @@ class PlayerService : Service() {
       val url = mustNormalizeUrl(upload.listen_url)
       val data = Gson().toJson(
         DownloadInfo(
+          track.id,
           url,
           track.title,
           track.artist.name,
