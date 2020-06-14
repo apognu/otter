@@ -11,13 +11,16 @@ import com.github.apognu.otter.adapters.TracksAdapter
 import com.github.apognu.otter.repositories.FavoritesRepository
 import com.github.apognu.otter.repositories.TracksRepository
 import com.github.apognu.otter.utils.*
+import com.google.android.exoplayer2.offline.Download
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.fragment_tracks.*
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class TracksFragment : FunkwhaleFragment<Track, TracksAdapter>() {
   override val viewRes = R.layout.fragment_tracks
@@ -78,11 +81,15 @@ class TracksFragment : FunkwhaleFragment<Track, TracksAdapter>() {
   override fun onResume() {
     super.onResume()
 
-    GlobalScope.launch(Main) {
+    GlobalScope.launch(IO) {
       RequestBus.send(Request.GetCurrentTrack).wait<Response.CurrentTrack>()?.let { response ->
-        adapter.currentTrack = response.track
-        adapter.notifyDataSetChanged()
+        withContext(Main) {
+          adapter.currentTrack = response.track
+          adapter.notifyDataSetChanged()
+        }
       }
+
+      refreshDownloadedTracks()
     }
 
     play.setOnClickListener {
@@ -117,29 +124,46 @@ class TracksFragment : FunkwhaleFragment<Track, TracksAdapter>() {
   }
 
   private fun watchEventBus() {
-    GlobalScope.launch(Main) {
+    GlobalScope.launch(IO) {
       EventBus.get().collect { message ->
         when (message) {
           is Event.TrackPlayed -> refreshCurrentTrack()
           is Event.RefreshTrack -> refreshCurrentTrack()
-          is Event.DownloadChanged -> {
-            val downloaded = TracksRepository.getDownloadedIds() ?: listOf()
+          is Event.DownloadChanged -> refreshDownloadedTrack(message.download)
+        }
+      }
+    }
+  }
 
-            adapter.data = adapter.data.map {
-              it.downloaded = downloaded.contains(it.id)
-              it
-            }.toMutableList()
+  private suspend fun refreshDownloadedTracks() {
+    val downloaded = TracksRepository.getDownloadedIds() ?: listOf()
 
-            adapter.notifyDataSetChanged()
+    withContext(Main) {
+      adapter.data = adapter.data.map {
+        it.downloaded = downloaded.contains(it.id)
+        it
+      }.toMutableList()
+
+      adapter.notifyDataSetChanged()
+    }
+  }
+
+  private suspend fun refreshDownloadedTrack(download: Download) {
+    if (download.state == Download.STATE_COMPLETED) {
+      download.getMetadata()?.let { info ->
+        adapter.data.withIndex().associate { it.value to it.index }.filter { it.key.id == info.id }.toList().getOrNull(0)?.let { match ->
+          withContext(Main) {
+            adapter.data[match.second].downloaded = true
+            adapter.notifyItemChanged(match.second)
           }
         }
       }
     }
   }
 
-  private fun refreshCurrentTrack() {
-    GlobalScope.launch(Main) {
-      RequestBus.send(Request.GetCurrentTrack).wait<Response.CurrentTrack>()?.let { response ->
+  private suspend fun refreshCurrentTrack() {
+    RequestBus.send(Request.GetCurrentTrack).wait<Response.CurrentTrack>()?.let { response ->
+      withContext(Main) {
         adapter.currentTrack = response.track
         adapter.notifyDataSetChanged()
       }

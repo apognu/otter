@@ -1,6 +1,7 @@
 package com.github.apognu.otter.utils
 
 import com.github.apognu.otter.Otter
+import com.google.android.exoplayer2.offline.Download
 import com.google.android.exoplayer2.offline.DownloadCursor
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
@@ -47,7 +48,7 @@ sealed class Event {
   object QueueChanged : Event()
   object RadioStarted : Event()
   object ListingsChanged : Event()
-  object DownloadChanged : Event()
+  class DownloadChanged(val download: Download) : Event()
 }
 
 sealed class Request(var channel: Channel<Response>? = null) {

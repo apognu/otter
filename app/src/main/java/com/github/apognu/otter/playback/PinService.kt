@@ -1,25 +1,45 @@
 package com.github.apognu.otter.playback
 
 import android.app.Notification
+import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
 import com.github.apognu.otter.utils.*
-import com.google.android.exoplayer2.offline.*
+import com.google.android.exoplayer2.offline.Download
+import com.google.android.exoplayer2.offline.DownloadManager
+import com.google.android.exoplayer2.offline.DownloadRequest
+import com.google.android.exoplayer2.offline.DownloadService
 import com.google.android.exoplayer2.scheduler.Scheduler
 import com.google.android.exoplayer2.ui.DownloadNotificationHelper
+import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.util.*
 
 class PinService : DownloadService(AppContext.NOTIFICATION_DOWNLOADS) {
-  private val manager by lazy {
-    val database = Otter.get().exoDatabase
-    val cache = Otter.get().exoCache
-    val helper = DownloaderConstructorHelper(cache, QueueManager.factory(this))
+  companion object {
+    fun download(context: Context, track: Track) {
+      track.bestUpload()?.let { upload ->
+        val url = mustNormalizeUrl(upload.listen_url)
+        val data = Gson().toJson(
+          DownloadInfo(
+            track.id,
+            url,
+            track.title,
+            track.artist.name,
+            null
+          )
+        ).toByteArray()
 
-    DownloadManager(this, DefaultDownloadIndex(database), DefaultDownloaderFactory(helper))
+        DownloadRequest(url, DownloadRequest.TYPE_PROGRESSIVE, Uri.parse(url), Collections.emptyList(), null, data).also {
+          sendAddDownload(context, PinService::class.java, it, false)
+        }
+      }
+    }
   }
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -36,22 +56,25 @@ class PinService : DownloadService(AppContext.NOTIFICATION_DOWNLOADS) {
     return super.onStartCommand(intent, flags, startId)
   }
 
-  override fun getDownloadManager() = manager
+  override fun getDownloadManager() = Otter.get().exoDownloadManager.apply {
+    addListener(DownloadListener())
+  }
 
   override fun getScheduler(): Scheduler? = null
 
-  override fun getForegroundNotification(downloads: MutableList<Download>?): Notification {
-    val quantity = downloads?.size ?: 0
-    val description = resources.getQuantityString(R.plurals.downloads_description, quantity, quantity)
+  override fun getForegroundNotification(downloads: MutableList<Download>): Notification {
+    val description = resources.getQuantityString(R.plurals.downloads_description, downloads.size, downloads.size)
 
     return DownloadNotificationHelper(this, AppContext.NOTIFICATION_CHANNEL_DOWNLOADS).buildProgressNotification(R.drawable.downloads, null, description, downloads)
   }
 
-  override fun onDownloadChanged(download: Download?) {
-    super.onDownloadChanged(download)
+  private fun getDownloads() = downloadManager.downloadIndex.getDownloads()
 
-    EventBus.send(Event.DownloadChanged)
+  inner class DownloadListener : DownloadManager.Listener {
+    override fun onDownloadChanged(downloadManager: DownloadManager, download: Download) {
+      super.onDownloadChanged(downloadManager, download)
+
+      EventBus.send(Event.DownloadChanged(download))
+    }
   }
-
-  private fun getDownloads() = manager.downloadIndex.getDownloads()
 }

@@ -8,7 +8,6 @@ import android.content.IntentFilter
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
-import android.net.Uri
 import android.os.Build
 import android.os.IBinder
 import android.support.v4.media.session.MediaSessionCompat
@@ -16,13 +15,13 @@ import android.view.KeyEvent
 import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
 import com.github.apognu.otter.utils.*
-import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.C
+import com.google.android.exoplayer2.ExoPlaybackException
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
-import com.google.android.exoplayer2.offline.DownloadRequest
-import com.google.android.exoplayer2.offline.DownloadService.sendAddDownload
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
-import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
@@ -30,7 +29,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.util.*
 
 class PlayerService : Service() {
   private lateinit var queue: QueueManager
@@ -88,7 +86,7 @@ class PlayerService : Service() {
 
     mediaControlsManager = MediaControlsManager(this, mediaSession)
 
-    player = ExoPlayerFactory.newSimpleInstance(this).apply {
+    player = SimpleExoPlayer.Builder(this).build().apply {
       playWhenReady = false
 
       playerEventListener = PlayerEventListener().also {
@@ -98,12 +96,12 @@ class PlayerService : Service() {
       MediaSessionConnector(mediaSession).also {
         it.setPlayer(this)
         it.setMediaButtonEventHandler { player, _, mediaButtonEvent ->
-          mediaButtonEvent?.extras?.getParcelable<KeyEvent>(Intent.EXTRA_KEY_EVENT)?.let { key ->
+          mediaButtonEvent.extras?.getParcelable<KeyEvent>(Intent.EXTRA_KEY_EVENT)?.let { key ->
             if (key.action == KeyEvent.ACTION_UP) {
               when (key.keyCode) {
                 KeyEvent.KEYCODE_MEDIA_PLAY -> state(true)
                 KeyEvent.KEYCODE_MEDIA_PAUSE -> state(false)
-                KeyEvent.KEYCODE_MEDIA_NEXT -> player?.next()
+                KeyEvent.KEYCODE_MEDIA_NEXT -> player.next()
                 KeyEvent.KEYCODE_MEDIA_PREVIOUS -> previousTrack()
               }
             }
@@ -193,8 +191,8 @@ class PlayerService : Service() {
 
           is Command.SetRepeatMode -> player.repeatMode = message.mode
 
-          is Command.PinTrack -> download(message.track)
-          is Command.PinTracks -> message.tracks.forEach { download(it) }
+          is Command.PinTrack -> PinService.download(this@PlayerService, message.track)
+          is Command.PinTracks -> message.tracks.forEach { PinService.download(this@PlayerService, it) }
         }
 
         if (player.playWhenReady) {
@@ -255,7 +253,7 @@ class PlayerService : Service() {
     state(false)
     player.release()
 
-    Otter.get().exoCache?.release()
+    Otter.get().exoCache.release()
 
     stopForeground(true)
     stopSelf()
@@ -338,25 +336,6 @@ class PlayerService : Service() {
     progressCache = Triple(duration.toInt(), queue.current()?.bestUpload()?.duration ?: 0, value)
 
     player.seekTo(duration.toLong())
-  }
-
-  private fun download(track: Track) {
-    track.bestUpload()?.let { upload ->
-      val url = mustNormalizeUrl(upload.listen_url)
-      val data = Gson().toJson(
-        DownloadInfo(
-          track.id,
-          url,
-          track.title,
-          track.artist.name,
-          null
-        )
-      ).toByteArray()
-
-      DownloadRequest(url, DownloadRequest.TYPE_PROGRESSIVE, Uri.parse(url), Collections.emptyList(), null, data).also {
-        sendAddDownload(this@PlayerService, PinService::class.java, it, false)
-      }
-    }
   }
 
   inner class PlayerEventListener : Player.EventListener {

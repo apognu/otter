@@ -8,14 +8,14 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.playback.PinService
-import com.github.apognu.otter.utils.DownloadInfo
+import com.github.apognu.otter.utils.*
 import com.google.android.exoplayer2.offline.Download
 import com.google.android.exoplayer2.offline.DownloadService
 import kotlinx.android.synthetic.main.row_download.view.*
 
-class DownloadsAdapter(private val context: Context, private val listener: OnRefreshListener) : RecyclerView.Adapter<DownloadsAdapter.ViewHolder>() {
-  interface OnRefreshListener {
-    fun refresh()
+class DownloadsAdapter(private val context: Context, private val listener: OnDownloadChangedListener) : RecyclerView.Adapter<DownloadsAdapter.ViewHolder>() {
+  interface OnDownloadChangedListener {
+    fun onItemRemoved(index: Int)
   }
 
   var downloads: MutableList<DownloadInfo> = mutableListOf()
@@ -38,7 +38,15 @@ class DownloadsAdapter(private val context: Context, private val listener: OnRef
       when (state.isTerminalState) {
         true -> {
           holder.progress.visibility = View.GONE
-          holder.toggle.visibility = View.GONE
+
+          when (state.state) {
+            Download.STATE_FAILED -> {
+              holder.toggle.setImageDrawable(context.getDrawable(R.drawable.retry))
+              holder.progress.visibility = View.GONE
+            }
+
+            else -> holder.toggle.visibility = View.GONE
+          }
         }
 
         false -> {
@@ -53,25 +61,29 @@ class DownloadsAdapter(private val context: Context, private val listener: OnRef
             }
 
             Download.STATE_STOPPED -> holder.toggle.setImageIcon(Icon.createWithResource(context, R.drawable.play))
+
             else -> holder.toggle.setImageIcon(Icon.createWithResource(context, R.drawable.pause))
           }
         }
       }
 
       holder.toggle.setOnClickListener {
-        if (state.state == Download.STATE_DOWNLOADING) {
-          DownloadService.sendSetStopReason(context, PinService::class.java, download.contentId, 1, false)
-        } else {
-          DownloadService.sendSetStopReason(context, PinService::class.java, download.contentId, Download.STOP_REASON_NONE, false)
-        }
+        when (state.state) {
+          Download.STATE_DOWNLOADING -> DownloadService.sendSetStopReason(context, PinService::class.java, download.contentId, 1, false)
 
-        listener.refresh()
+          Download.STATE_FAILED -> {
+            Track(download.id, download.title, Artist(0, download.artist, listOf()),Album(0, Album.Artist(""), "", Covers("")), 0, listOf(Track.Upload(download.contentId, 0, 0))).also {
+              PinService.download(context, it)
+            }
+          }
+
+          else -> DownloadService.sendSetStopReason(context, PinService::class.java, download.contentId, Download.STOP_REASON_NONE, false)
+        }
       }
 
       holder.delete.setOnClickListener {
+        listener.onItemRemoved(position)
         DownloadService.sendRemoveDownload(context, PinService::class.java, download.contentId, false)
-
-        listener.refresh()
       }
     }
   }

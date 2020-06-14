@@ -4,7 +4,6 @@ import android.content.Context
 import com.github.apognu.otter.utils.*
 import com.github.kittinunf.fuel.gson.gsonDeserializerOf
 import com.google.android.exoplayer2.offline.Download
-import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
@@ -26,7 +25,7 @@ class TracksRepository(override val context: Context?, albumId: Int) : Repositor
         while (response.cursor.moveToNext()) {
           val download = response.cursor.download
 
-          Gson().fromJson(String(download.request.data), DownloadInfo::class.java)?.let {
+          download.getMetadata()?.let {
             if (download.state == Download.STATE_COMPLETED) {
               ids.add(it.id)
             }

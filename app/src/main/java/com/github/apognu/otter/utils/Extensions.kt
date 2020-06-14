@@ -6,6 +6,8 @@ import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.BrowseFragment
 import com.github.apognu.otter.repositories.Repository
 import com.github.kittinunf.fuel.core.Request
+import com.google.android.exoplayer2.offline.Download
+import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.RequestCreator
 import kotlinx.coroutines.Dispatchers.Main
@@ -62,8 +64,8 @@ fun <T> T.applyOnApi(api: Int, block: T.() -> T): T {
 }
 
 fun Picasso.maybeLoad(url: String?): RequestCreator {
-  if (url == null) return load(R.drawable.cover)
-  else return load(url)
+  return if (url == null) load(R.drawable.cover)
+  else load(url)
 }
 
 fun Request.authorize(): Request {
@@ -73,3 +75,5 @@ fun Request.authorize(): Request {
     }
   }
 }
+
+fun Download.getMetadata(): DownloadInfo? = Gson().fromJson(String(this.request.data), DownloadInfo::class.java)

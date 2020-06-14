@@ -1,17 +1,19 @@
 package com.github.apognu.otter.activities
 
 import android.os.Bundle
+import kotlinx.coroutines.flow.collect
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.apognu.otter.R
 import com.github.apognu.otter.adapters.DownloadsAdapter
 import com.github.apognu.otter.utils.*
-import com.google.gson.Gson
+import com.google.android.exoplayer2.offline.Download
 import kotlinx.android.synthetic.main.activity_downloads.*
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class DownloadsActivity : AppCompatActivity() {
   lateinit var adapter: DownloadsAdapter
@@ -21,17 +23,24 @@ class DownloadsActivity : AppCompatActivity() {
 
     setContentView(R.layout.activity_downloads)
 
-    adapter = DownloadsAdapter(this, RefreshListener()).also {
+    adapter = DownloadsAdapter(this, DownloadChangedListener()).also {
       downloads.layoutManager = LinearLayoutManager(this)
       downloads.adapter = it
     }
+  }
 
-    GlobalScope.launch(Main) {
-      while (true) {
-        refresh()
-        delay(1000)
+  override fun onResume() {
+    super.onResume()
+
+    GlobalScope.launch(IO) {
+      EventBus.get().collect { event ->
+        if (event is Event.DownloadChanged) {
+          refreshTrack(event.download)
+        }
       }
     }
+
+    refresh()
   }
 
   private fun refresh() {
@@ -42,7 +51,7 @@ class DownloadsActivity : AppCompatActivity() {
         while (response.cursor.moveToNext()) {
           val download = response.cursor.download
 
-          Gson().fromJson(String(download.request.data), DownloadInfo::class.java)?.let { info ->
+          download.getMetadata()?.let { info ->
             adapter.downloads.add(info.apply {
               this.download = download
             })
@@ -54,9 +63,26 @@ class DownloadsActivity : AppCompatActivity() {
     }
   }
 
-  inner class RefreshListener : DownloadsAdapter.OnRefreshListener {
-    override fun refresh() {
-      this@DownloadsActivity.refresh()
+  private suspend fun refreshTrack(download: Download) {
+    if (download.state == Download.STATE_COMPLETED) {
+      download.getMetadata()?.let { info ->
+        adapter.downloads.withIndex().associate { it.value to it.index }.filter { it.key.id == info.id }.toList().getOrNull(0)?.let { match ->
+          withContext(Main) {
+            adapter.downloads[match.second] = info.apply {
+              this.download = download
+            }
+
+            adapter.notifyItemChanged(match.second)
+          }
+        }
+      }
+    }
+  }
+
+  inner class DownloadChangedListener : DownloadsAdapter.OnDownloadChangedListener {
+    override fun onItemRemoved(index: Int) {
+      adapter.downloads.removeAt(index)
+      adapter.notifyDataSetChanged()
     }
   }
 }
