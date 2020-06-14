@@ -16,6 +16,7 @@ class PlaylistTracksCache(data: List<PlaylistTrack>) : CacheItem<PlaylistTrack>(
 class RadiosCache(data: List<Radio>) : CacheItem<Radio>(data)
 class FavoritedCache(data: List<Int>) : CacheItem<Int>(data)
 class QueueCache(data: List<Track>) : CacheItem<Track>(data)
+class TagsCache(data: List<Tag>) : CacheItem<Tag>(data)
 
 abstract class OtterResponse<D : Any> {
   abstract val count: Int
@@ -58,6 +59,10 @@ data class RadiosResponse(override val count: Int, override val next: String?, v
 
 data class Covers(val urls: CoverUrls)
 data class CoverUrls(val original: String)
+
+data class TagsResponse(override val count: Int, override val next: String?, val results: List<Tag>) : OtterResponse<Tag>() {
+  override fun getData() = results
+}
 
 typealias AlbumList = List<Album>
 
@@ -177,3 +182,5 @@ data class DownloadInfo(
   val artist: String,
   var download: Download?
 )
+
+data class Tag(val name: String)

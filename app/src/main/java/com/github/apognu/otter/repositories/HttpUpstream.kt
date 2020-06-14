@@ -18,7 +18,7 @@ import java.io.Reader
 import java.lang.reflect.Type
 import kotlin.math.ceil
 
-class HttpUpstream<D : Any, R : OtterResponse<D>>(val behavior: Behavior, private val url: String, private val type: Type) : Upstream<D> {
+class HttpUpstream<D : Any, R : OtterResponse<D>>(val behavior: Behavior, private val url: String, private val type: Type, private val maxSize: Int = AppContext.PAGE_SIZE) : Upstream<D> {
   enum class Behavior {
     Single, AtOnce, Progressive
   }
@@ -26,12 +26,12 @@ class HttpUpstream<D : Any, R : OtterResponse<D>>(val behavior: Behavior, privat
   override fun fetch(size: Int): Flow<Repository.Response<D>> = flow {
     if (behavior == Behavior.Single && size != 0) return@flow
 
-    val page = ceil(size / AppContext.PAGE_SIZE.toDouble()).toInt() + 1
+    val page = ceil(size / maxSize.toDouble()).toInt() + 1
 
     val url =
       Uri.parse(url)
         .buildUpon()
-        .appendQueryParameter("page_size", AppContext.PAGE_SIZE.toString())
+        .appendQueryParameter("page_size", maxSize.toString())
         .appendQueryParameter("page", page.toString())
         .appendQueryParameter("scope", Settings.getScope())
         .build()
