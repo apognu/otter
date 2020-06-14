@@ -92,6 +92,20 @@ class TracksFragment : FunkwhaleFragment<Track, TracksAdapter>() {
       refreshDownloadedTracks()
     }
 
+    var coverHeight: Float? = null
+
+    scroller.setOnScrollChangeListener { _: View?, _: Int, scrollY: Int, _: Int, _: Int ->
+      if (coverHeight == null) {
+        coverHeight = cover.measuredHeight.toFloat()
+      }
+
+      cover.translationY = (scrollY / 2).toFloat()
+
+      coverHeight?.let { height ->
+        cover.alpha = (height - scrollY.toFloat()) / height
+      }
+    }
+
     play.setOnClickListener {
       CommandBus.send(Command.ReplaceQueue(adapter.data.shuffled()))
 

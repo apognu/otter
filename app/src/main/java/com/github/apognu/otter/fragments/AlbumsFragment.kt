@@ -1,14 +1,10 @@
 package com.github.apognu.otter.fragments
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.DisplayMetrics
-import android.view.Gravity
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.graphics.drawable.toDrawable
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
@@ -25,7 +21,6 @@ import com.github.apognu.otter.views.LoadingFlotingActionButton
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.fragment_albums.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
@@ -135,6 +130,24 @@ class AlbumsFragment : FunkwhaleFragment<Album, AlbumsAdapter>() {
               LoadingFlotingActionButton.stop(play, loaderAnimation)
             }
           }
+      }
+    }
+  }
+
+  override fun onResume() {
+    super.onResume()
+
+    var coverHeight: Float? = null
+
+    scroller.setOnScrollChangeListener { _: View?, _: Int, scrollY: Int, _: Int, _: Int ->
+      if (coverHeight == null) {
+        coverHeight = cover.measuredHeight.toFloat()
+      }
+
+      cover.translationY = (scrollY / 2).toFloat()
+
+      coverHeight?.let { height ->
+        cover.alpha = (height - scrollY.toFloat()) / height
       }
     }
   }

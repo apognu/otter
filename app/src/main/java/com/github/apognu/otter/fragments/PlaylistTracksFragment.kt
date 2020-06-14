@@ -80,6 +80,20 @@ class PlaylistTracksFragment : FunkwhaleFragment<PlaylistTrack, PlaylistTracksAd
       }
     }
 
+    var coverHeight: Float? = null
+
+    scroller.setOnScrollChangeListener { _: View?, _: Int, scrollY: Int, _: Int, _: Int ->
+      if (coverHeight == null) {
+        coverHeight = covers.measuredHeight.toFloat()
+      }
+
+      covers.translationY = (scrollY / 2).toFloat()
+
+      coverHeight?.let { height ->
+        covers.alpha = (height - scrollY.toFloat()) / height
+      }
+    }
+
     play.setOnClickListener {
       CommandBus.send(Command.ReplaceQueue(adapter.data.map { it.track }.shuffled()))
 
