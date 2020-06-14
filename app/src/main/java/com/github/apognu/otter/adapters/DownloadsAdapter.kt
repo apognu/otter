@@ -52,9 +52,14 @@ class DownloadsAdapter(private val context: Context, private val listener: OnDow
         false -> {
           holder.progress.visibility = View.VISIBLE
           holder.toggle.visibility = View.VISIBLE
+          holder.progress.isIndeterminate = false
           holder.progress.progress = state.percentDownloaded.toInt()
 
           when (state.state) {
+            Download.STATE_QUEUED -> {
+              holder.progress.isIndeterminate = true
+            }
+
             Download.STATE_REMOVING -> {
               holder.progress.visibility = View.GONE
               holder.toggle.visibility = View.GONE
@@ -69,7 +74,7 @@ class DownloadsAdapter(private val context: Context, private val listener: OnDow
 
       holder.toggle.setOnClickListener {
         when (state.state) {
-          Download.STATE_DOWNLOADING -> DownloadService.sendSetStopReason(context, PinService::class.java, download.contentId, 1, false)
+          Download.STATE_QUEUED, Download.STATE_DOWNLOADING -> DownloadService.sendSetStopReason(context, PinService::class.java, download.contentId, 1, false)
 
           Download.STATE_FAILED -> {
             Track(download.id, download.title, Artist(0, download.artist, listOf()),Album(0, Album.Artist(""), "", Covers("")), 0, listOf(Track.Upload(download.contentId, 0, 0))).also {

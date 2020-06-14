@@ -64,9 +64,9 @@ class DownloadsActivity : AppCompatActivity() {
   }
 
   private suspend fun refreshTrack(download: Download) {
-    if (download.state == Download.STATE_COMPLETED) {
-      download.getMetadata()?.let { info ->
-        adapter.downloads.withIndex().associate { it.value to it.index }.filter { it.key.id == info.id }.toList().getOrNull(0)?.let { match ->
+    download.getMetadata()?.let { info ->
+      adapter.downloads.withIndex().associate { it.value to it.index }.filter { it.key.id == info.id }.toList().getOrNull(0)?.let { match ->
+        if (download.state != info.download?.state) {
           withContext(Main) {
             adapter.downloads[match.second] = info.apply {
               this.download = download
