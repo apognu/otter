@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
@@ -22,6 +23,7 @@ import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
+import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import kotlinx.coroutines.Dispatchers.IO
@@ -90,6 +92,17 @@ class PlayerService : MediaBrowserServiceCompat() {
 
     mediaControlsManager = MediaControlsManager(this, mediaSession)
 
+    val queueNavigator: TimelineQueueNavigator = object : TimelineQueueNavigator(mediaSession) {
+      override fun getMediaDescription(player: Player, windowIndex: Int): MediaDescriptionCompat {
+        val track = queue.get(windowIndex)
+        return MediaDescriptionCompat.Builder().apply {
+          setTitle(track.title)
+          setSubtitle(track.subtitle())
+          setIconUri(Uri.parse(maybeNormalizeUrl(track.cover())))
+        }.build()
+      }
+    }
+
     player = SimpleExoPlayer.Builder(this).build().apply {
       playWhenReady = false
 
@@ -99,6 +112,7 @@ class PlayerService : MediaBrowserServiceCompat() {
 
       MediaSessionConnector(mediaSession).also {
         it.setPlayer(this)
+        it.setQueueNavigator(queueNavigator)
         it.setMediaButtonEventHandler { player, _, mediaButtonEvent ->
           mediaButtonEvent.extras?.getParcelable<KeyEvent>(Intent.EXTRA_KEY_EVENT)?.let { key ->
             if (key.action == KeyEvent.ACTION_UP) {
