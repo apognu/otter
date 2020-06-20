@@ -253,8 +253,6 @@ class PlayerService : Service() {
     state(false)
     player.release()
 
-    Otter.get().exoCache.release()
-
     stopForeground(true)
     stopSelf()
 

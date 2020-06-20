@@ -127,8 +127,24 @@ class QueueManager(val context: Context) {
 
   fun remove(track: Track) {
     metadata.indexOf(track).let {
+      if (it < 0) {
+        return
+      }
+
       datasources.removeMediaSource(it)
       metadata.removeAt(it)
+
+      if (it == current) {
+        CommandBus.send(Command.NextTrack)
+      }
+
+      if (it < current) {
+        current--
+      }
+    }
+
+    if (metadata.isEmpty()) {
+      current = -1
     }
 
     persist()
