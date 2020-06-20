@@ -16,4 +16,7 @@
 
   <color name="whiteWhileLight">#000000</color>
   <color name="blackWhileLight">#ffffff</color>
+
+  <color name="downloaded">@color/controlColor</color>
+  <color name="cached">#aeaeae</color>
 </resources>

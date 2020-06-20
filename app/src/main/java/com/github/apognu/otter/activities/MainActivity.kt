@@ -41,9 +41,11 @@ import kotlinx.android.synthetic.main.partial_now_playing.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
   enum class ResultCode(val code: Int) {
@@ -52,6 +54,8 @@ class MainActivity : AppCompatActivity() {
 
   private val favoriteRepository = FavoritesRepository(this)
   private val favoriteCheckRepository = FavoritedRepository(this)
+
+  private var bus: Job? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -69,10 +73,6 @@ class MainActivity : AppCompatActivity() {
       .beginTransaction()
       .replace(R.id.container, BrowseFragment())
       .commit()
-
-    watchEventBus()
-
-    CommandBus.send(Command.RefreshService)
   }
 
   override fun onResume() {
@@ -116,6 +116,19 @@ class MainActivity : AppCompatActivity() {
     landscape_queue?.let {
       supportFragmentManager.beginTransaction().replace(R.id.landscape_queue, LandscapeQueueFragment()).commit()
     }
+
+    if (bus == null) {
+      watchEventBus()
+    }
+
+    CommandBus.send(Command.RefreshService)
+  }
+
+  override fun onPause() {
+    super.onPause()
+
+    bus?.cancel()
+    bus = null
   }
 
   override fun onBackPressed() {
@@ -212,7 +225,7 @@ class MainActivity : AppCompatActivity() {
 
   @SuppressLint("NewApi")
   private fun watchEventBus() {
-    GlobalScope.launch(Main) {
+    bus = GlobalScope.launch(Main) {
       EventBus.get().collect { message ->
         when (message) {
           is Event.LogOut -> {

@@ -1,6 +1,7 @@
 package com.github.apognu.otter.repositories
 
 import android.content.Context
+import com.github.apognu.otter.Otter
 import com.github.apognu.otter.utils.*
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitByteArrayResponseResult
@@ -26,6 +27,13 @@ class FavoritesRepository(override val context: Context?) : Repository<Track, Tr
     data.map { track ->
       track.favorite = true
       track.downloaded = downloaded.contains(track.id)
+
+      track.bestUpload()?.let { upload ->
+        val url = mustNormalizeUrl(upload.listen_url)
+
+        track.cached = Otter.get().exoCache.isCached(url, 0, upload.duration * 1000L)
+      }
+
       track
     }
   }

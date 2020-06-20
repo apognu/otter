@@ -2,8 +2,7 @@ package com.github.apognu.otter.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
-import android.graphics.Typeface
+import android.graphics.*
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.view.*
@@ -95,9 +94,21 @@ class TracksAdapter(private val context: Context?, private val favoriteListener:
         }
       }
 
-      when (track.downloaded) {
+      when (track.cached || track.downloaded) {
         true -> holder.title.setCompoundDrawablesWithIntrinsicBounds(R.drawable.downloaded, 0, 0, 0)
         false -> holder.title.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+      }
+
+      if (track.cached && !track.downloaded) {
+        holder.title.compoundDrawables.forEach {
+          it?.colorFilter = PorterDuffColorFilter(context.getColor(R.color.cached), PorterDuff.Mode.SRC_IN)
+        }
+      }
+
+      if (track.downloaded) {
+        holder.title.compoundDrawables.forEach {
+          it?.colorFilter = PorterDuffColorFilter(context.getColor(R.color.downloaded), PorterDuff.Mode.SRC_IN)
+        }
       }
     }
 

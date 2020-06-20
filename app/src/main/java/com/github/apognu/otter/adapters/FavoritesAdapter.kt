@@ -2,6 +2,8 @@ package com.github.apognu.otter.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.graphics.Typeface
 import android.os.Build
 import android.view.Gravity
@@ -74,9 +76,21 @@ class FavoritesAdapter(private val context: Context?, private val favoriteListen
         false -> holder.favorite.setColorFilter(context.getColor(R.color.colorSelected))
       }
 
-      when (favorite.downloaded) {
+      when (favorite.cached || favorite.downloaded) {
         true -> holder.title.setCompoundDrawablesWithIntrinsicBounds(R.drawable.downloaded, 0, 0, 0)
         false -> holder.title.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+      }
+
+      if (favorite.cached && !favorite.downloaded) {
+        holder.title.compoundDrawables.forEach {
+          it?.colorFilter = PorterDuffColorFilter(context.getColor(R.color.cached), PorterDuff.Mode.SRC_IN)
+        }
+      }
+
+      if (favorite.downloaded) {
+        holder.title.compoundDrawables.forEach {
+          it?.colorFilter = PorterDuffColorFilter(context.getColor(R.color.downloaded), PorterDuff.Mode.SRC_IN)
+        }
       }
 
       holder.favorite.setOnClickListener {

@@ -1,6 +1,7 @@
 package com.github.apognu.otter.repositories
 
 import android.content.Context
+import com.github.apognu.otter.Otter
 import com.github.apognu.otter.utils.*
 import com.github.kittinunf.fuel.gson.gsonDeserializerOf
 import com.google.android.exoplayer2.offline.Download
@@ -48,6 +49,13 @@ class TracksRepository(override val context: Context?, albumId: Int) : Repositor
     data.map { track ->
       track.favorite = favorites.contains(track.id)
       track.downloaded = downloaded.contains(track.id)
+
+      track.bestUpload()?.let { upload ->
+        val url = mustNormalizeUrl(upload.listen_url)
+
+        track.cached = Otter.get().exoCache.isCached(url, 0, upload.duration * 1000L)
+      }
+
       track
     }.sortedBy { it.position }
   }

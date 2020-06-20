@@ -100,6 +100,7 @@ data class Track(
 ) : SearchResult {
   var current: Boolean = false
   var favorite: Boolean = false
+  var cached: Boolean = false
   var downloaded: Boolean = false
 
   data class Upload(

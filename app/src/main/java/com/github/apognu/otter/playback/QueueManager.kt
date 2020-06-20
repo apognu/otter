@@ -9,6 +9,8 @@ import com.github.kittinunf.fuel.gson.gsonDeserializerOf
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
+import com.google.android.exoplayer2.upstream.FileDataSource
+import com.google.android.exoplayer2.upstream.cache.CacheDataSource
 import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import com.google.gson.Gson
@@ -28,7 +30,16 @@ class QueueManager(val context: Context) {
         }
       }
 
-      return CacheDataSourceFactory(Otter.get().exoCache, http)
+      val playbackCache = CacheDataSourceFactory(Otter.get().exoCache, http)
+
+      return CacheDataSourceFactory(
+        Otter.get().exoDownloadCache,
+        playbackCache,
+        FileDataSource.Factory(),
+        null,
+        CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR,
+        null
+      )
     }
   }
 
