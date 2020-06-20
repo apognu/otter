@@ -97,12 +97,12 @@ play {
 dependencies {
   implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar", "*.aar"))))
 
-  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.61")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.2")
+  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.71")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.6")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.6")
 
   implementation("androidx.appcompat:appcompat:1.1.0")
-  implementation("androidx.core:core-ktx:1.4.0-alpha01")
+  implementation("androidx.core:core-ktx:1.5.0-alpha01")
   implementation("androidx.coordinatorlayout:coordinatorlayout:1.1.0")
   implementation("androidx.preference:preference:1.1.1")
   implementation("androidx.recyclerview:recyclerview:1.1.0")

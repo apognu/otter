@@ -3,6 +3,7 @@ package com.github.apognu.otter.utils
 import com.github.apognu.otter.Otter
 import com.google.android.exoplayer2.offline.Download
 import com.google.android.exoplayer2.offline.DownloadCursor
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
@@ -43,7 +44,7 @@ sealed class Event {
   class Buffering(val value: Boolean) : Event()
   class TrackPlayed(val track: Track?, val play: Boolean) : Event()
   class TrackFinished(val track: Track?) : Event()
-  class RefreshTrack(val track: Track?, val play: Boolean) : Event()
+  class RefreshTrack(val track: Track?) : Event()
   class StateChanged(val playing: Boolean) : Event()
   object QueueChanged : Event()
   object RadioStarted : Event()
@@ -67,8 +68,8 @@ sealed class Response {
 
 object EventBus {
   fun send(event: Event) {
-    GlobalScope.launch {
-      Otter.get().eventBus.send(event)
+    GlobalScope.launch(IO) {
+      Otter.get().eventBus.offer(event)
     }
   }
 

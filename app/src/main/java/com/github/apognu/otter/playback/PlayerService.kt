@@ -135,7 +135,7 @@ class PlayerService : Service() {
             EventBus.send(Event.QueueChanged)
 
             if (queue.metadata.isNotEmpty()) {
-              EventBus.send(Event.RefreshTrack(queue.current(), player.playWhenReady))
+              EventBus.send(Event.RefreshTrack(queue.current()))
               EventBus.send(Event.StateChanged(player.playWhenReady))
             }
           }
@@ -148,12 +148,7 @@ class PlayerService : Service() {
 
             state(true)
 
-            EventBus.send(
-              Event.RefreshTrack(
-                queue.current(),
-                true
-              )
-            )
+            EventBus.send(Event.RefreshTrack(queue.current()))
           }
 
           is Command.AddToQueue -> queue.append(message.tracks)
@@ -167,7 +162,7 @@ class PlayerService : Service() {
 
             state(true)
 
-            EventBus.send(Event.RefreshTrack(queue.current(), true))
+            EventBus.send(Event.RefreshTrack(queue.current()))
           }
 
           is Command.ToggleState -> toggle()
@@ -351,7 +346,6 @@ class PlayerService : Service() {
           when (playbackState) {
             Player.STATE_READY -> mediaControlsManager.updateNotification(queue.current(), true)
             Player.STATE_BUFFERING -> EventBus.send(Event.Buffering(true))
-            Player.STATE_IDLE -> state(false)
             Player.STATE_ENDED -> EventBus.send(Event.PlaybackStopped)
           }
 
@@ -359,7 +353,6 @@ class PlayerService : Service() {
         }
 
         false -> {
-          EventBus.send(Event.StateChanged(false))
           EventBus.send(Event.Buffering(false))
 
           if (playbackState == Player.STATE_READY) {
@@ -387,7 +380,7 @@ class PlayerService : Service() {
 
       Cache.set(this@PlayerService, "current", queue.current.toString().toByteArray())
 
-      EventBus.send(Event.RefreshTrack(queue.current(), true))
+      EventBus.send(Event.RefreshTrack(queue.current()))
     }
 
     override fun onPositionDiscontinuity(reason: Int) {
@@ -401,10 +394,12 @@ class PlayerService : Service() {
     override fun onPlayerError(error: ExoPlaybackException) {
       EventBus.send(Event.PlaybackError(getString(R.string.error_playback)))
 
-      queue.current()?.let {
-        queue.remove(it)
-        player.prepare(queue.datasources)
-      }
+      queue.current++
+      player.prepare(queue.datasources, true, true)
+      player.seekTo(queue.current, 0)
+      player.playWhenReady = true
+
+      EventBus.send(Event.RefreshTrack(queue.current()))
     }
   }
 

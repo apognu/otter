@@ -72,10 +72,18 @@ class MainActivity : AppCompatActivity() {
       .beginTransaction()
       .replace(R.id.container, BrowseFragment())
       .commit()
+
+    if (bus == null) {
+      watchEventBus()
+    }
+
+    CommandBus.send(Command.RefreshService)
   }
 
   override fun onResume() {
     super.onResume()
+
+    CommandBus.send(Command.RefreshService)
 
     startService(Intent(this, PlayerService::class.java))
     DownloadService.start(this, PinService::class.java)
@@ -115,12 +123,6 @@ class MainActivity : AppCompatActivity() {
     landscape_queue?.let {
       supportFragmentManager.beginTransaction().replace(R.id.landscape_queue, LandscapeQueueFragment()).commit()
     }
-
-    if (bus == null) {
-      watchEventBus()
-    }
-
-    CommandBus.send(Command.RefreshService)
   }
 
   override fun onPause() {
@@ -489,12 +491,15 @@ class MainActivity : AppCompatActivity() {
   private fun incrementListenCount(track: Track?) {
     track?.let {
       GlobalScope.launch(IO) {
-        Fuel
-          .post(mustNormalizeUrl("/api/v1/history/listenings/"))
-          .authorize()
-          .header("Content-Type", "application/json")
-          .body(Gson().toJson(mapOf("track" to track.id)))
-          .awaitStringResponse()
+        try {
+          Fuel
+            .post(mustNormalizeUrl("/api/v1/history/listenings/"))
+            .authorize()
+            .header("Content-Type", "application/json")
+            .body(Gson().toJson(mapOf("track" to track.id)))
+            .awaitStringResponse()
+        } catch (_: Exception) {
+        }
       }
     }
   }
