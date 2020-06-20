@@ -50,11 +50,23 @@ class LoginActivity : AppCompatActivity() {
         if (hostname.isEmpty()) throw Exception(getString(R.string.login_error_hostname))
 
         Uri.parse(hostname).apply {
-          if (scheme == "http") {
+          if (!cleartext.isChecked && scheme == "http") {
             throw Exception(getString(R.string.login_error_hostname_https))
           }
 
-          if (scheme == null) hostname = "https://$hostname"
+          if (scheme == null) {
+            hostname = when (cleartext.isChecked) {
+              true -> "http://$hostname"
+              false -> "https://$hostname"
+            }
+          }
+        }
+
+        hostname_field.error = ""
+
+        when (anonymous.isChecked) {
+          false -> authedLogin(hostname, username, password)
+          true -> anonymousLogin(hostname)
         }
       } catch (e: Exception) {
         val message =
@@ -62,13 +74,6 @@ class LoginActivity : AppCompatActivity() {
           else e.message
 
         hostname_field.error = message
-      }
-
-      hostname_field.error = ""
-
-      when (anonymous.isChecked) {
-        false -> authedLogin(hostname, username, password)
-        true -> anonymousLogin(hostname)
       }
     }
   }

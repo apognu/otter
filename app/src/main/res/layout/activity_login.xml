@@ -51,6 +51,14 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.checkbox.MaterialCheckBox
+      android:id="@+id/cleartext"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:buttonTint="@android:color/white"
+      android:text="@string/login_cleartext"
+      android:textColor="@android:color/white" />
+
+    <com.google.android.material.checkbox.MaterialCheckBox
       android:id="@+id/anonymous"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
