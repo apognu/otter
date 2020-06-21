@@ -73,15 +73,15 @@ class MainActivity : AppCompatActivity() {
       .replace(R.id.container, BrowseFragment())
       .commit()
 
-    if (bus == null) {
-      watchEventBus()
-    }
-
     CommandBus.send(Command.RefreshService)
   }
 
   override fun onResume() {
     super.onResume()
+
+    if (bus == null) {
+      watchEventBus()
+    }
 
     CommandBus.send(Command.RefreshService)
 
@@ -150,9 +150,7 @@ class MainActivity : AppCompatActivity() {
 
     // CastButtonFactory.setUpMediaRouteButton(this, menu, R.id.cast)
 
-    menu?.let {
-      menu.findItem(R.id.nav_only_my_music).isChecked = Settings.getScope() == "me"
-    }
+    menu?.findItem(R.id.nav_only_my_music)?.isChecked = Settings.getScope() == "me"
 
     return true
   }
