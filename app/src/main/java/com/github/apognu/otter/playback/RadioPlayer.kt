@@ -6,6 +6,7 @@ import com.github.apognu.otter.repositories.FavoritedRepository
 import com.github.apognu.otter.repositories.Repository
 import com.github.apognu.otter.utils.*
 import com.github.kittinunf.fuel.Fuel
+import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
 import com.github.kittinunf.fuel.coroutines.awaitObjectResult
 import com.github.kittinunf.fuel.gson.gsonDeserializerOf
 import com.google.gson.Gson
@@ -18,7 +19,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.withContext
 
-data class RadioSessionBody(val radio_type: String, var custom_radio: Int? = null)
+data class RadioSessionBody(val radio_type: String, var custom_radio: Int? = null, var related_object_id: String? = null)
 data class RadioSession(val id: Int)
 data class RadioTrackBody(val session: Int)
 data class RadioTrack(val position: Int, val track: RadioTrackID)
@@ -29,6 +30,7 @@ class RadioPlayer(val context: Context) {
 
   private var currentRadio: Radio? = null
   private var session: Int? = null
+  private var cookie: String? = null
 
   private val favoritedRepository = FavoritedRepository(context)
 
@@ -36,8 +38,11 @@ class RadioPlayer(val context: Context) {
     Cache.get(context, "radio_type")?.readLine()?.let { radio_type ->
       Cache.get(context, "radio_id")?.readLine()?.toInt()?.let { radio_id ->
         Cache.get(context, "radio_session")?.readLine()?.toInt()?.let { radio_session ->
-          currentRadio = Radio(radio_id, radio_type, "", "")
-          session = radio_session
+          Cache.get(context, "radio_cookie")?.readLine()?.let { radio_cookie ->
+            currentRadio = Radio(radio_id, radio_type, "", "")
+            session = radio_session
+            cookie = radio_cookie
+          }
         }
       }
     }
@@ -59,6 +64,7 @@ class RadioPlayer(val context: Context) {
     Cache.delete(context, "radio_type")
     Cache.delete(context, "radio_id")
     Cache.delete(context, "radio_session")
+    Cache.delete(context, "radio_cookie")
   }
 
   fun isActive() = currentRadio != null && session != null
@@ -66,24 +72,26 @@ class RadioPlayer(val context: Context) {
   private suspend fun createSession() {
     currentRadio?.let { radio ->
       try {
-        val request = RadioSessionBody(radio.radio_type).apply {
+        val request = RadioSessionBody(radio.radio_type, related_object_id = radio.related_object_id).apply {
           if (radio_type == "custom") {
             custom_radio = radio.id
           }
         }
 
         val body = Gson().toJson(request)
-        val result = Fuel.post(mustNormalizeUrl("/api/v1/radios/sessions/"))
+        val (_, response, result) = Fuel.post(mustNormalizeUrl("/api/v1/radios/sessions/"))
           .authorize()
           .header("Content-Type", "application/json")
           .body(body)
-          .awaitObjectResult(gsonDeserializerOf(RadioSession::class.java))
+          .awaitObjectResponseResult(gsonDeserializerOf(RadioSession::class.java))
 
         session = result.get().id
+        cookie = response.header("set-cookie").joinToString(";")
 
         Cache.set(context, "radio_type", radio.radio_type.toByteArray())
         Cache.set(context, "radio_id", radio.id.toString().toByteArray())
         Cache.set(context, "radio_session", session.toString().toByteArray())
+        Cache.set(context, "radio_cookie", cookie.toString().toByteArray())
 
         prepareNextTrack(true)
       } catch (e: Exception) {
@@ -101,6 +109,11 @@ class RadioPlayer(val context: Context) {
         val result = Fuel.post(mustNormalizeUrl("/api/v1/radios/tracks/"))
           .authorize()
           .header("Content-Type", "application/json")
+          .apply {
+            cookie?.let {
+              header("cookie", it)
+            }
+          }
           .body(body)
           .awaitObjectResult(gsonDeserializerOf(RadioTrack::class.java))
 

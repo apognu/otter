@@ -88,6 +88,10 @@ class MainActivity : AppCompatActivity() {
     startService(Intent(this, PlayerService::class.java))
     DownloadService.start(this, PinService::class.java)
 
+    GlobalScope.launch(IO) {
+      Userinfo.get()
+    }
+
     now_playing_toggle.setOnClickListener {
       CommandBus.send(Command.ToggleState)
     }

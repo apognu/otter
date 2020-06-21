@@ -11,6 +11,7 @@
   <string name="login_logging_in">Logging in</string>
   <string name="login_error_hostname">This could not be understood as a valid URL</string>
   <string name="login_error_hostname_https">The Funkwhale hostname should be secure through HTTPS</string>
+  <string name="login_error_userinfo">We could not retrieve information about your user</string>
   <string name="toolbar_search">Search</string>
   <string name="title_downloads">Downloads</string>
   <string name="title_settings">Settings</string>
@@ -89,6 +90,11 @@
   <string name="track_info_details_track_bitrate">Bitrate</string>
   <string name="track_info_details_track_instance">Funkwhale instance</string>
   <string name="radio_playback_error">There was an error while trying to play this radio</string>
+  <string name="radio_instance_radios">Instance radios</string>
+  <string name="radio_user_radios">User radios</string>
+  <string name="radio_your_content_title">Your content</string>
+  <string name="radio_your_content_description">Picks from your own libraries</string>
+  <string name="radio_favorites_description"> Play your favorites tunes in a never-ending happiness loop.</string>
   <string name="radio_random_title">Random</string>
   <string name="radio_random_description">Totally random picks, maybe you\'ll discover new things?</string>
   <string name="radio_less_listened_title">Less listened</string>

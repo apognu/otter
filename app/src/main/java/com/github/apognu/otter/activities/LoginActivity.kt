@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.LoginDialog
 import com.github.apognu.otter.utils.AppContext
+import com.github.apognu.otter.utils.Userinfo
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
 import com.github.kittinunf.fuel.gson.gsonDeserializerOf
@@ -103,9 +104,13 @@ class LoginActivity : AppCompatActivity() {
               setString("access_token", result.get().token)
             }
 
-            dialog.dismiss()
-            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
-            finish()
+            Userinfo.get()?.let {
+              dialog.dismiss()
+              startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+              finish()
+            }
+
+            throw Exception(getString(R.string.login_error_userinfo))
           }
 
           is Result.Failure -> {

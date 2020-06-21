@@ -10,6 +10,7 @@
     <string name="login_logging_in">Connexion</string>
     <string name="login_error_hostname">Cela ne semble pas être un nom d\hôte valide</string>
     <string name="login_error_hostname_https">Le nom d\'hôte Funkwhale devrait être sécurisé à travers HTTPS</string>
+    <string name="login_error_userinfo">Nous n\'avons pas pu récupérer les informations à propos de votre utilisateur</string>
     <string name="toolbar_search">Rechercher</string>
     <string name="title_downloads">Téléchargements</string>
     <string name="title_settings">Paramètres</string>
@@ -88,6 +89,11 @@
     <string name="track_info_details_track_bitrate">Bitrate</string>
     <string name="track_info_details_track_instance">Instance Funkwhale</string>
     <string name="radio_playback_error">Une erreur s\'est produite lors de la lecture de cette radio</string>
+    <string name="radio_instance_radios">Radios de l\'instance</string>
+    <string name="radio_user_radios">Radios des utilisateurs</string>
+    <string name="radio_your_content_title">Votre contenu</string>
+    <string name="radio_your_content_description">Une sélection de votre propre bibliothèque.</string>
+    <string name="radio_favorites_description">Jouez vos morceaux favoris dans une boucle allègre infinie.</string>
     <string name="radio_random_title">Aléatoire</string>
     <string name="radio_random_description">Choix de pistes totalement aléatoires, vous découvrirez peut-être quelque chose ?</string>
     <string name="radio_less_listened_title">Moins écoutées</string>

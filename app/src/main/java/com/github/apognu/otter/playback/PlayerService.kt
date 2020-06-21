@@ -12,7 +12,6 @@ import android.os.Build
 import android.os.IBinder
 import android.support.v4.media.session.MediaSessionCompat
 import android.view.KeyEvent
-import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
 import com.github.apognu.otter.utils.*
 import com.google.android.exoplayer2.C
