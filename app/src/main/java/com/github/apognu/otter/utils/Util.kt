@@ -22,9 +22,13 @@ fun Any.log() {
 }
 
 fun maybeNormalizeUrl(rawUrl: String?): String? {
-  if (rawUrl == null || rawUrl.isEmpty()) return null
+  try {
+    if (rawUrl == null || rawUrl.isEmpty()) return null
 
-  return mustNormalizeUrl(rawUrl)
+    return mustNormalizeUrl(rawUrl)
+  } catch (e: Exception) {
+    return null
+  }
 }
 
 fun mustNormalizeUrl(rawUrl: String): String {

@@ -65,32 +65,40 @@ class HttpUpstream<D : Any, R : FunkwhaleResponse<D>>(val behavior: Behavior, pr
   }
 
   suspend fun get(url: String): Result<R, FuelError> {
-    val request = Fuel.get(mustNormalizeUrl(url)).apply {
-      if (!Settings.isAnonymous()) {
-        header("Authorization", "Bearer ${Settings.getAccessToken()}")
-      }
-    }
-
-    val (_, response, result) = request.awaitObjectResponseResult(GenericDeserializer<R>(type))
-
-    if (response.statusCode == 401) {
-      return retryGet(url)
-    }
-
-    return result
-  }
-
-  private suspend fun retryGet(url: String): Result<R, FuelError> {
-    return if (HTTP.refresh()) {
+    return try {
       val request = Fuel.get(mustNormalizeUrl(url)).apply {
         if (!Settings.isAnonymous()) {
           header("Authorization", "Bearer ${Settings.getAccessToken()}")
         }
       }
 
-      request.awaitObjectResult(GenericDeserializer(type))
-    } else {
-      Result.Failure(FuelError.wrap(RefreshError))
+      val (_, response, result) = request.awaitObjectResponseResult(GenericDeserializer<R>(type))
+
+      if (response.statusCode == 401) {
+        return retryGet(url)
+      }
+
+      result
+    } catch (e: Exception) {
+      Result.error(FuelError.wrap(e))
+    }
+  }
+
+  private suspend fun retryGet(url: String): Result<R, FuelError> {
+    return try {
+      return if (HTTP.refresh()) {
+        val request = Fuel.get(mustNormalizeUrl(url)).apply {
+          if (!Settings.isAnonymous()) {
+            header("Authorization", "Bearer ${Settings.getAccessToken()}")
+          }
+        }
+
+        request.awaitObjectResult(GenericDeserializer(type))
+      } else {
+        Result.Failure(FuelError.wrap(RefreshError))
+      }
+    } catch (e: Exception) {
+      Result.error(FuelError.wrap(e))
     }
   }
 }

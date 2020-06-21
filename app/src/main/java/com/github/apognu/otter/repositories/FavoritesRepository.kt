@@ -29,9 +29,9 @@ class FavoritesRepository(override val context: Context?) : Repository<Track, Tr
       track.downloaded = downloaded.contains(track.id)
 
       track.bestUpload()?.let { upload ->
-        val url = mustNormalizeUrl(upload.listen_url)
-
-        track.cached = Otter.get().exoCache.isCached(url, 0, upload.duration * 1000L)
+        maybeNormalizeUrl(upload.listen_url)?.let { url ->
+          track.cached = Otter.get().exoCache.isCached(url, 0, upload.duration * 1000L)
+        }
       }
 
       track
