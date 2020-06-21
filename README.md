@@ -8,7 +8,7 @@
 
 Otter is a native Android music player for [Funkwhale](https://funkwhale.audio), native to both Android (developed in Kotlin) and to Funkwhale (uses its native API instead of Subsonic).
 
-![Otter graphic](https://github.com/apognu/otter/raw/master/app/src/main/play/listings/en-US/graphics/feature-graphic/1.png)
+![Otter graphic](https://github.com/apognu/otter/raw/develop/app/src/main/play/listings/en-US/graphics/feature-graphic/1.png)
 
 ## State
 
@@ -29,7 +29,7 @@ Otter will try to behave as you would expect a mobile music player to, meaning i
 
 ## Screenshots
 
-<img src="https://github.com/apognu/otter/raw/master/app/src/main/play/listings/en-US/graphics/phone-screenshots/1.png" width="200" /> <img src="https://github.com/apognu/otter/raw/master/app/src/main/play/listings/en-US/graphics/phone-screenshots/2.png" width="200" /> <img src="https://github.com/apognu/otter/raw/master/app/src/main/play/listings/en-US/graphics/phone-screenshots/3.png" width="200" /> <img src="https://github.com/apognu/otter/raw/master/app/src/main/play/listings/en-US/graphics/phone-screenshots/4.png" width="200" /> <img src="https://github.com/apognu/otter/raw/master/app/src/main/play/listings/en-US/graphics/phone-screenshots/5.png" width="200" /> <img src="https://github.com/apognu/otter/raw/master/app/src/main/play/listings/en-US/graphics/phone-screenshots/6.png" width="200" /> <img src="https://github.com/apognu/otter/raw/master/app/src/main/play/listings/en-US/graphics/phone-screenshots/7.png" width="200" />
+<img src="https://github.com/apognu/otter/raw/develop/app/src/main/play/listings/en-US/graphics/phone-screenshots/1.png" width="200" /> <img src="https://github.com/apognu/otter/raw/develop/app/src/main/play/listings/en-US/graphics/phone-screenshots/2.png" width="200" /> <img src="https://github.com/apognu/otter/raw/develop/app/src/main/play/listings/en-US/graphics/phone-screenshots/3.png" width="200" /> <img src="https://github.com/apognu/otter/raw/develop/app/src/main/play/listings/en-US/graphics/phone-screenshots/4.png" width="200" /> <img src="https://github.com/apognu/otter/raw/develop/app/src/main/play/listings/en-US/graphics/phone-screenshots/5.png" width="200" /> <img src="https://github.com/apognu/otter/raw/develop/app/src/main/play/listings/en-US/graphics/phone-screenshots/6.png" width="200" /> <img src="https://github.com/apognu/otter/raw/develop/app/src/main/play/listings/en-US/graphics/phone-screenshots/7.png" width="200" />
 
 ## Translation
 
