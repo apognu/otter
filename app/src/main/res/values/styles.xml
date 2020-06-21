@@ -16,6 +16,8 @@
 
     <item name="buttonBarNegativeButtonStyle">@style/AppTheme.DialogButtonStyle</item>
     <item name="buttonBarPositiveButtonStyle">@style/AppTheme.DialogButtonStyle</item>
+
+    <item name="mediaRouteTheme">@style/AppTheme.MediaRouteTheme</item>
   </style>
 
   <style name="AppTheme.Fragment"></style>
@@ -97,6 +99,14 @@
     <item name="android:fontFamily">sans-serif-medium</item>
     <item name="android:textSize">14sp</item>
     <item name="android:textColor">@android:color/white</item>
+  </style>
+
+  <style name="AppTheme.MediaRouteTheme" parent="Theme.MediaRouter">
+    <item name="mediaRouteButtonStyle">@style/AppTheme.MediaRouteTheme.ButtonStyle</item>
+  </style>
+
+  <style name="AppTheme.MediaRouteTheme.ButtonStyle" parent="Widget.MediaRouter.Light.MediaRouteButton">
+    <item name="mediaRouteButtonTint">@android:color/white</item>
   </style>
 
 </resources>
