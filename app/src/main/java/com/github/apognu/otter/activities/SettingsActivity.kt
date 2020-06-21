@@ -11,6 +11,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SeekBarPreference
 import com.github.apognu.otter.BuildConfig
+import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
 import com.github.apognu.otter.utils.*
 import com.preference.PowerPreference
@@ -78,11 +79,9 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
             .setTitle(context.getString(R.string.logout_title))
             .setMessage(context.getString(R.string.logout_content))
             .setPositiveButton(android.R.string.yes) { _, _ ->
-              PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).clear()
-
-              context.cacheDir.deleteRecursively()
-
               CommandBus.send(Command.ClearQueue)
+
+              Otter.get().deleteAllData()
 
               activity?.setResult(MainActivity.ResultCode.LOGOUT.code)
               activity?.finish()

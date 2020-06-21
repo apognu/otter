@@ -75,6 +75,12 @@ class Otter : Application() {
     }
   }
 
+  fun deleteAllData() {
+    PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).clear()
+
+    exoDownloadManager.removeAllDownloads()
+  }
+
   inner class CrashReportHandler : Thread.UncaughtExceptionHandler {
     override fun uncaughtException(t: Thread, e: Throwable) {
       val now = Date(Date().time - (5 * 60 * 1000))
