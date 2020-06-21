@@ -19,6 +19,7 @@ import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import com.github.apognu.otter.Cast
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.*
 import com.github.apognu.otter.playback.MediaControlsManager
@@ -157,7 +158,7 @@ class MainActivity : AppCompatActivity() {
   override fun onCreateOptionsMenu(menu: Menu?): Boolean {
     menuInflater.inflate(R.menu.toolbar, menu)
 
-    // CastButtonFactory.setUpMediaRouteButton(this, menu, R.id.cast)
+    Cast.setupButton(applicationContext, menu)
 
     menu?.findItem(R.id.nav_only_my_music)?.isChecked = Settings.getScope() == "me"
 

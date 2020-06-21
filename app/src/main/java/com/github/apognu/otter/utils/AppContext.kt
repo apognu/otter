@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import com.github.apognu.otter.Cast
 import com.github.apognu.otter.R
 import com.github.kittinunf.fuel.core.FuelManager
 import com.github.kittinunf.fuel.core.Method
@@ -26,7 +27,7 @@ object AppContext {
   fun init(context: Activity) {
     setupNotificationChannels(context)
 
-    // CastContext.getSharedInstance(context)
+    Cast.init(context)
 
     FuelManager.instance.addResponseInterceptor { next ->
       { request, response ->

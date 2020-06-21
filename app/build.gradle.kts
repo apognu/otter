@@ -77,6 +77,22 @@ android {
       proguardFile("proguard-rules.pro")
     }
   }
+
+  flavorDimensions("version")
+
+  productFlavors {
+    create("full") {
+      setDimension("version")
+
+      applicationId = "com.github.apognu.otter"
+    }
+
+    create("foss") {
+      setDimension("version")
+
+      applicationId = "com.github.apognu.otter.foss"
+    }
+  }
 }
 
 ktlint {
@@ -122,4 +138,7 @@ dependencies {
   implementation("com.google.code.gson:gson:2.8.5")
   implementation("com.squareup.picasso:picasso:2.71828")
   implementation("jp.wasabeef:picasso-transformations:2.2.1")
+
+  "fullImplementation"("com.google.android.gms:play-services-cast-framework:18.1.0")
+  "fullImplementation"("com.google.android.exoplayer:extension-cast:2.11.5")
 }

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.github.apognu.otter">
+  xmlns:tools="http://schemas.android.com/tools"
+  package="com.github.apognu.otter"
+  tools:node="merge">
 
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -16,10 +18,6 @@
     android:supportsRtl="true"
     android:theme="@style/AppTheme"
     android:usesCleartextTraffic="true">
-
-    <!-- <meta-data
-      android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
-      android:value="com.google.android.exoplayer2.ext.cast.DefaultCastOptionsProvider"/> -->
 
     <activity
       android:name="com.github.apognu.otter.activities.SplashActivity"

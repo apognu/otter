@@ -68,6 +68,7 @@ sealed class Response {
 object EventBus {
   fun send(event: Event) {
     GlobalScope.launch(IO) {
+      Otter.get().eventBus.log()
       Otter.get().eventBus.offer(event)
     }
   }

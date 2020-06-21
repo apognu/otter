@@ -6,20 +6,19 @@
     android:id="@+id/nav_queue"
     android:icon="@drawable/queue"
     android:title="@string/playback_queue"
-    app:showAsAction="ifRoom" />
+    app:showAsAction="always" />
 
-  <!-- <item
+  <item
     android:id="@+id/cast"
-    android:iconTint="@android:color/white"
-    android:title="@string/toolbar_cast"
+    android:title="Cast!"
     app:actionProviderClass="androidx.mediarouter.app.MediaRouteActionProvider"
-    app:showAsAction="ifRoom" /> -->
+    app:showAsAction="always" />
 
   <item
     android:id="@+id/nav_search"
     android:icon="@drawable/search"
     android:title="@string/toolbar_search"
-    app:showAsAction="ifRoom" />
+    app:showAsAction="always" />
 
   <item
     android:id="@+id/nav_only_my_music"
@@ -36,7 +35,6 @@
   <item
     android:id="@+id/settings"
     android:icon="@drawable/settings"
-    android:iconTint="@android:color/white"
     android:title="@string/title_settings"
     app:showAsAction="never" />
 
