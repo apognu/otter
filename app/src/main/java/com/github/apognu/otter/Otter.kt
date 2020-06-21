@@ -78,6 +78,12 @@ class Otter : Application() {
   fun deleteAllData() {
     PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).clear()
 
+    cacheDir.listFiles()?.forEach {
+      it.delete()
+    }
+
+    cacheDir.resolve("picasso-cache").deleteRecursively()
+
     exoDownloadManager.removeAllDownloads()
   }
 
