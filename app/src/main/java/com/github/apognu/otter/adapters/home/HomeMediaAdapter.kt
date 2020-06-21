@@ -9,12 +9,12 @@ import com.github.apognu.otter.R
 import com.github.apognu.otter.utils.mustNormalizeUrl
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
-import kotlinx.android.synthetic.main.row_dummy.view.*
+import kotlinx.android.synthetic.main.row_home_media.view.*
 
-class DummyAdapter(val context: Context?, val viewRes: Int = R.layout.row_dummy) : RecyclerView.Adapter<DummyAdapter.ViewHolder>() {
-  data class DummyItem(val label: String, val cover: String?)
+class HomeMediaAdapter(val context: Context?, val viewRes: Int = R.layout.row_home_media) : RecyclerView.Adapter<HomeMediaAdapter.ViewHolder>() {
+  data class HomeMediaItem(val label: String, val cover: String?)
 
-  var data: List<DummyItem> = listOf()
+  var data: List<HomeMediaItem> = listOf()
 
   override fun getItemCount() = data.size
 

@@ -19,12 +19,19 @@
       android:layout_marginBottom="16dp"
       android:text="Tags" />
 
+    <ProgressBar
+      android:id="@+id/tags_loader"
+      android:layout_width="32dp"
+      android:layout_height="32dp"
+      android:layout_gravity="center_horizontal" />
+
     <androidx.recyclerview.widget.RecyclerView
       android:id="@+id/tags"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginBottom="16dp"
-      android:orientation="horizontal" />
+      android:orientation="horizontal"
+      android:visibility="gone" />
 
     <TextView
       style="@style/AppTheme.Title"
@@ -36,12 +43,19 @@
       android:layout_marginBottom="16dp"
       android:text="Random picks" />
 
+    <ProgressBar
+      android:id="@+id/random_loader"
+      android:layout_width="32dp"
+      android:layout_height="32dp"
+      android:layout_gravity="center_horizontal" />
+
     <androidx.recyclerview.widget.RecyclerView
       android:id="@+id/random"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginBottom="16dp"
-      android:orientation="horizontal" />
+      android:orientation="horizontal"
+      android:visibility="gone" />
 
     <TextView
       style="@style/AppTheme.Title"
@@ -53,12 +67,19 @@
       android:layout_marginBottom="16dp"
       android:text="Recently listened" />
 
+    <ProgressBar
+      android:id="@+id/recently_listened_loader"
+      android:layout_width="32dp"
+      android:layout_height="32dp"
+      android:layout_gravity="center_horizontal" />
+
     <androidx.recyclerview.widget.RecyclerView
       android:id="@+id/recently_listened"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginBottom="16dp"
-      android:orientation="horizontal" />
+      android:orientation="horizontal"
+      android:visibility="gone" />
 
     <TextView
       style="@style/AppTheme.Title"
@@ -70,26 +91,16 @@
       android:layout_marginBottom="16dp"
       android:text="Newly uploaded" />
 
+    <ProgressBar
+      android:id="@+id/recently_added_loader"
+      android:layout_width="32dp"
+      android:layout_height="32dp"
+      android:layout_gravity="center_horizontal" />
+
     <androidx.recyclerview.widget.RecyclerView
       android:id="@+id/recently_added"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginBottom="16dp"
-      android:orientation="horizontal" />
-
-    <TextView
-      style="@style/AppTheme.Title"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginStart="16dp"
-      android:layout_marginTop="16dp"
-      android:layout_marginEnd="16dp"
-      android:layout_marginBottom="16dp"
-      android:text="Playlists and radios" />
-
-    <androidx.recyclerview.widget.RecyclerView
-      android:id="@+id/playlists"
-      android:layout_width="match_parent"
+      android:visibility="gone"
       android:layout_height="wrap_content"
       android:layout_marginBottom="16dp"
       android:orientation="horizontal" />
