@@ -27,6 +27,10 @@ Otter's features, as of this writing, are the following:
 
 Otter will try to behave as you would expect a mobile music player to, meaning integrating with the OS's media controls (including headset controls) or pause on incoming calls. If there is anything you would like it to do, please [open an issue](https://github.com/apognu/otter/issues/new).
 
+## Screenshots
+
+<img src="https://github.com/apognu/otter/raw/master/app/src/main/play/listings/en-US/graphics/phone-screenshots/1.png" width="200" /> <img src="https://github.com/apognu/otter/raw/master/app/src/main/play/listings/en-US/graphics/phone-screenshots/2.png" width="200" /> <img src="https://github.com/apognu/otter/raw/master/app/src/main/play/listings/en-US/graphics/phone-screenshots/3.png" width="200" /> <img src="https://github.com/apognu/otter/raw/master/app/src/main/play/listings/en-US/graphics/phone-screenshots/4.png" width="200" /> <img src="https://github.com/apognu/otter/raw/master/app/src/main/play/listings/en-US/graphics/phone-screenshots/5.png" width="200" /> <img src="https://github.com/apognu/otter/raw/master/app/src/main/play/listings/en-US/graphics/phone-screenshots/6.png" width="200" /> <img src="https://github.com/apognu/otter/raw/master/app/src/main/play/listings/en-US/graphics/phone-screenshots/7.png" width="200" />
+
 ## Translation
 
 Otter is being translated by the community through [Weblate](https://translate.funkwhale.audio/projects/otter/android/). If you would like to contribute to its localization or add a new language, you can help out there.
