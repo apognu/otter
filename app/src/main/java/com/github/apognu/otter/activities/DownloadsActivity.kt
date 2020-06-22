@@ -36,7 +36,7 @@ class DownloadsActivity : AppCompatActivity() {
 
     GlobalScope.launch(IO) {
       while (true) {
-        delay(500)
+        delay(1000)
         refreshProgress()
       }
     }
