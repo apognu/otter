@@ -18,27 +18,38 @@
     <androidx.cardview.widget.CardView
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_margin="8dp"
+      android:layout_marginStart="8dp"
+      android:layout_marginTop="16dp"
+      android:layout_marginEnd="8dp"
+      android:layout_marginBottom="0dp"
       android:elevation="4dp">
 
-      <androidx.appcompat.widget.SearchView
-        android:id="@+id/search"
+      <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:iconifiedByDefault="false"
-        app:queryBackground="@android:color/transparent"
-        app:queryHint="@string/search_placeholder" />
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.SearchView
+          android:id="@+id/search"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          app:iconifiedByDefault="false"
+          app:queryBackground="@android:color/transparent"
+          app:queryHint="@string/search_placeholder" />
+
+        <ProgressBar
+          android:id="@+id/search_spinner"
+          style="?android:attr/progressBarStyleHorizontal"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="-12dp"
+          android:layout_marginBottom="-12dp"
+          android:indeterminate="true"
+          android:visibility="invisible" />
+
+      </LinearLayout>
 
     </androidx.cardview.widget.CardView>
-
-    <ProgressBar
-      android:id="@+id/search_spinner"
-      android:layout_width="32dp"
-      android:layout_height="32dp"
-      android:layout_gravity="center"
-      android:layout_marginTop="16dp"
-      android:indeterminate="true"
-      android:visibility="gone" />
 
     <TextView
       android:id="@+id/search_empty"

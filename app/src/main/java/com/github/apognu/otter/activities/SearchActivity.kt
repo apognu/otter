@@ -25,6 +25,8 @@ class SearchActivity : AppCompatActivity() {
 
   lateinit var favoritesRepository: FavoritesRepository
 
+  var done = 0
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
@@ -46,6 +48,8 @@ class SearchActivity : AppCompatActivity() {
         search.clearFocus()
 
         rawQuery?.let {
+          done = 0
+
           val query = URLEncoder.encode(it, "UTF-8")
 
           tracksRepository = TracksSearchRepository(this@SearchActivity, query.toLowerCase(Locale.ROOT))
@@ -54,6 +58,7 @@ class SearchActivity : AppCompatActivity() {
           favoritesRepository = FavoritesRepository(this@SearchActivity)
 
           search_spinner.visibility = View.VISIBLE
+          search_empty.visibility = View.GONE
           search_no_results.visibility = View.GONE
 
           adapter.artists.clear()
@@ -62,33 +67,24 @@ class SearchActivity : AppCompatActivity() {
           adapter.notifyDataSetChanged()
 
           artistsRepository.fetch(Repository.Origin.Network.origin).untilNetwork { artists, _, _ ->
-            when (artists.isEmpty()) {
-              true -> search_no_results.visibility = View.VISIBLE
-              false -> adapter.artists.addAll(artists)
-            }
+            done++
 
-            adapter.notifyDataSetChanged()
+            adapter.artists.addAll(artists)
+            refresh()
           }
 
           albumsRepository.fetch(Repository.Origin.Network.origin).untilNetwork { albums, _, _ ->
-            when (albums.isEmpty()) {
-              true -> search_no_results.visibility = View.VISIBLE
-              false -> adapter.albums.addAll(albums)
-            }
+            done++
 
-            adapter.notifyDataSetChanged()
+            adapter.albums.addAll(albums)
+            refresh()
           }
 
           tracksRepository.fetch(Repository.Origin.Network.origin).untilNetwork { tracks, _, _ ->
-            search_spinner.visibility = View.GONE
-            search_empty.visibility = View.GONE
+            done++
 
-            when (tracks.isEmpty()) {
-              true -> search_no_results.visibility = View.VISIBLE
-              false -> adapter.tracks.addAll(tracks)
-            }
-
-            adapter.notifyDataSetChanged()
+            adapter.tracks.addAll(tracks)
+            refresh()
           }
         }
 
@@ -97,6 +93,20 @@ class SearchActivity : AppCompatActivity() {
 
       override fun onQueryTextChange(newText: String?) = true
     })
+  }
+
+  private fun refresh() {
+    adapter.notifyDataSetChanged()
+
+    if (adapter.artists.size + adapter.albums.size + adapter.tracks.size == 0) {
+      search_no_results.visibility = View.VISIBLE
+    } else {
+      search_no_results.visibility = View.GONE
+    }
+
+    if (done == 3) {
+      search_spinner.visibility = View.INVISIBLE
+    }
   }
 
   inner class SearchResultClickListener : SearchAdapter.OnSearchResultClickListener {

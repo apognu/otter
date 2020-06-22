@@ -19,22 +19,21 @@ class TracksRepository(override val context: Context?, albumId: Int) : Repositor
   override fun uncache(reader: BufferedReader) = gsonDeserializerOf(TracksCache::class.java).deserialize(reader)
 
   companion object {
-    suspend fun getDownloadedIds(): List<Int>? {
-      return RequestBus.send(Request.GetDownloads).wait<com.github.apognu.otter.utils.Response.Downloads>()?.let { response ->
-        val ids: MutableList<Int> = mutableListOf()
+    fun getDownloadedIds(): List<Int>? {
+      val cursor = Otter.get().exoDownloadManager.downloadIndex.getDownloads()
+      val ids: MutableList<Int> = mutableListOf()
 
-        while (response.cursor.moveToNext()) {
-          val download = response.cursor.download
+      while (cursor.moveToNext()) {
+        val download = cursor.download
 
-          download.getMetadata()?.let {
-            if (download.state == Download.STATE_COMPLETED) {
-              ids.add(it.id)
-            }
+        download.getMetadata()?.let {
+          if (download.state == Download.STATE_COMPLETED) {
+            ids.add(it.id)
           }
         }
-
-        ids
       }
+
+      return ids
     }
   }
 

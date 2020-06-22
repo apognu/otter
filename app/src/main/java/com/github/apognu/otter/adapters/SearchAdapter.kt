@@ -2,6 +2,8 @@ package com.github.apognu.otter.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.graphics.Typeface
 import android.os.Build
 import android.view.Gravity
@@ -69,10 +71,6 @@ class SearchAdapter(private val context: Context?, private val listener: OnSearc
     return ResultType.Track.ordinal
   }
 
-  override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-    super.onAttachedToRecyclerView(recyclerView)
-  }
-
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
     val view = when (viewType) {
       ResultType.Header.ordinal -> LayoutInflater.from(context).inflate(R.layout.row_search_header, parent, false)
@@ -93,27 +91,33 @@ class SearchAdapter(private val context: Context?, private val listener: OnSearc
         if (position == 0) {
           holder.title.text = context.getString(R.string.artists)
           holder.itemView.visibility = View.VISIBLE
+          holder.itemView.layoutParams = RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 
           if (artists.isEmpty()) {
             holder.itemView.visibility = View.GONE
+            holder.itemView.layoutParams = RecyclerView.LayoutParams(0, 0)
           }
         }
 
         if (position == (artists.size + 1)) {
           holder.title.text = context.getString(R.string.albums)
           holder.itemView.visibility = View.VISIBLE
+          holder.itemView.layoutParams = RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 
           if (albums.isEmpty()) {
             holder.itemView.visibility = View.GONE
+            holder.itemView.layoutParams = RecyclerView.LayoutParams(0, 0)
           }
         }
 
         if (position == (artists.size + albums.size + 2)) {
           holder.title.text = context.getString(R.string.tracks)
           holder.itemView.visibility = View.VISIBLE
+          holder.itemView.layoutParams = RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 
           if (tracks.isEmpty()) {
             holder.itemView.visibility = View.GONE
+            holder.itemView.layoutParams = RecyclerView.LayoutParams(0, 0)
           }
         }
       }
@@ -160,6 +164,8 @@ class SearchAdapter(private val context: Context?, private val listener: OnSearc
         holder.artist.typeface = Typeface.create(holder.artist.typeface, Typeface.NORMAL)
       })
 
+    holder.title.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+
     if (resultType == ResultType.Track.ordinal) {
       (item as? Track)?.let { track ->
         context?.let { context ->
@@ -180,6 +186,23 @@ class SearchAdapter(private val context: Context?, private val listener: OnSearc
               tracks[position - artists.size - albums.size - SECTION_COUNT].favorite = !track.favorite
 
               notifyItemChanged(position)
+            }
+          }
+
+          when (track.cached || track.downloaded) {
+            true -> holder.title.setCompoundDrawablesWithIntrinsicBounds(R.drawable.downloaded, 0, 0, 0)
+            false -> holder.title.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+          }
+
+          if (track.cached && !track.downloaded) {
+            holder.title.compoundDrawables.forEach {
+              it?.colorFilter = PorterDuffColorFilter(context.getColor(R.color.cached), PorterDuff.Mode.SRC_IN)
+            }
+          }
+
+          if (track.downloaded) {
+            holder.title.compoundDrawables.forEach {
+              it?.colorFilter = PorterDuffColorFilter(context.getColor(R.color.downloaded), PorterDuff.Mode.SRC_IN)
             }
           }
 

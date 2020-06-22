@@ -4,7 +4,6 @@ import com.github.apognu.otter.Otter
 import com.google.android.exoplayer2.offline.Download
 import com.google.android.exoplayer2.offline.DownloadCursor
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.asFlow
@@ -89,7 +88,7 @@ object CommandBus {
 object RequestBus {
   fun send(request: Request): Channel<Response> {
     return Channel<Response>().also {
-      GlobalScope.launch(Main) {
+      GlobalScope.launch(IO) {
         request.channel = it
 
         Otter.get().requestBus.offer(request)
