@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.activity_downloads.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -24,9 +25,20 @@ class DownloadsActivity : AppCompatActivity() {
 
     setContentView(R.layout.activity_downloads)
 
+    downloads.itemAnimator = null
+
     adapter = DownloadsAdapter(this, DownloadChangedListener()).also {
+      it.setHasStableIds(true)
+
       downloads.layoutManager = LinearLayoutManager(this)
       downloads.adapter = it
+    }
+
+    GlobalScope.launch(IO) {
+      while (true) {
+        delay(500)
+        refreshProgress()
+      }
     }
   }
 
@@ -74,6 +86,28 @@ class DownloadsActivity : AppCompatActivity() {
             }
 
             adapter.notifyItemChanged(match.second)
+          }
+        }
+      }
+    }
+  }
+
+  private suspend fun refreshProgress() {
+    val cursor = Otter.get().exoDownloadManager.downloadIndex.getDownloads()
+
+    while (cursor.moveToNext()) {
+      val download = cursor.download
+
+      download.getMetadata()?.let { info ->
+        adapter.downloads.withIndex().associate { it.value to it.index }.filter { it.key.id == info.id }.toList().getOrNull(0)?.let { match ->
+          if (download.state == Download.STATE_DOWNLOADING && download.percentDownloaded != info.download?.percentDownloaded ?: 0) {
+            withContext(Main) {
+              adapter.downloads[match.second] = info.apply {
+                this.download = download
+              }
+
+              adapter.notifyItemChanged(match.second)
+            }
           }
         }
       }

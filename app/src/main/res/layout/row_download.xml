@@ -5,7 +5,10 @@
   android:layout_height="wrap_content"
   android:background="?android:attr/selectableItemBackground"
   android:orientation="horizontal"
-  android:padding="16dp"
+  android:paddingStart="16dp"
+  android:paddingTop="6dp"
+  android:paddingEnd="16dp"
+  android:paddingBottom="6dp"
   tools:showIn="@layout/activity_downloads">
 
   <LinearLayout

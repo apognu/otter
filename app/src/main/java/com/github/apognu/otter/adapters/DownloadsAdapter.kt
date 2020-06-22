@@ -22,6 +22,8 @@ class DownloadsAdapter(private val context: Context, private val listener: OnDow
 
   override fun getItemCount() = downloads.size
 
+  override fun getItemId(position: Int) = downloads[position].id.toLong()
+
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
     val view = LayoutInflater.from(context).inflate(R.layout.row_download, parent, false)
 
@@ -37,12 +39,12 @@ class DownloadsAdapter(private val context: Context, private val listener: OnDow
     download.download?.let { state ->
       when (state.isTerminalState) {
         true -> {
-          holder.progress.visibility = View.GONE
+          holder.progress.visibility = View.INVISIBLE
 
           when (state.state) {
             Download.STATE_FAILED -> {
               holder.toggle.setImageDrawable(context.getDrawable(R.drawable.retry))
-              holder.progress.visibility = View.GONE
+              holder.progress.visibility = View.INVISIBLE
             }
 
             else -> holder.toggle.visibility = View.GONE
