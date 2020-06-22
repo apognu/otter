@@ -7,13 +7,13 @@
   android:background="@drawable/rounded"
   android:orientation="vertical"
   android:paddingHorizontal="12dp"
-  android:paddingVertical="8dp">
+  android:paddingVertical="6dp">
 
   <TextView
     android:id="@+id/label"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:textColor="@android:color/white"
-    android:textSize="18sp" />
+    android:textSize="16sp" />
 
 </LinearLayout>

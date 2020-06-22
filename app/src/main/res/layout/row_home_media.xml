@@ -3,13 +3,16 @@
   android:layout_width="wrap_content"
   android:layout_height="wrap_content"
   android:layout_marginHorizontal="8dp"
-  android:orientation="vertical">
+  android:background="@drawable/ripple"
+  android:orientation="vertical"
+  android:padding="8dp">
 
   <ImageView
     android:id="@+id/cover"
     android:layout_width="150dp"
     android:layout_height="150dp"
     android:layout_marginBottom="8dp"
+    android:contentDescription="@string/alt_album_cover"
     android:src="@drawable/cover" />
 
   <TextView

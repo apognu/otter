@@ -76,6 +76,7 @@ object Cache {
 
   fun set(context: Context?, key: String, value: ByteArray) = context?.let {
     with(File(it.cacheDir, key(key))) {
+      "$key (${key(key)} : $value"
       writeBytes(value)
     }
   }
