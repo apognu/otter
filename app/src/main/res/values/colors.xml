@@ -21,4 +21,6 @@
 
   <color name="downloaded">@color/colorPrimary</color>
   <color name="cached">#999999</color>
+
+  <color name="ripple">#c2def0</color>
 </resources>

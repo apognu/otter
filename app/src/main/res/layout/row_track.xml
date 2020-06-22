@@ -3,13 +3,12 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
-  android:background="?android:attr/selectableItemBackground"
+  android:layout_marginHorizontal="8dp"
+  android:layout_marginVertical="6dp"
+  android:background="@drawable/ripple"
   android:gravity="center_vertical"
   android:orientation="horizontal"
-  android:paddingStart="16dp"
-  android:paddingTop="12dp"
-  android:paddingEnd="16dp"
-  android:paddingBottom="12dp"
+  android:padding="8dp"
   android:transitionGroup="true"
   tools:showIn="@layout/fragment_tracks">
 
@@ -42,8 +41,8 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:drawableStart="@drawable/downloaded"
-      android:drawableTint="@color/controlColor"
       android:drawablePadding="8dp"
+      android:drawableTint="@color/controlColor"
       android:ellipsize="end"
       android:lines="1"
       tools:text="Absolution" />

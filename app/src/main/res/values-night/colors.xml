@@ -19,4 +19,6 @@
 
   <color name="downloaded">@color/controlColor</color>
   <color name="cached">#aeaeae</color>
+
+  <color name="ripple">#283f4e</color>
 </resources>
