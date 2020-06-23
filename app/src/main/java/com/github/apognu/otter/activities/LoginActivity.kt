@@ -107,7 +107,8 @@ class LoginActivity : AppCompatActivity() {
             Userinfo.get()?.let {
               dialog.dismiss()
               startActivity(Intent(this@LoginActivity, MainActivity::class.java))
-              finish()
+
+              return@launch finish()
             }
 
             throw Exception(getString(R.string.login_error_userinfo))
