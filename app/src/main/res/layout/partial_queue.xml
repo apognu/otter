@@ -17,7 +17,7 @@
     android:layout_gravity="center"
     android:layout_marginTop="64dp"
     android:layout_marginBottom="64dp"
-    android:drawableTop="@drawable/ottericon"
+    android:drawableTop="@drawable/ottershape"
     android:drawablePadding="16dp"
     android:drawableTint="#525252"
     android:text="@string/playback_queue_empty"

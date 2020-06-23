@@ -67,7 +67,7 @@ class MediaControlsManager(val context: Service, private val mediaSession: Media
               .setMediaSession(mediaSession.sessionToken)
               .setShowActionsInCompactView(0, 1, 2)
           )
-          .setSmallIcon(R.drawable.ottericon)
+          .setSmallIcon(R.drawable.ottershape)
           .run {
             if (cover != null) {
               try { setLargeIcon(cover.get()) } catch (_: Exception) {}
