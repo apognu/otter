@@ -6,6 +6,8 @@ import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.BrowseFragment
 import com.github.apognu.otter.repositories.Repository
 import com.github.kittinunf.fuel.core.Request
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.offline.Download
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
@@ -77,3 +79,8 @@ fun Request.authorize(): Request {
 }
 
 fun Download.getMetadata(): DownloadInfo? = Gson().fromJson(String(this.request.data), DownloadInfo::class.java)
+
+fun Player.onLocal(): SimpleExoPlayer? {
+  return if (this is SimpleExoPlayer) this
+  else null
+}

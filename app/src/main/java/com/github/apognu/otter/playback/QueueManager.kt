@@ -15,7 +15,7 @@ import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import com.google.gson.Gson
 
-class QueueManager(val context: Context) {
+class QueueManager(val context: Context, val cast: CastInterface?) {
   var metadata: MutableList<Track> = mutableListOf()
   val datasources = ConcatenatingMediaSource()
   var current = -1
@@ -84,6 +84,8 @@ class QueueManager(val context: Context) {
     datasources.clear()
     datasources.addMediaSources(sources)
 
+    cast?.replaceQueue(tracks)
+
     persist()
 
     EventBus.send(Event.QueueChanged)
@@ -101,6 +103,8 @@ class QueueManager(val context: Context) {
 
     metadata.addAll(tracks)
     datasources.addMediaSources(sources)
+
+    cast?.addToQueue(tracks)
 
     persist()
 
@@ -120,25 +124,29 @@ class QueueManager(val context: Context) {
       move(metadata.indexOf(track), current + 1)
     }
 
+    cast?.insertNext(track, current)
+
     persist()
 
     EventBus.send(Event.QueueChanged)
   }
 
   fun remove(track: Track) {
-    metadata.indexOf(track).let {
-      if (it < 0) {
+    metadata.indexOf(track).let { trackIndex ->
+      if (trackIndex < 0) {
         return
       }
 
-      datasources.removeMediaSource(it)
-      metadata.removeAt(it)
+      datasources.removeMediaSource(trackIndex)
+      metadata.removeAt(trackIndex)
 
-      if (it == current) {
+      cast?.remove(trackIndex)
+
+      if (trackIndex == current) {
         CommandBus.send(Command.NextTrack)
       }
 
-      if (it < current) {
+      if (trackIndex < current) {
         current--
       }
     }
@@ -155,6 +163,8 @@ class QueueManager(val context: Context) {
   fun move(oldPosition: Int, newPosition: Int) {
     datasources.moveMediaSource(oldPosition, newPosition)
     metadata.add(newPosition, metadata.removeAt(oldPosition))
+
+    cast?.move(oldPosition, newPosition)
 
     persist()
   }

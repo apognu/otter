@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <item
+    android:id="@+id/nav_search"
+    android:icon="@drawable/search"
+    android:title="@string/toolbar_search"
+    app:showAsAction="ifRoom" />
+
+  <item
+    android:id="@+id/nav_only_my_music"
+    android:checkable="true"
+    android:title="@string/only_my_music"
+    app:showAsAction="never" />
+
+  <item
+    android:id="@+id/settings"
+    android:icon="@drawable/settings"
+    android:iconTint="@android:color/white"
+    android:title="@string/title_settings"
+    app:showAsAction="never" />
+
+</menu>

@@ -20,6 +20,7 @@ object Userinfo {
 
           PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).apply {
             setString("actor_username", user.full_username)
+            setString("listen_token", user.tokens.listen)
           }
 
           user

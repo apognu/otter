@@ -4,8 +4,11 @@ import com.google.android.exoplayer2.offline.Download
 import com.preference.PowerPreference
 
 data class User(
-  val full_username: String
+  val full_username: String,
+  val tokens: UserTokens
 )
+
+data class UserTokens(val listen: String)
 
 sealed class CacheItem<D : Any>(val data: List<D>)
 class ArtistsCache(data: List<Artist>) : CacheItem<Artist>(data)

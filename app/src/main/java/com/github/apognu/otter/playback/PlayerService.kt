@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.IBinder
 import android.support.v4.media.session.MediaSessionCompat
 import android.view.KeyEvent
+import com.github.apognu.otter.Cast
 import com.github.apognu.otter.R
 import com.github.apognu.otter.utils.*
 import com.google.android.exoplayer2.C
@@ -30,6 +31,11 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class PlayerService : Service() {
+  interface OnPlayerSwitchListener {
+    fun switchToLocal()
+    fun switchToRemote()
+  }
+
   private lateinit var queue: QueueManager
   private val jobs = mutableListOf<Job>()
 
@@ -40,7 +46,10 @@ class PlayerService : Service() {
 
   private lateinit var mediaControlsManager: MediaControlsManager
   private lateinit var mediaSession: MediaSessionCompat
-  private lateinit var player: SimpleExoPlayer
+
+  private lateinit var player: Player
+  private lateinit var localPlayer: SimpleExoPlayer
+  private var cast: Cast? = null
 
   private lateinit var playerEventListener: PlayerEventListener
   private val headphonesUnpluggedReceiver = HeadphonesUnpluggedReceiver()
@@ -58,7 +67,6 @@ class PlayerService : Service() {
   override fun onCreate() {
     super.onCreate()
 
-    queue = QueueManager(this)
     radioPlayer = RadioPlayer(this)
 
     audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
@@ -85,12 +93,14 @@ class PlayerService : Service() {
 
     mediaControlsManager = MediaControlsManager(this, mediaSession)
 
-    player = SimpleExoPlayer.Builder(this).build().apply {
+    localPlayer = SimpleExoPlayer.Builder(this).build().apply {
       playWhenReady = false
 
       playerEventListener = PlayerEventListener().also {
         addListener(it)
       }
+
+      cast = Cast.get(this@PlayerService, PlayerSwitchListener(), playerEventListener)
 
       MediaSessionConnector(mediaSession).also {
         it.setPlayer(this)
@@ -111,8 +121,11 @@ class PlayerService : Service() {
       }
     }
 
+    player = if (cast?.isCastSessionAvailable() == true) cast!!.getPlayer(this) else localPlayer
+    queue = QueueManager(this, cast)
+
     if (queue.current > -1) {
-      player.prepare(queue.datasources, true, true)
+      player.onLocal()?.prepare(queue.datasources, true, true)
 
       Cache.get(this, "progress")?.let { progress ->
         player.seekTo(queue.current, progress.readLine().toLong())
@@ -143,7 +156,7 @@ class PlayerService : Service() {
             if (!command.fromRadio) radioPlayer.stop()
 
             queue.replace(command.queue)
-            player.prepare(queue.datasources, true, true)
+            player.onLocal()?.prepare(queue.datasources, true, true)
 
             state(true)
 
@@ -262,7 +275,7 @@ class PlayerService : Service() {
     }
 
     if (state && player.playbackState == Player.STATE_IDLE) {
-      player.prepare(queue.datasources)
+      player.onLocal()?.prepare(queue.datasources)
     }
 
     var allowed = !state
@@ -394,7 +407,7 @@ class PlayerService : Service() {
       EventBus.send(Event.PlaybackError(getString(R.string.error_playback)))
 
       queue.current++
-      player.prepare(queue.datasources, true, true)
+      player.onLocal()?.prepare(queue.datasources, true, true)
       player.seekTo(queue.current, 0)
       player.playWhenReady = true
 
@@ -406,7 +419,7 @@ class PlayerService : Service() {
     override fun onAudioFocusChange(focus: Int) {
       when (focus) {
         AudioManager.AUDIOFOCUS_GAIN -> {
-          player.volume = 1f
+          player.onLocal()?.volume = 1f
 
           state(stateWhenLostFocus)
           stateWhenLostFocus = false
@@ -424,8 +437,20 @@ class PlayerService : Service() {
 
         AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
           stateWhenLostFocus = player.playWhenReady
-          player.volume = 0.3f
+          player.onLocal()?.volume = 0.3f
         }
+      }
+    }
+  }
+
+  inner class PlayerSwitchListener : OnPlayerSwitchListener {
+    override fun switchToLocal() {
+      player = localPlayer
+    }
+
+    override fun switchToRemote() {
+      cast?.let { cast ->
+        player = cast.getPlayer(this@PlayerService)
       }
     }
   }
