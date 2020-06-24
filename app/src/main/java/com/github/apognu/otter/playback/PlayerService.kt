@@ -50,7 +50,7 @@ class PlayerService : Service() {
   private lateinit var radioPlayer: RadioPlayer
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-    watchEventBus()
+    if (jobs.isEmpty()) watchEventBus()
 
     return START_STICKY
   }
@@ -222,7 +222,10 @@ class PlayerService : Service() {
 
   @SuppressLint("NewApi")
   override fun onDestroy() {
-    jobs.forEach { it.cancel() }
+    jobs.forEach {
+      it.cancel()
+      jobs.remove(it)
+    }
 
     try {
       unregisterReceiver(headphonesUnpluggedReceiver)

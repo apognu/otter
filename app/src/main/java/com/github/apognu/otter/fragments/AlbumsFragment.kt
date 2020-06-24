@@ -1,12 +1,7 @@
 package com.github.apognu.otter.fragments
 
 import android.content.Context
-import android.graphics.Rect
-import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.style.DynamicDrawableSpan
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.appcompat.app.AppCompatActivity
@@ -24,7 +19,6 @@ import com.github.apognu.otter.repositories.AlbumsRepository
 import com.github.apognu.otter.repositories.ArtistTracksRepository
 import com.github.apognu.otter.repositories.Repository
 import com.github.apognu.otter.utils.*
-import com.github.apognu.otter.views.LoadingFlotingActionButton
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.fragment_albums.*

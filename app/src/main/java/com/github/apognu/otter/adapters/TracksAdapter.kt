@@ -158,8 +158,6 @@ class TracksAdapter(private val context: Context?, private val favoriteListener:
     }
 
     notifyItemMoved(oldPosition, newPosition)
-
-    CommandBus.send(Command.MoveFromQueue(oldPosition, newPosition))
   }
 
   inner class ViewHolder(view: View, val context: Context?) : RecyclerView.ViewHolder(view), View.OnClickListener {
@@ -186,6 +184,9 @@ class TracksAdapter(private val context: Context?, private val favoriteListener:
   }
 
   inner class TouchHelperCallback : ItemTouchHelper.Callback() {
+    var from = -1
+    var to = -1
+
     override fun isLongPressDragEnabled() = false
 
     override fun isItemViewSwipeEnabled() = false
@@ -194,7 +195,9 @@ class TracksAdapter(private val context: Context?, private val favoriteListener:
       makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0)
 
     override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
-      onItemMove(viewHolder.adapterPosition, target.adapterPosition)
+      to = target.adapterPosition
+
+      onItemMove(viewHolder.adapterPosition, to)
 
       return true
     }
@@ -204,7 +207,10 @@ class TracksAdapter(private val context: Context?, private val favoriteListener:
     override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
       if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
         context?.let {
-          viewHolder?.itemView?.background = ColorDrawable(context.getColor(R.color.colorSelected))
+          viewHolder?.let {
+            from = viewHolder.adapterPosition
+            viewHolder.itemView.background = ColorDrawable(context.getColor(R.color.colorSelected))
+          }
         }
       }
 
@@ -212,6 +218,13 @@ class TracksAdapter(private val context: Context?, private val favoriteListener:
     }
 
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+      if (from != -1 && to != -1) {
+        CommandBus.send(Command.MoveFromQueue(from, to))
+
+        from = -1
+        to = -1
+      }
+
       viewHolder.itemView.background = ColorDrawable(Color.TRANSPARENT)
 
       super.clearView(recyclerView, viewHolder)
