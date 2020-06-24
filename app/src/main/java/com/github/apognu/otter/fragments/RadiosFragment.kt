@@ -2,6 +2,7 @@ package com.github.apognu.otter.fragments
 
 import android.os.Bundle
 import androidx.core.view.forEach
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.adapters.RadiosAdapter
@@ -9,7 +10,6 @@ import com.github.apognu.otter.repositories.RadiosRepository
 import com.github.apognu.otter.utils.*
 import kotlinx.android.synthetic.main.fragment_radios.*
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -20,7 +20,7 @@ class RadiosFragment : FunkwhaleFragment<Radio, RadiosAdapter>() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    adapter = RadiosAdapter(context, RadioClickListener())
+    adapter = RadiosAdapter(context, lifecycleScope, RadioClickListener())
     repository = RadiosRepository(context)
   }
 
@@ -34,15 +34,16 @@ class RadiosFragment : FunkwhaleFragment<Radio, RadiosAdapter>() {
 
       CommandBus.send(Command.PlayRadio(radio))
 
-      GlobalScope.launch(Main) {
+      lifecycleScope.launch(Main) {
         EventBus.get().collect { message ->
           when (message) {
             is Event.RadioStarted ->
-              if (radios != null) { recycler.forEach {
-                it.isEnabled = true
-                it.isClickable = true
+              if (radios != null) {
+                recycler.forEach {
+                  it.isEnabled = true
+                  it.isClickable = true
+                }
               }
-            }
           }
         }
       }

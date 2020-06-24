@@ -21,23 +21,24 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class PlayerService : Service() {
-  private lateinit var queue: QueueManager
-  private val jobs = mutableListOf<Job>()
+  private var started = false
+  private val scope: CoroutineScope = CoroutineScope(Job() + Main)
 
   private lateinit var audioManager: AudioManager
   private var audioFocusRequest: AudioFocusRequest? = null
   private val audioFocusChangeListener = AudioFocusChange()
   private var stateWhenLostFocus = false
 
+  private lateinit var queue: QueueManager
   private lateinit var mediaControlsManager: MediaControlsManager
   private lateinit var mediaSession: MediaSessionCompat
   private lateinit var player: SimpleExoPlayer
@@ -50,7 +51,9 @@ class PlayerService : Service() {
   private lateinit var radioPlayer: RadioPlayer
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-    if (jobs.isEmpty()) watchEventBus()
+    if (!started) watchEventBus()
+
+    started = true
 
     return START_STICKY
   }
@@ -59,7 +62,7 @@ class PlayerService : Service() {
     super.onCreate()
 
     queue = QueueManager(this)
-    radioPlayer = RadioPlayer(this)
+    radioPlayer = RadioPlayer(this, scope)
 
     audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
@@ -83,7 +86,7 @@ class PlayerService : Service() {
       isActive = true
     }
 
-    mediaControlsManager = MediaControlsManager(this, mediaSession)
+    mediaControlsManager = MediaControlsManager(this, scope, mediaSession)
 
     player = SimpleExoPlayer.Builder(this).build().apply {
       playWhenReady = false
@@ -127,7 +130,7 @@ class PlayerService : Service() {
   }
 
   private fun watchEventBus() {
-    jobs.add(GlobalScope.launch(Main) {
+    scope.launch(Main) {
       CommandBus.get().collect { command ->
         when (command) {
           is Command.RefreshService -> {
@@ -193,9 +196,9 @@ class PlayerService : Service() {
           mediaControlsManager.tick()
         }
       }
-    })
+    }
 
-    jobs.add(GlobalScope.launch(Main) {
+    scope.launch(Main) {
       RequestBus.get().collect { request ->
         when (request) {
           is Request.GetCurrentTrack -> request.channel?.offer(Response.CurrentTrack(queue.current()))
@@ -203,9 +206,9 @@ class PlayerService : Service() {
           is Request.GetQueue -> request.channel?.offer(Response.Queue(queue.get()))
         }
       }
-    })
+    }
 
-    jobs.add(GlobalScope.launch(Main) {
+    scope.launch(Main) {
       while (true) {
         delay(1000)
 
@@ -215,18 +218,13 @@ class PlayerService : Service() {
           ProgressBus.send(current, duration, percent)
         }
       }
-    })
+    }
   }
 
   override fun onBind(intent: Intent?): IBinder? = null
 
   @SuppressLint("NewApi")
   override fun onDestroy() {
-    jobs.forEach {
-      it.cancel()
-      jobs.remove(it)
-    }
-
     try {
       unregisterReceiver(headphonesUnpluggedReceiver)
     } catch (_: Exception) {
@@ -372,7 +370,7 @@ class PlayerService : Service() {
       mediaControlsManager.updateNotification(queue.current(), player.playWhenReady)
 
       if (queue.get().isNotEmpty() && queue.current() == queue.get().last() && radioPlayer.isActive()) {
-        GlobalScope.launch(IO) {
+        scope.launch(IO) {
           if (radioPlayer.lock.tryAcquire()) {
             radioPlayer.prepareNextTrack()
             radioPlayer.lock.release()

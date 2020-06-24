@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.apognu.otter.R
 import com.github.apognu.otter.adapters.TracksAdapter
@@ -12,7 +13,6 @@ import com.github.apognu.otter.utils.*
 import kotlinx.android.synthetic.main.partial_queue.*
 import kotlinx.android.synthetic.main.partial_queue.view.*
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -44,7 +44,7 @@ class LandscapeQueueFragment : Fragment() {
   }
 
   private fun refresh() {
-    GlobalScope.launch(Main) {
+    activity?.lifecycleScope?.launch(Main) {
       RequestBus.send(Request.GetQueue).wait<Response.Queue>()?.let { response ->
         adapter?.let {
           it.data = response.queue.toMutableList()
@@ -63,7 +63,7 @@ class LandscapeQueueFragment : Fragment() {
   }
 
   private fun watchEventBus() {
-    GlobalScope.launch(Main) {
+    activity?.lifecycleScope?.launch(Main) {
       EventBus.get().collect { message ->
         when (message) {
           is Event.QueueChanged -> refresh()
@@ -71,7 +71,7 @@ class LandscapeQueueFragment : Fragment() {
       }
     }
 
-    GlobalScope.launch(Main) {
+    activity?.lifecycleScope?.launch(Main) {
       CommandBus.get().collect { command ->
         when (command) {
           is Command.RefreshTrack -> refresh()

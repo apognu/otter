@@ -7,17 +7,20 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.FunkwhaleAdapter
-import com.github.apognu.otter.utils.*
+import com.github.apognu.otter.utils.AppContext
+import com.github.apognu.otter.utils.Event
+import com.github.apognu.otter.utils.EventBus
+import com.github.apognu.otter.utils.Radio
 import com.github.apognu.otter.views.LoadingImageView
 import com.preference.PowerPreference
 import kotlinx.android.synthetic.main.row_radio.view.*
 import kotlinx.android.synthetic.main.row_radio_header.view.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class RadiosAdapter(val context: Context?, private val listener: OnRadioClickListener) : FunkwhaleAdapter<Radio, RadiosAdapter.ViewHolder>() {
+class RadiosAdapter(val context: Context?, val scope: CoroutineScope, private val listener: OnRadioClickListener) : FunkwhaleAdapter<Radio, RadiosAdapter.ViewHolder>() {
   interface OnRadioClickListener {
     fun onClick(holder: ViewHolder, radio: Radio)
   }
@@ -139,7 +142,7 @@ class RadiosAdapter(val context: Context?, private val listener: OnRadioClickLis
 
         art.setColorFilter(context.getColor(R.color.controlForeground))
 
-        GlobalScope.launch(Main) {
+        scope.launch(Main) {
           EventBus.get().collect { message ->
             when (message) {
               is Event.RadioStarted -> {

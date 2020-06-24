@@ -1,6 +1,7 @@
 package com.github.apognu.otter.fragments
 
 import android.os.Bundle
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.adapters.FavoritesAdapter
@@ -11,7 +12,6 @@ import com.google.android.exoplayer2.offline.Download
 import kotlinx.android.synthetic.main.fragment_favorites.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -32,7 +32,7 @@ class FavoritesFragment : FunkwhaleFragment<Track, FavoritesAdapter>() {
   override fun onResume() {
     super.onResume()
 
-    GlobalScope.launch(IO) {
+    lifecycleScope.launch(IO) {
       RequestBus.send(Request.GetCurrentTrack).wait<Response.CurrentTrack>()?.let { response ->
         withContext(Main) {
           adapter.currentTrack = response.track
@@ -49,7 +49,7 @@ class FavoritesFragment : FunkwhaleFragment<Track, FavoritesAdapter>() {
   }
 
   private fun watchEventBus() {
-    GlobalScope.launch(Main) {
+    lifecycleScope.launch(Main) {
       EventBus.get().collect { message ->
         when (message) {
           is Event.DownloadChanged -> refreshDownloadedTrack(message.download)
@@ -57,7 +57,7 @@ class FavoritesFragment : FunkwhaleFragment<Track, FavoritesAdapter>() {
       }
     }
 
-    GlobalScope.launch(Main) {
+    lifecycleScope.launch(Main) {
       CommandBus.get().collect { command ->
         when (command) {
           is Command.RefreshTrack -> refreshCurrentTrack(command.track)

@@ -5,16 +5,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.repositories.HttpUpstream
 import com.github.apognu.otter.repositories.Repository
-import com.github.apognu.otter.utils.*
+import com.github.apognu.otter.utils.Cache
+import com.github.apognu.otter.utils.Event
+import com.github.apognu.otter.utils.EventBus
+import com.github.apognu.otter.utils.untilNetwork
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_artists.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -70,7 +73,7 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
     }
 
     if (listener == null) {
-      listener = GlobalScope.launch(IO) {
+      listener = lifecycleScope.launch(IO) {
         EventBus.get().collect { event ->
           if (event is Event.ListingsChanged) {
             withContext(Main) {
@@ -92,8 +95,8 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
       swiper?.isRefreshing = true
     }
 
-    repository.fetch(upstreams, size).untilNetwork(IO) { data, isCache, hasMore ->
-      GlobalScope.launch(Main) {
+    repository.fetch(upstreams, size).untilNetwork(lifecycleScope, IO) { data, isCache, hasMore ->
+      lifecycleScope.launch(Main) {
         if (isCache) {
           adapter.data = data.toMutableList()
           adapter.notifyDataSetChanged()
@@ -112,7 +115,7 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
         if (!hasMore) {
           swiper?.isRefreshing = false
 
-          GlobalScope.launch(IO) {
+          withContext(IO) {
             if (adapter.data.isNotEmpty()) {
               try {
                 repository.cacheId?.let { cacheId ->

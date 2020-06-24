@@ -5,6 +5,7 @@ import android.view.Gravity
 import android.view.View
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.adapters.PlaylistTracksAdapter
@@ -15,7 +16,6 @@ import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.fragment_tracks.*
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -73,7 +73,7 @@ class PlaylistTracksFragment : FunkwhaleFragment<PlaylistTrack, PlaylistTracksAd
   override fun onResume() {
     super.onResume()
 
-    GlobalScope.launch(Main) {
+    lifecycleScope.launch(Main) {
       RequestBus.send(Request.GetCurrentTrack).wait<Response.CurrentTrack>()?.let { response ->
         adapter.currentTrack = response.track
         adapter.notifyDataSetChanged()
@@ -144,7 +144,7 @@ class PlaylistTracksFragment : FunkwhaleFragment<PlaylistTrack, PlaylistTracksAd
       }
 
       imageView?.let { view ->
-        GlobalScope.launch(Main) {
+        lifecycleScope.launch(Main) {
           Picasso.get()
             .maybeLoad(maybeNormalizeUrl(url))
             .fit()
@@ -157,7 +157,7 @@ class PlaylistTracksFragment : FunkwhaleFragment<PlaylistTrack, PlaylistTracksAd
   }
 
   private fun watchEventBus() {
-    GlobalScope.launch(Main) {
+    lifecycleScope.launch(Main) {
       CommandBus.get().collect { command ->
         when (command) {
           is Command.RefreshTrack -> refreshCurrentTrack(command.track)

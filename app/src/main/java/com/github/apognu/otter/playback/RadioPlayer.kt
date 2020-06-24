@@ -10,9 +10,9 @@ import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
 import com.github.kittinunf.fuel.coroutines.awaitObjectResult
 import com.github.kittinunf.fuel.gson.gsonDeserializerOf
 import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
@@ -25,7 +25,7 @@ data class RadioTrackBody(val session: Int)
 data class RadioTrack(val position: Int, val track: RadioTrackID)
 data class RadioTrackID(val id: Int)
 
-class RadioPlayer(val context: Context) {
+class RadioPlayer(val context: Context, val scope: CoroutineScope) {
   val lock = Semaphore(1)
 
   private var currentRadio: Radio? = null
@@ -52,7 +52,7 @@ class RadioPlayer(val context: Context) {
     currentRadio = radio
     session = null
 
-    GlobalScope.launch(IO) {
+    scope.launch(IO) {
       createSession()
     }
   }

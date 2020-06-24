@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import androidx.transition.Fade
@@ -24,7 +25,6 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.fragment_albums.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
@@ -126,7 +126,7 @@ class AlbumsFragment : FunkwhaleFragment<Album, AlbumsAdapter>() {
       play.icon = loader
       play.isClickable = false
 
-      GlobalScope.launch(IO) {
+      lifecycleScope.launch(IO) {
         artistTracksRepository.fetch(Repository.Origin.Network.origin)
           .map { it.data }
           .toList()

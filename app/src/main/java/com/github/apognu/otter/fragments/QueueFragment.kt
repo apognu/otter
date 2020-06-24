@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.apognu.otter.R
 import com.github.apognu.otter.adapters.TracksAdapter
@@ -18,7 +19,6 @@ import kotlinx.android.synthetic.main.fragment_queue.view.*
 import kotlinx.android.synthetic.main.partial_queue.*
 import kotlinx.android.synthetic.main.partial_queue.view.*
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -66,7 +66,7 @@ class QueueFragment : BottomSheetDialogFragment() {
   }
 
   private fun refresh() {
-    GlobalScope.launch(Main) {
+    lifecycleScope.launch(Main) {
       RequestBus.send(Request.GetQueue).wait<Response.Queue>()?.let { response ->
         included?.let { included ->
           adapter?.let {
@@ -87,7 +87,7 @@ class QueueFragment : BottomSheetDialogFragment() {
   }
 
   private fun watchEventBus() {
-    GlobalScope.launch(Main) {
+    lifecycleScope.launch(Main) {
       EventBus.get().collect { message ->
         when (message) {
           is Event.QueueChanged -> refresh()
@@ -95,7 +95,7 @@ class QueueFragment : BottomSheetDialogFragment() {
       }
     }
 
-    GlobalScope.launch(Main) {
+    lifecycleScope.launch(Main) {
       CommandBus.get().collect { command ->
         when (command) {
           is Command.RefreshTrack -> refresh()

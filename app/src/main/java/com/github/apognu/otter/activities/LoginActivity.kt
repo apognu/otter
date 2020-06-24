@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.LoginDialog
 import com.github.apognu.otter.utils.AppContext
@@ -17,7 +18,6 @@ import com.google.gson.Gson
 import com.preference.PowerPreference
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 data class FwCredentials(val token: String, val non_field_errors: List<String>?)
@@ -89,7 +89,7 @@ class LoginActivity : AppCompatActivity() {
       show(supportFragmentManager, "LoginDialog")
     }
 
-    GlobalScope.launch(Main) {
+    lifecycleScope.launch(Main) {
       try {
         val (_, response, result) = Fuel.post("$hostname/api/v1/token/", body)
           .awaitObjectResponseResult(gsonDeserializerOf(FwCredentials::class.java))
@@ -146,7 +146,7 @@ class LoginActivity : AppCompatActivity() {
       show(supportFragmentManager, "LoginDialog")
     }
 
-    GlobalScope.launch(Main) {
+    lifecycleScope.launch(Main) {
       try {
         val (_, _, result) = Fuel.get("$hostname/api/v1/tracks/")
           .awaitObjectResponseResult(gsonDeserializerOf(FwCredentials::class.java))

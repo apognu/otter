@@ -16,11 +16,11 @@ import com.github.apognu.otter.R
 import com.github.apognu.otter.activities.MainActivity
 import com.github.apognu.otter.utils.*
 import com.squareup.picasso.Picasso
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.launch
 
-class MediaControlsManager(val context: Service, private val mediaSession: MediaSessionCompat) {
+class MediaControlsManager(val context: Service, private val scope: CoroutineScope, private val mediaSession: MediaSessionCompat) {
   companion object {
     const val NOTIFICATION_ACTION_OPEN_QUEUE = 0
     const val NOTIFICATION_ACTION_PREVIOUS = 1
@@ -39,7 +39,7 @@ class MediaControlsManager(val context: Service, private val mediaSession: Media
         false -> R.drawable.play
       }
 
-      GlobalScope.launch(IO) {
+      scope.launch(Default) {
         val openIntent = Intent(context, MainActivity::class.java).apply { action = NOTIFICATION_ACTION_OPEN_QUEUE.toString() }
         val openPendingIntent = PendingIntent.getActivity(context, 0, openIntent, 0)
 

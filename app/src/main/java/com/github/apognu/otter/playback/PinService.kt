@@ -14,13 +14,16 @@ import com.google.android.exoplayer2.offline.DownloadService
 import com.google.android.exoplayer2.scheduler.Scheduler
 import com.google.android.exoplayer2.ui.DownloadNotificationHelper
 import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.*
 
 class PinService : DownloadService(AppContext.NOTIFICATION_DOWNLOADS) {
+  private val scope: CoroutineScope = CoroutineScope(Job() + Main)
+
   companion object {
     fun download(context: Context, track: Track) {
       track.bestUpload()?.let { upload ->
@@ -45,7 +48,7 @@ class PinService : DownloadService(AppContext.NOTIFICATION_DOWNLOADS) {
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
     buildResumeDownloadsIntent(this, PinService::class.java, true)
 
-    GlobalScope.launch(Main) {
+    scope.launch(Main) {
       RequestBus.get().collect { request ->
         when (request) {
           is Request.GetDownloads -> request.channel?.offer(Response.Downloads(getDownloads()))

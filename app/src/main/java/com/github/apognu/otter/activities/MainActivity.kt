@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -19,6 +18,7 @@ import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.lifecycleScope
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.*
 import com.github.apognu.otter.playback.MediaControlsManager
@@ -38,11 +38,9 @@ import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.partial_now_playing.*
-import kotlinx.android.synthetic.main.row_download.*
+import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -54,10 +52,6 @@ class MainActivity : AppCompatActivity() {
 
   private val favoriteRepository = FavoritesRepository(this)
   private val favoriteCheckRepository = FavoritedRepository(this)
-
-  private var eventBus: Job? = null
-  private var commandBus: Job? = null
-  private var progressBus: Job? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -76,22 +70,18 @@ class MainActivity : AppCompatActivity() {
       .replace(R.id.container, BrowseFragment())
       .commit()
 
-    CommandBus.send(Command.RefreshService)
+    watchEventBus()
   }
 
   override fun onResume() {
     super.onResume()
 
-    if (eventBus == null) {
-      watchEventBus()
-    }
-
-    CommandBus.send(Command.RefreshService)
-
     startService(Intent(this, PlayerService::class.java))
     DownloadService.start(this, PinService::class.java)
 
-    GlobalScope.launch(IO) {
+    CommandBus.send(Command.RefreshService)
+
+    lifecycleScope.launch(IO) {
       Userinfo.get()
     }
 
@@ -132,19 +122,6 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
-  override fun onPause() {
-    super.onPause()
-
-    eventBus?.cancel()
-    eventBus = null
-
-    commandBus?.cancel()
-    commandBus = null
-
-    progressBus?.cancel()
-    progressBus = null
-  }
-
   override fun onBackPressed() {
     if (now_playing.isOpened()) {
       now_playing.close()
@@ -156,8 +133,6 @@ class MainActivity : AppCompatActivity() {
 
   override fun onCreateOptionsMenu(menu: Menu?): Boolean {
     menuInflater.inflate(R.menu.toolbar, menu)
-
-    // CastButtonFactory.setUpMediaRouteButton(this, menu, R.id.cast)
 
     menu?.findItem(R.id.nav_only_my_music)?.isChecked = Settings.getScope() == "me"
 
@@ -210,10 +185,6 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
-  override fun onConfigurationChanged(newConfig: Configuration) {
-    super.onConfigurationChanged(newConfig)
-  }
-
   private fun launchFragment(fragment: Fragment) {
     supportFragmentManager.fragments.lastOrNull()?.also { oldFragment ->
       oldFragment.enterTransition = null
@@ -237,7 +208,7 @@ class MainActivity : AppCompatActivity() {
 
   @SuppressLint("NewApi")
   private fun watchEventBus() {
-    eventBus = GlobalScope.launch(Main) {
+    lifecycleScope.launch(Main) {
       EventBus.get().collect { message ->
         when (message) {
           is Event.LogOut -> {
@@ -312,7 +283,7 @@ class MainActivity : AppCompatActivity() {
       }
     }
 
-    commandBus = GlobalScope.launch(Main) {
+    lifecycleScope.launch(Main) {
       CommandBus.get().collect { command ->
         when (command) {
           is Command.RefreshTrack -> refreshCurrentTrack(command.track)
@@ -320,7 +291,7 @@ class MainActivity : AppCompatActivity() {
       }
     }
 
-    progressBus = GlobalScope.launch(Main) {
+    lifecycleScope.launch(Main) {
       ProgressBus.get().collect { (current, duration, percent) ->
         now_playing_progress.progress = percent
         now_playing_details_progress.progress = percent
@@ -384,7 +355,7 @@ class MainActivity : AppCompatActivity() {
       }
 
       if (now_playing_details_cover == null) {
-        GlobalScope.launch(IO) {
+        lifecycleScope.launch(Default) {
           val width = DisplayMetrics().apply {
             windowManager.defaultDisplay.getMetrics(this)
           }.widthPixels
@@ -437,8 +408,8 @@ class MainActivity : AppCompatActivity() {
       }
 
       now_playing_details_favorite?.let { now_playing_details_favorite ->
-        favoriteCheckRepository.fetch().untilNetwork(IO) { favorites, _, _ ->
-          GlobalScope.launch(Main) {
+        favoriteCheckRepository.fetch().untilNetwork(lifecycleScope, IO) { favorites, _, _ ->
+          lifecycleScope.launch(Main) {
             track.favorite = favorites.contains(track.id)
 
             when (track.favorite) {
@@ -507,7 +478,7 @@ class MainActivity : AppCompatActivity() {
 
   private fun incrementListenCount(track: Track?) {
     track?.let {
-      GlobalScope.launch(IO) {
+      lifecycleScope.launch(IO) {
         try {
           Fuel
             .post(mustNormalizeUrl("/api/v1/history/listenings/"))

@@ -5,6 +5,7 @@ import android.view.Gravity
 import android.view.View
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.adapters.TracksAdapter
@@ -17,7 +18,6 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.fragment_tracks.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -81,12 +81,10 @@ class TracksFragment : FunkwhaleFragment<Track, TracksAdapter>() {
   override fun onResume() {
     super.onResume()
 
-    GlobalScope.launch(IO) {
+    lifecycleScope.launch(Main) {
       RequestBus.send(Request.GetCurrentTrack).wait<Response.CurrentTrack>()?.let { response ->
-        withContext(Main) {
-          adapter.currentTrack = response.track
-          adapter.notifyDataSetChanged()
-        }
+        adapter.currentTrack = response.track
+        adapter.notifyDataSetChanged()
       }
 
       refreshDownloadedTracks()
@@ -138,7 +136,7 @@ class TracksFragment : FunkwhaleFragment<Track, TracksAdapter>() {
   }
 
   private fun watchEventBus() {
-    GlobalScope.launch(IO) {
+    lifecycleScope.launch(IO) {
       EventBus.get().collect { message ->
         when (message) {
           is Event.DownloadChanged -> refreshDownloadedTrack(message.download)
@@ -146,7 +144,7 @@ class TracksFragment : FunkwhaleFragment<Track, TracksAdapter>() {
       }
     }
 
-    GlobalScope.launch(Main) {
+    lifecycleScope.launch(Main) {
       CommandBus.get().collect { command ->
         when (command) {
           is Command.RefreshTrack -> refreshCurrentTrack(command.track)

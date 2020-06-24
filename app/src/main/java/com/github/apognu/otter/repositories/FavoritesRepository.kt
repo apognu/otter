@@ -9,7 +9,6 @@ import com.github.kittinunf.fuel.gson.gsonDeserializerOf
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.io.BufferedReader
@@ -47,7 +46,7 @@ class FavoritesRepository(override val context: Context?) : Repository<Track, Tr
       }
     }
 
-    GlobalScope.launch(IO) {
+    scope.launch(IO) {
       request
         .header("Content-Type", "application/json")
         .body(Gson().toJson(body))
@@ -64,7 +63,7 @@ class FavoritesRepository(override val context: Context?) : Repository<Track, Tr
       }
     }
 
-    GlobalScope.launch(IO) {
+    scope.launch(IO) {
       request
         .header("Content-Type", "application/json")
         .body(Gson().toJson(body))

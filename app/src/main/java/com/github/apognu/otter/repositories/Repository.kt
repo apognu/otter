@@ -3,7 +3,9 @@ package com.github.apognu.otter.repositories
 import android.content.Context
 import com.github.apognu.otter.utils.Cache
 import com.github.apognu.otter.utils.CacheItem
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import java.io.BufferedReader
 
@@ -12,6 +14,8 @@ interface Upstream<D> {
 }
 
 abstract class Repository<D : Any, C : CacheItem<D>> {
+  protected val scope: CoroutineScope = CoroutineScope(Job() + IO)
+
   enum class Origin(val origin: Int) {
     Cache(0b01),
     Network(0b10)

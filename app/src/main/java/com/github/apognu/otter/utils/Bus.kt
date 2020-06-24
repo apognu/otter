@@ -77,7 +77,7 @@ object EventBus {
 
 object CommandBus {
   fun send(command: Command) {
-    GlobalScope.launch {
+    GlobalScope.launch(IO) {
       Otter.get().commandBus.offer(command)
     }
   }
@@ -101,7 +101,7 @@ object RequestBus {
 
 object ProgressBus {
   fun send(current: Int, duration: Int, percent: Int) {
-    GlobalScope.launch {
+    GlobalScope.launch(IO) {
       Otter.get().progressBus.send(Triple(current, duration, percent))
     }
   }

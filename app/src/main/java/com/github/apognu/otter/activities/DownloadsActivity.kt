@@ -1,19 +1,21 @@
 package com.github.apognu.otter.activities
 
 import android.os.Bundle
-import kotlinx.coroutines.flow.collect
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
 import com.github.apognu.otter.adapters.DownloadsAdapter
-import com.github.apognu.otter.utils.*
+import com.github.apognu.otter.utils.Event
+import com.github.apognu.otter.utils.EventBus
+import com.github.apognu.otter.utils.getMetadata
 import com.google.android.exoplayer2.offline.Download
 import kotlinx.android.synthetic.main.activity_downloads.*
-import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -34,7 +36,7 @@ class DownloadsActivity : AppCompatActivity() {
       downloads.adapter = it
     }
 
-    GlobalScope.launch(IO) {
+    lifecycleScope.launch(Default) {
       while (true) {
         delay(1000)
         refreshProgress()
@@ -45,7 +47,7 @@ class DownloadsActivity : AppCompatActivity() {
   override fun onResume() {
     super.onResume()
 
-    GlobalScope.launch(IO) {
+    lifecycleScope.launch(Default) {
       EventBus.get().collect { event ->
         if (event is Event.DownloadChanged) {
           refreshTrack(event.download)
@@ -57,7 +59,7 @@ class DownloadsActivity : AppCompatActivity() {
   }
 
   private fun refresh() {
-    GlobalScope.launch(Main) {
+    lifecycleScope.launch(Main) {
       val cursor = Otter.get().exoDownloadManager.downloadIndex.getDownloads()
 
       adapter.downloads.clear()

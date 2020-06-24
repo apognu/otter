@@ -103,6 +103,7 @@ dependencies {
 
   implementation("androidx.appcompat:appcompat:1.1.0")
   implementation("androidx.core:core-ktx:1.5.0-alpha01")
+  implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.0-alpha05")
   implementation("androidx.coordinatorlayout:coordinatorlayout:1.1.0")
   implementation("androidx.preference:preference:1.1.1")
   implementation("androidx.recyclerview:recyclerview:1.1.0")
