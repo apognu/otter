@@ -160,4 +160,5 @@ data class DownloadInfo(
   val contentId: String,
   val title: String,
   val artist: String,
-  var download: Download?)
+  var download: Download?
+)

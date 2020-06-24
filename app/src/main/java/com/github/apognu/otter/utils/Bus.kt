@@ -33,6 +33,8 @@ sealed class Command {
   class PlayTrack(val index: Int) : Command()
   class PinTrack(val track: Track) : Command()
   class PinTracks(val tracks: List<Track>) : Command()
+
+  class RefreshTrack(val track: Track?) : Command()
 }
 
 sealed class Event {
@@ -41,9 +43,7 @@ sealed class Event {
   class PlaybackError(val message: String) : Event()
   object PlaybackStopped : Event()
   class Buffering(val value: Boolean) : Event()
-  class TrackPlayed(val track: Track?, val play: Boolean) : Event()
   class TrackFinished(val track: Track?) : Event()
-  class RefreshTrack(val track: Track?) : Event()
   class StateChanged(val playing: Boolean) : Event()
   object QueueChanged : Event()
   object RadioStarted : Event()
@@ -78,11 +78,11 @@ object EventBus {
 object CommandBus {
   fun send(command: Command) {
     GlobalScope.launch {
-      get().offer(command)
+      Otter.get().commandBus.offer(command)
     }
   }
 
-  fun get() = Otter.get().commandBus
+  fun get() = Otter.get().commandBus.asFlow()
 }
 
 object RequestBus {

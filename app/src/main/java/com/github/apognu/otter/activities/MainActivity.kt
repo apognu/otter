@@ -38,6 +38,7 @@ import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.partial_now_playing.*
+import kotlinx.android.synthetic.main.row_download.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.GlobalScope
@@ -54,7 +55,9 @@ class MainActivity : AppCompatActivity() {
   private val favoriteRepository = FavoritesRepository(this)
   private val favoriteCheckRepository = FavoritedRepository(this)
 
-  private var bus: Job? = null
+  private var eventBus: Job? = null
+  private var commandBus: Job? = null
+  private var progressBus: Job? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -79,7 +82,7 @@ class MainActivity : AppCompatActivity() {
   override fun onResume() {
     super.onResume()
 
-    if (bus == null) {
+    if (eventBus == null) {
       watchEventBus()
     }
 
@@ -132,8 +135,14 @@ class MainActivity : AppCompatActivity() {
   override fun onPause() {
     super.onPause()
 
-    bus?.cancel()
-    bus = null
+    eventBus?.cancel()
+    eventBus = null
+
+    commandBus?.cancel()
+    commandBus = null
+
+    progressBus?.cancel()
+    progressBus = null
   }
 
   override fun onBackPressed() {
@@ -228,7 +237,7 @@ class MainActivity : AppCompatActivity() {
 
   @SuppressLint("NewApi")
   private fun watchEventBus() {
-    bus = GlobalScope.launch(Main) {
+    eventBus = GlobalScope.launch(Main) {
       EventBus.get().collect { message ->
         when (message) {
           is Event.LogOut -> {
@@ -274,8 +283,6 @@ class MainActivity : AppCompatActivity() {
             }
           }
 
-          is Event.TrackPlayed -> refreshCurrentTrack(message.track)
-          is Event.RefreshTrack -> refreshCurrentTrack(message.track)
           is Event.TrackFinished -> incrementListenCount(message.track)
 
           is Event.StateChanged -> {
@@ -305,7 +312,15 @@ class MainActivity : AppCompatActivity() {
       }
     }
 
-    GlobalScope.launch(Main) {
+    commandBus = GlobalScope.launch(Main) {
+      CommandBus.get().collect { command ->
+        when (command) {
+          is Command.RefreshTrack -> refreshCurrentTrack(command.track)
+        }
+      }
+    }
+
+    progressBus = GlobalScope.launch(Main) {
       ProgressBus.get().collect { (current, duration, percent) ->
         now_playing_progress.progress = percent
         now_playing_details_progress.progress = percent

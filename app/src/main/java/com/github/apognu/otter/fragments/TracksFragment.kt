@@ -141,9 +141,15 @@ class TracksFragment : FunkwhaleFragment<Track, TracksAdapter>() {
     GlobalScope.launch(IO) {
       EventBus.get().collect { message ->
         when (message) {
-          is Event.TrackPlayed -> refreshCurrentTrack()
-          is Event.RefreshTrack -> refreshCurrentTrack()
           is Event.DownloadChanged -> refreshDownloadedTrack(message.download)
+        }
+      }
+    }
+
+    GlobalScope.launch(Main) {
+      CommandBus.get().collect { command ->
+        when (command) {
+          is Command.RefreshTrack -> refreshCurrentTrack(command.track)
         }
       }
     }
@@ -175,12 +181,10 @@ class TracksFragment : FunkwhaleFragment<Track, TracksAdapter>() {
     }
   }
 
-  private suspend fun refreshCurrentTrack() {
-    RequestBus.send(Request.GetCurrentTrack).wait<Response.CurrentTrack>()?.let { response ->
-      withContext(Main) {
-        adapter.currentTrack = response.track
-        adapter.notifyDataSetChanged()
-      }
+  private fun refreshCurrentTrack(track: Track?) {
+    track?.let {
+      adapter.currentTrack = track
+      adapter.notifyDataSetChanged()
     }
   }
 

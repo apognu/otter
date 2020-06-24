@@ -128,44 +128,44 @@ class PlayerService : Service() {
 
   private fun watchEventBus() {
     jobs.add(GlobalScope.launch(Main) {
-      for (message in CommandBus.get()) {
-        when (message) {
+      CommandBus.get().collect { command ->
+        when (command) {
           is Command.RefreshService -> {
             EventBus.send(Event.QueueChanged)
 
             if (queue.metadata.isNotEmpty()) {
-              EventBus.send(Event.RefreshTrack(queue.current()))
+              CommandBus.send(Command.RefreshTrack(queue.current()))
               EventBus.send(Event.StateChanged(player.playWhenReady))
             }
           }
 
           is Command.ReplaceQueue -> {
-            if (!message.fromRadio) radioPlayer.stop()
+            if (!command.fromRadio) radioPlayer.stop()
 
-            queue.replace(message.queue)
+            queue.replace(command.queue)
             player.prepare(queue.datasources, true, true)
 
             state(true)
 
-            EventBus.send(Event.RefreshTrack(queue.current()))
+            CommandBus.send(Command.RefreshTrack(queue.current()))
           }
 
-          is Command.AddToQueue -> queue.append(message.tracks)
-          is Command.PlayNext -> queue.insertNext(message.track)
-          is Command.RemoveFromQueue -> queue.remove(message.track)
-          is Command.MoveFromQueue -> queue.move(message.oldPosition, message.newPosition)
+          is Command.AddToQueue -> queue.append(command.tracks)
+          is Command.PlayNext -> queue.insertNext(command.track)
+          is Command.RemoveFromQueue -> queue.remove(command.track)
+          is Command.MoveFromQueue -> queue.move(command.oldPosition, command.newPosition)
 
           is Command.PlayTrack -> {
-            queue.current = message.index
-            player.seekTo(message.index, C.TIME_UNSET)
+            queue.current = command.index
+            player.seekTo(command.index, C.TIME_UNSET)
 
             state(true)
 
-            EventBus.send(Event.RefreshTrack(queue.current()))
+            CommandBus.send(Command.RefreshTrack(queue.current()))
           }
 
           is Command.ToggleState -> toggle()
-          is Command.SetState -> state(message.state)
+          is Command.SetState -> state(command.state)
 
           is Command.NextTrack -> {
             player.next()
@@ -174,19 +174,19 @@ class PlayerService : Service() {
             ProgressBus.send(0, 0, 0)
           }
           is Command.PreviousTrack -> previousTrack()
-          is Command.Seek -> progress(message.progress)
+          is Command.Seek -> progress(command.progress)
 
           is Command.ClearQueue -> queue.clear()
 
           is Command.PlayRadio -> {
             queue.clear()
-            radioPlayer.play(message.radio)
+            radioPlayer.play(command.radio)
           }
 
-          is Command.SetRepeatMode -> player.repeatMode = message.mode
+          is Command.SetRepeatMode -> player.repeatMode = command.mode
 
-          is Command.PinTrack -> PinService.download(this@PlayerService, message.track)
-          is Command.PinTracks -> message.tracks.forEach { PinService.download(this@PlayerService, it) }
+          is Command.PinTrack -> PinService.download(this@PlayerService, command.track)
+          is Command.PinTracks -> command.tracks.forEach { PinService.download(this@PlayerService, it) }
         }
 
         if (player.playWhenReady) {
@@ -337,7 +337,7 @@ class PlayerService : Service() {
       EventBus.send(Event.StateChanged(playWhenReady))
 
       if (queue.current == -1) {
-        EventBus.send(Event.TrackPlayed(queue.current(), playWhenReady))
+        CommandBus.send(Command.RefreshTrack(queue.current()))
       }
 
       when (playWhenReady) {
@@ -379,7 +379,7 @@ class PlayerService : Service() {
 
       Cache.set(this@PlayerService, "current", queue.current.toString().toByteArray())
 
-      EventBus.send(Event.RefreshTrack(queue.current()))
+      CommandBus.send(Command.RefreshTrack(queue.current()))
     }
 
     override fun onPositionDiscontinuity(reason: Int) {
@@ -398,7 +398,7 @@ class PlayerService : Service() {
       player.seekTo(queue.current, 0)
       player.playWhenReady = true
 
-      EventBus.send(Event.RefreshTrack(queue.current()))
+      CommandBus.send(Command.RefreshTrack(queue.current()))
     }
   }
 

@@ -14,7 +14,6 @@ import com.google.android.exoplayer2.upstream.cache.NoOpCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.preference.PowerPreference
 import kotlinx.coroutines.channels.BroadcastChannel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -29,7 +28,7 @@ class Otter : Application() {
   var defaultExceptionHandler: Thread.UncaughtExceptionHandler? = null
 
   val eventBus: BroadcastChannel<Event> = BroadcastChannel(10)
-  val commandBus: Channel<Command> = Channel(10)
+  val commandBus: BroadcastChannel<Command> = BroadcastChannel(10)
   val requestBus: BroadcastChannel<Request> = BroadcastChannel(10)
   val progressBus: BroadcastChannel<Triple<Int, Int, Int>> = ConflatedBroadcastChannel()
 

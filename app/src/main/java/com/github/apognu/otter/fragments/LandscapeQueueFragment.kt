@@ -66,9 +66,15 @@ class LandscapeQueueFragment : Fragment() {
     GlobalScope.launch(Main) {
       EventBus.get().collect { message ->
         when (message) {
-          is Event.TrackPlayed -> refresh()
-          is Event.RefreshTrack -> refresh()
           is Event.QueueChanged -> refresh()
+        }
+      }
+    }
+
+    GlobalScope.launch(Main) {
+      CommandBus.get().collect { command ->
+        when (command) {
+          is Command.RefreshTrack -> refresh()
         }
       }
     }

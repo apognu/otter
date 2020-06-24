@@ -13,8 +13,9 @@ import androidx.preference.SeekBarPreference
 import com.github.apognu.otter.BuildConfig
 import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
-import com.github.apognu.otter.utils.*
-import com.preference.PowerPreference
+import com.github.apognu.otter.utils.Cache
+import com.github.apognu.otter.utils.Command
+import com.github.apognu.otter.utils.CommandBus
 
 class SettingsActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {

@@ -52,9 +52,15 @@ class FavoritesFragment : FunkwhaleFragment<Track, FavoritesAdapter>() {
     GlobalScope.launch(Main) {
       EventBus.get().collect { message ->
         when (message) {
-          is Event.TrackPlayed -> refreshCurrentTrack()
-          is Event.RefreshTrack -> refreshCurrentTrack()
           is Event.DownloadChanged -> refreshDownloadedTrack(message.download)
+        }
+      }
+    }
+
+    GlobalScope.launch(Main) {
+      CommandBus.get().collect { command ->
+        when (command) {
+          is Command.RefreshTrack -> refreshCurrentTrack(command.track)
         }
       }
     }
@@ -86,12 +92,10 @@ class FavoritesFragment : FunkwhaleFragment<Track, FavoritesAdapter>() {
     }
   }
 
-  private fun refreshCurrentTrack() {
-    GlobalScope.launch(Main) {
-      RequestBus.send(Request.GetCurrentTrack).wait<Response.CurrentTrack>()?.let { response ->
-        adapter.currentTrack = response.track
-        adapter.notifyDataSetChanged()
-      }
+  private fun refreshCurrentTrack(track: Track?) {
+    track?.let {
+      adapter.currentTrack = track
+      adapter.notifyDataSetChanged()
     }
   }
 
