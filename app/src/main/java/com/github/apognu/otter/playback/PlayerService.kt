@@ -59,7 +59,7 @@ class PlayerService : Service() {
   private lateinit var radioPlayer: RadioPlayer
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-    watchEventBus()
+    if (jobs.isEmpty()) watchEventBus()
 
     return START_STICKY
   }
@@ -235,7 +235,10 @@ class PlayerService : Service() {
 
   @SuppressLint("NewApi")
   override fun onDestroy() {
-    jobs.forEach { it.cancel() }
+    jobs.forEach {
+      it.cancel()
+      jobs.remove(it)
+    }
 
     try {
       unregisterReceiver(headphonesUnpluggedReceiver)
@@ -356,7 +359,7 @@ class PlayerService : Service() {
       when (playWhenReady) {
         true -> {
           when (playbackState) {
-            Player.STATE_READY -> mediaControlsManager.updateNotification(queue.current(), true)
+            Player.STATE_READY -> player.onLocal()?.also { mediaControlsManager.updateNotification(queue.current(), true) }
             Player.STATE_BUFFERING -> EventBus.send(Event.Buffering(true))
             Player.STATE_ENDED -> EventBus.send(Event.PlaybackStopped)
           }
@@ -379,7 +382,7 @@ class PlayerService : Service() {
       super.onTracksChanged(trackGroups, trackSelections)
 
       queue.current = player.currentWindowIndex
-      mediaControlsManager.updateNotification(queue.current(), player.playWhenReady)
+      player.onLocal()?.also { mediaControlsManager.updateNotification(queue.current(), player.playWhenReady) }
 
       if (queue.get().isNotEmpty() && queue.current() == queue.get().last() && radioPlayer.isActive()) {
         GlobalScope.launch(IO) {

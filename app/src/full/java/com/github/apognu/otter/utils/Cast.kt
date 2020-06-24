@@ -4,10 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.view.Menu
 import com.github.apognu.otter.playback.PlayerService
-import com.github.apognu.otter.utils.AppContext
-import com.github.apognu.otter.utils.CastInterface
-import com.github.apognu.otter.utils.Track
-import com.github.apognu.otter.utils.mustNormalizeUrl
+import com.github.apognu.otter.utils.*
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.Timeline
 import com.google.android.exoplayer2.ext.cast.CastPlayer
@@ -58,7 +55,9 @@ class Cast(val context: Context, val switchListener: PlayerService.OnPlayerSwitc
       tracks
         .map { track -> buildMediaQueueItem(track) }
         .apply {
-          castPlayer.loadItems(this.toTypedArray(), 0, 0, Player.REPEAT_MODE_OFF)
+          castPlayer.loadItems(this.toTypedArray(), 0, 0, Player.REPEAT_MODE_OFF).also { result ->
+            result?.addStatusListener { debugQueue() }
+          }
           castPlayer.playWhenReady = true
         }
     }
@@ -69,7 +68,9 @@ class Cast(val context: Context, val switchListener: PlayerService.OnPlayerSwitc
       tracks
         .map { track -> buildMediaQueueItem(track) }
         .forEach {
-          castPlayer.addItems(it)
+          castPlayer.addItems(it).also { result ->
+            result?.addStatusListener { debugQueue() }
+          }
         }
     }
   }
@@ -80,7 +81,9 @@ class Cast(val context: Context, val switchListener: PlayerService.OnPlayerSwitc
         player.currentTimeline.getPeriod(current + 1, this)
       }
 
-      castPlayer.addItems(period.id.toString().toInt(), buildMediaQueueItem(track))
+      castPlayer.addItems(period.id.toString().toInt(), buildMediaQueueItem(track)).also { result ->
+        result?.addStatusListener { debugQueue() }
+      }
     }
   }
 
@@ -90,7 +93,9 @@ class Cast(val context: Context, val switchListener: PlayerService.OnPlayerSwitc
         player.currentTimeline.getPeriod(index, this)
       }
 
-      castPlayer.removeItem(period.id.toString().toInt())
+      castPlayer.removeItem(period.id.toString().toInt()).also { result ->
+        result?.addStatusListener { debugQueue() }
+      }
     }
   }
 
@@ -100,7 +105,29 @@ class Cast(val context: Context, val switchListener: PlayerService.OnPlayerSwitc
         player.currentTimeline.getPeriod(oldPosition, this)
       }
 
-      castPlayer.moveItem(period.id.toString().toInt(), newPosition)
+      castPlayer.moveItem(period.id.toString().toInt(), newPosition).also { result ->
+        result?.addStatusListener { debugQueue() }
+      }
+    }
+  }
+
+  private fun debugQueue() {
+    if (BuildConfig.DEBUG) {
+      player.onCast()?.let { castPlayer ->
+        "START queue".log()
+
+        for (index in 0 until castPlayer.currentTimeline.periodCount) {
+          val period = Timeline.Period().run {
+            player.currentTimeline.getPeriod(index, this)
+          }
+
+          castPlayer.getItem(period.id as Int)?.let { item ->
+            "${item.media.metadata.getString(MediaMetadata.KEY_ARTIST)} - ${item.media.metadata.getString(MediaMetadata.KEY_TITLE)}".log()
+          }
+        }
+
+        "END queue".log()
+      }
     }
   }
 

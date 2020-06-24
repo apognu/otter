@@ -24,7 +24,6 @@ import com.github.apognu.otter.repositories.AlbumsRepository
 import com.github.apognu.otter.repositories.ArtistTracksRepository
 import com.github.apognu.otter.repositories.Repository
 import com.github.apognu.otter.utils.*
-import com.github.apognu.otter.views.LoadingFlotingActionButton
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.fragment_albums.*
