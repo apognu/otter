@@ -56,20 +56,23 @@
               app:layout_constraintVertical_bias="0"
               tools:src="@tools:sample/avatars" />
 
-            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            <com.google.android.material.button.MaterialButton
               android:id="@+id/play"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
               android:backgroundTint="@color/colorPrimary"
-              android:elevation="10dp"
+              android:paddingHorizontal="16dp"
+              android:paddingVertical="8dp"
               android:text="@string/playback_shuffle"
               android:textColor="@android:color/white"
               app:icon="@drawable/play"
+              app:iconSize="24dp"
               app:iconTint="@android:color/white"
               app:layout_constraintBottom_toBottomOf="@id/cover"
               app:layout_constraintLeft_toLeftOf="@id/cover"
               app:layout_constraintRight_toRightOf="@id/cover"
-              app:layout_constraintTop_toBottomOf="@id/cover" />
+              app:layout_constraintTop_toBottomOf="@id/cover"
+              app:rippleColor="@color/ripple" />
 
           </androidx.constraintlayout.widget.ConstraintLayout>
 

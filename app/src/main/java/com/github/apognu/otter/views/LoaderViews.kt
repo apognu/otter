@@ -6,30 +6,6 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.ImageView
 import com.github.apognu.otter.R
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-
-object LoadingFlotingActionButton {
-  fun start(button: ExtendedFloatingActionButton): ObjectAnimator {
-    button.isEnabled = false
-    button.setIconResource(R.drawable.fab_spinner)
-    button.shrink()
-
-    return ObjectAnimator.ofFloat(button, View.ROTATION, 0f, 360f).apply {
-      duration = 500
-      repeatCount = ObjectAnimator.INFINITE
-      start()
-    }
-  }
-
-  fun stop(button: ExtendedFloatingActionButton, animator: ObjectAnimator) {
-    animator.cancel()
-
-    button.isEnabled = true
-    button.setIconResource(R.drawable.play)
-    button.rotation = 0.0f
-    button.extend()
-  }
-}
 
 object LoadingImageView {
   fun start(context: Context?, image: ImageView): ObjectAnimator? {

@@ -49,18 +49,20 @@
           android:layout_marginBottom="16dp"
           android:text="@string/favorites" />
 
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        <com.google.android.material.button.MaterialButton
           android:id="@+id/play"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_centerHorizontal="true"
-          android:layout_marginTop="16dp"
+          android:layout_marginTop="8dp"
           android:backgroundTint="@color/colorPrimary"
-          android:elevation="10dp"
+          android:paddingHorizontal="16dp"
+          android:paddingVertical="8dp"
           android:text="@string/playback_shuffle"
           android:textColor="@android:color/white"
           app:icon="@drawable/play"
-          app:iconTint="@android:color/white" />
+          app:iconTint="@android:color/white"
+          app:rippleColor="@color/ripple" />
 
       </RelativeLayout>
 

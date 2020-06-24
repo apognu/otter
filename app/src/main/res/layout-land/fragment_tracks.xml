@@ -40,7 +40,7 @@
             <ImageView
               android:id="@+id/cover"
               android:layout_width="match_parent"
-              android:layout_height="100dp"
+              android:layout_height="250dp"
               android:layout_margin="8dp"
               android:contentDescription="@string/alt_album_cover"
               android:scaleType="centerCrop"
@@ -56,6 +56,7 @@
               android:id="@+id/covers"
               android:layout_width="match_parent"
               android:layout_height="250dp"
+              android:layout_margin="8dp"
               android:visibility="gone"
               app:layout_constraintBottom_toBottomOf="parent"
               app:layout_constraintEnd_toEndOf="parent"
@@ -128,12 +129,13 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            <com.google.android.material.button.MaterialButton
               android:id="@+id/play"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
               android:backgroundTint="@color/colorPrimary"
-              android:elevation="10dp"
+              android:paddingHorizontal="16dp"
+              android:paddingVertical="8dp"
               android:text="@string/playback_shuffle"
               android:textColor="@android:color/white"
               app:icon="@drawable/play"
@@ -141,7 +143,8 @@
               app:layout_constraintBottom_toBottomOf="@id/cover"
               app:layout_constraintLeft_toLeftOf="@id/cover"
               app:layout_constraintRight_toRightOf="@id/cover"
-              app:layout_constraintTop_toBottomOf="@id/cover" />
+              app:layout_constraintTop_toBottomOf="@id/cover"
+              app:rippleColor="@color/ripple" />
 
           </androidx.constraintlayout.widget.ConstraintLayout>
 

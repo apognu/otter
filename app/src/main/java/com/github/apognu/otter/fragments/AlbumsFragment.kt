@@ -1,13 +1,20 @@
 package com.github.apognu.otter.fragments
 
 import android.content.Context
+import android.graphics.Rect
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.DynamicDrawableSpan
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import androidx.transition.Fade
 import androidx.transition.Slide
 import com.github.apognu.otter.R
@@ -115,7 +122,15 @@ class AlbumsFragment : FunkwhaleFragment<Album, AlbumsAdapter>() {
     artist.text = artistName
 
     play.setOnClickListener {
-      val loaderAnimation = LoadingFlotingActionButton.start(play)
+      val loader = CircularProgressDrawable(requireContext()).apply {
+        setColorSchemeColors(ContextCompat.getColor(requireContext(), android.R.color.white))
+        strokeWidth = 4f
+      }
+
+      loader.start()
+
+      play.icon = loader
+      play.isClickable = false
 
       GlobalScope.launch(IO) {
         artistTracksRepository.fetch(Repository.Origin.Network.origin)
@@ -127,7 +142,8 @@ class AlbumsFragment : FunkwhaleFragment<Album, AlbumsAdapter>() {
             CommandBus.send(Command.ReplaceQueue(it))
 
             withContext(Main) {
-              LoadingFlotingActionButton.stop(play, loaderAnimation)
+              play.icon = requireContext().getDrawable(R.drawable.play)
+              play.isClickable = true
             }
           }
       }
