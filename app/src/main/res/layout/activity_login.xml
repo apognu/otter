@@ -16,7 +16,7 @@
       android:layout_height="128dp"
       android:layout_marginBottom="32dp"
       android:contentDescription="@string/alt_app_logo"
-      android:src="@drawable/ottershape"
+      android:src="@drawable/otter"
       android:tint="@android:color/white" />
 
     <TextView
@@ -45,6 +45,7 @@
         android:hint="@string/login_hostname"
         android:inputType="textUri"
         android:lines="1"
+        android:text="@string/debug.hostname"
         android:textColor="@android:color/white"
         android:textCursorDrawable="@null" />
 
@@ -85,6 +86,7 @@
         android:layout_height="wrap_content"
         android:inputType="textEmailAddress"
         android:lines="1"
+        android:text="@string/debug.username"
         android:textColor="@android:color/white"
         android:textCursorDrawable="@null" />
 
@@ -110,6 +112,7 @@
         android:layout_height="wrap_content"
         android:inputType="textPassword"
         android:lines="1"
+        android:text="@string/debug.password"
         android:textColor="@android:color/white"
         android:textCursorDrawable="@null" />
 

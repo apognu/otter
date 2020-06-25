@@ -40,7 +40,7 @@
             <ImageView
               android:id="@+id/cover"
               android:layout_width="match_parent"
-              android:layout_height="250dp"
+              android:layout_height="100dp"
               android:layout_margin="8dp"
               android:contentDescription="@string/alt_album_cover"
               android:scaleType="centerCrop"
@@ -55,7 +55,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
               android:id="@+id/covers"
               android:layout_width="match_parent"
-              android:layout_height="250dp"
+              android:layout_height="100dp"
               android:layout_margin="8dp"
               android:visibility="gone"
               app:layout_constraintBottom_toBottomOf="parent"
