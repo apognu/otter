@@ -1,5 +1,3 @@
-import org.gradle.kotlin.dsl.*
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
 import org.jetbrains.kotlin.konan.properties.hasProperty
 import java.io.FileInputStream
 import java.util.*
@@ -15,7 +13,10 @@ plugins {
 }
 
 val props = Properties().apply {
-  try { load(FileInputStream(rootProject.file("local.properties"))) } catch (e: Exception) {}
+  try {
+    load(FileInputStream(rootProject.file("local.properties")))
+  } catch (e: Exception) {
+  }
 }
 
 androidGitVersion {
@@ -30,9 +31,7 @@ android {
   }
 
   kotlinOptions {
-    (this as KotlinJvmOptions).apply {
-      jvmTarget = JavaVersion.VERSION_1_8.toString()
-    }
+    jvmTarget = JavaVersion.VERSION_1_8.toString()
   }
 
   buildToolsVersion = "29.0.3"
@@ -64,6 +63,10 @@ android {
   buildTypes {
     getByName("debug") {
       isDebuggable = true
+
+      resValue("string", "debug.hostname", props.getProperty("debug.hostname", ""))
+      resValue("string", "debug.username", props.getProperty("debug.username", ""))
+      resValue("string", "debug.password", props.getProperty("debug.password", ""))
     }
 
     getByName("release") {
@@ -71,10 +74,13 @@ android {
         signingConfig = signingConfigs.getByName("release")
       }
 
-      isMinifyEnabled = false
+      isMinifyEnabled = true
+      isShrinkResources = true
 
-      proguardFile(getDefaultProguardFile("proguard-android-optimize.txt"))
-      proguardFile("proguard-rules.pro")
+      proguardFiles(
+        getDefaultProguardFile("proguard-android-optimize.txt"),
+        "proguard-rules.pro"
+      )
     }
   }
 }
@@ -97,9 +103,9 @@ play {
 dependencies {
   implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar", "*.aar"))))
 
-  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.71")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.6")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.6")
+  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.72")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.7")
 
   implementation("androidx.appcompat:appcompat:1.1.0")
   implementation("androidx.core:core-ktx:1.5.0-alpha01")
@@ -107,7 +113,7 @@ dependencies {
   implementation("androidx.coordinatorlayout:coordinatorlayout:1.1.0")
   implementation("androidx.preference:preference:1.1.1")
   implementation("androidx.recyclerview:recyclerview:1.1.0")
-  implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
+  implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
   implementation("com.google.android.material:material:1.3.0-alpha01")
   implementation("com.android.support.constraint:constraint-layout:1.1.3")
 
