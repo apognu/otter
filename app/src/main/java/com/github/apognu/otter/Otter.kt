@@ -36,9 +36,11 @@ class Otter : Application() {
 
   val exoCache: SimpleCache by lazy {
     PowerPreference.getDefaultFile().getInt("media_cache_size", 1).toLong().let {
+      val cacheSize = if (it == 0L) 0 else it * 1024 * 1024 * 1024
+
       SimpleCache(
         cacheDir.resolve("media"),
-        LeastRecentlyUsedCacheEvictor(it * 1024 * 1024 * 1024),
+        LeastRecentlyUsedCacheEvictor(cacheSize),
         exoDatabase
       )
     }
