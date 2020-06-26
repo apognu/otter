@@ -23,6 +23,8 @@ object AppContext {
   const val PAGE_SIZE = 50
   const val TRANSITION_DURATION = 300L
 
+  const val HOME_CACHE_DURATION = 15 * 60 * 1000
+
   fun init(context: Activity) {
     setupNotificationChannels(context)
 

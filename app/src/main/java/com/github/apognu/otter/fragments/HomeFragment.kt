@@ -1,10 +1,13 @@
 package com.github.apognu.otter.fragments
 
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.apognu.otter.R
 import com.github.apognu.otter.adapters.home.HomeMediaAdapter
@@ -29,10 +32,8 @@ import java.util.*
 
 class HomeFragment : Fragment() {
   interface OnHomeClickListener {
-    fun onClick(artist: Artist? = null, album: Album? = null, track: Track? = null)
+    fun onClick(view: View?, artist: Artist? = null, album: Album? = null, track: Track? = null)
   }
-
-  val CACHE_DURATION = 15 * 60 * 1000
 
   private var bus: Job? = null
 
@@ -55,9 +56,9 @@ class HomeFragment : Fragment() {
     recentlyListenedRepository = RecentlyListenedRepository(context)
 
     tagsAdapter = HomeMediaAdapter(context, ItemType.Tag, R.layout.row_tag)
-    randomAdapter = HomeMediaAdapter(context, ItemType.Artist, listener = ArtistClickListener())
-    recentlyAddedAdapter = HomeMediaAdapter(context, ItemType.Track)
-    recentlyListenedAdapter = HomeMediaAdapter(context, ItemType.Track)
+    randomAdapter = HomeMediaAdapter(context, ItemType.Artist, listener = HomeMediaClickListener())
+    recentlyAddedAdapter = HomeMediaAdapter(context, ItemType.Track, listener = HomeMediaClickListener())
+    recentlyListenedAdapter = HomeMediaAdapter(context, ItemType.Track, listener = HomeMediaClickListener())
   }
 
   override fun onResume() {
@@ -119,7 +120,7 @@ class HomeFragment : Fragment() {
     repository.cacheId?.let { cacheId ->
       repository.cache(listOf())?.let {
         Cache.get(context, "$cacheId-at")?.readLine()?.toLong()?.let { date ->
-          return if ((Date().time - date) < CACHE_DURATION) Repository.Origin.Cache
+          return if ((Date().time - date) < AppContext.HOME_CACHE_DURATION) Repository.Origin.Cache
           else Repository.Origin.Network
         }
       }
@@ -128,7 +129,7 @@ class HomeFragment : Fragment() {
     return Repository.Origin.Network
   }
 
-  private fun <T: Any> cache(repository: Repository<T, *>, data: List<T>) {
+  private fun <T : Any> cache(repository: Repository<T, *>, data: List<T>) {
     repository.cacheId?.let { cacheId ->
       repository.cache(data)?.let { cache ->
         Cache.set(
@@ -143,7 +144,7 @@ class HomeFragment : Fragment() {
   }
 
   private fun refresh(force: Boolean = false) {
-    tagsRepository.fetch(originFor(tagsRepository, force).origin).untilNetwork(IO) { data, isCache, _ ->
+    tagsRepository.fetch(originFor(tagsRepository, force).origin).untilNetwork(lifecycleScope, IO) { data, isCache, _ ->
       GlobalScope.launch(Main) {
         tagsAdapter.data = data.map { HomeMediaAdapter.HomeMediaItem(it.name, null) }
         tagsAdapter.notifyDataSetChanged()
@@ -155,7 +156,7 @@ class HomeFragment : Fragment() {
       }
     }
 
-    randomArtistsRepository.fetch(originFor(randomArtistsRepository, force).origin).untilNetwork(IO) { data, isCache, _ ->
+    randomArtistsRepository.fetch(originFor(randomArtistsRepository, force).origin).untilNetwork(lifecycleScope, IO) { data, isCache, _ ->
       GlobalScope.launch(Main) {
         randomAdapter.data = data.map { HomeMediaAdapter.HomeMediaItem(it.name, it.albums?.getOrNull(0)?.cover?.original, artist = it) }
         randomAdapter.notifyDataSetChanged()
@@ -167,9 +168,9 @@ class HomeFragment : Fragment() {
       }
     }
 
-    recentlyListenedRepository.fetch(originFor(recentlyListenedRepository, force).origin).untilNetwork(IO) { data, isCache, _ ->
+    recentlyListenedRepository.fetch(originFor(recentlyListenedRepository, force).origin).untilNetwork(lifecycleScope, IO) { data, isCache, _ ->
       GlobalScope.launch(Main) {
-        recentlyListenedAdapter.data = data.map { HomeMediaAdapter.HomeMediaItem(it.track.title, it.track.album.cover.original) }
+        recentlyListenedAdapter.data = data.map { HomeMediaAdapter.HomeMediaItem(it.track.title, it.track.album.cover.original, track = it.track) }
         recentlyListenedAdapter.notifyDataSetChanged()
 
         recently_listened_loader?.visibility = View.GONE
@@ -179,9 +180,9 @@ class HomeFragment : Fragment() {
       }
     }
 
-    recentlyAddedRepository.fetch(originFor(recentlyAddedRepository, force).origin).untilNetwork(IO) { data, isCache, _ ->
+    recentlyAddedRepository.fetch(originFor(recentlyAddedRepository, force).origin).untilNetwork(lifecycleScope, IO) { data, isCache, _ ->
       GlobalScope.launch(Main) {
-        recentlyAddedAdapter.data = data.map { HomeMediaAdapter.HomeMediaItem(it.title, it.album.cover.original) }
+        recentlyAddedAdapter.data = data.map { HomeMediaAdapter.HomeMediaItem(it.title, it.album.cover.original, track = it) }
         recentlyAddedAdapter.notifyDataSetChanged()
 
         recently_added_loader?.visibility = View.GONE
@@ -192,10 +193,31 @@ class HomeFragment : Fragment() {
     }
   }
 
-  inner class ArtistClickListener : OnHomeClickListener {
-    override fun onClick(artist: Artist?, album: Album?, track: Track?) {
+  inner class HomeMediaClickListener : OnHomeClickListener {
+    override fun onClick(view: View?, artist: Artist?, album: Album?, track: Track?) {
       artist?.let {
         ArtistsFragment.openAlbums(context, artist)
+      }
+
+      track?.let {
+        context?.let {
+          PopupMenu(context, view, Gravity.TOP, R.attr.actionOverflowMenuStyle, 0).apply {
+            inflate(R.menu.row_track)
+
+            menu.findItem(R.id.track_pin).isVisible = false
+
+            setOnMenuItemClickListener {
+              when (it.itemId) {
+                R.id.track_add_to_queue -> CommandBus.send(Command.AddToQueue(listOf(track)))
+                R.id.track_play_next -> CommandBus.send(Command.PlayNext(track))
+              }
+
+              true
+            }
+
+            show()
+          }
+        }
       }
     }
   }

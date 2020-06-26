@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.HomeFragment
 import com.github.apognu.otter.utils.Artist
+import com.github.apognu.otter.utils.Track
+import com.github.apognu.otter.utils.log
 import com.github.apognu.otter.utils.mustNormalizeUrl
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
@@ -27,7 +29,8 @@ class HomeMediaAdapter(
   data class HomeMediaItem(
     val label: String,
     val cover: String?,
-    val artist: Artist? = null
+    val artist: Artist? = null,
+    val track: Track? = null
   )
 
   var data: List<HomeMediaItem> = listOf()
@@ -64,7 +67,8 @@ class HomeMediaAdapter(
 
     override fun onClick(view: View?) {
       when {
-        kind == ItemType.Artist -> listener?.onClick(artist = data[layoutPosition].artist)
+        kind == ItemType.Artist -> listener?.onClick(view, artist = data[layoutPosition].artist)
+        kind == ItemType.Track -> listener?.onClick(view, track = data[layoutPosition].track)
       }
     }
   }
