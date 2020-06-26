@@ -55,19 +55,14 @@ class FavoritesAdapter(private val context: Context?, private val favoriteListen
     holder.title.text = favorite.title
     holder.artist.text = favorite.artist.name
 
-    Build.VERSION_CODES.P.onApi(
-      {
-        holder.title.setTypeface(holder.title.typeface, Typeface.DEFAULT.weight)
-        holder.artist.setTypeface(holder.artist.typeface, Typeface.DEFAULT.weight)
-      },
-      {
-        holder.title.typeface = Typeface.create(holder.title.typeface, Typeface.NORMAL)
-        holder.artist.typeface = Typeface.create(holder.artist.typeface, Typeface.NORMAL)
-      })
+    context?.let {
+      holder.itemView.background = context.getDrawable(R.drawable.ripple)
+    }
 
     if (favorite.id == currentTrack?.id) {
-      holder.title.setTypeface(holder.title.typeface, Typeface.BOLD)
-      holder.artist.setTypeface(holder.artist.typeface, Typeface.BOLD)
+      context?.let {
+        holder.itemView.background = context.getDrawable(R.drawable.current)
+      }
     }
 
     context?.let {

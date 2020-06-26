@@ -94,7 +94,10 @@ class FavoritesFragment : FunkwhaleFragment<Track, FavoritesAdapter>() {
 
   private fun refreshCurrentTrack(track: Track?) {
     track?.let {
-      adapter.currentTrack = track
+      adapter.currentTrack?.current = false
+      adapter.currentTrack = track.apply {
+        current = true
+      }
       adapter.notifyDataSetChanged()
     }
   }

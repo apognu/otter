@@ -19,6 +19,7 @@
   <color name="whiteWhileLight">#ffffff</color>
   <color name="blackWhileLight">#000000</color>
 
+  <color name="current">#dfecf5</color>
   <color name="downloaded">@color/colorPrimary</color>
   <color name="cached">#999999</color>
 

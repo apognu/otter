@@ -11,12 +11,13 @@
   <color name="itemTitle">#abffffff</color>
 
   <color name="controlForeground">#caffffff</color>
-  <color name="controlColor">#53bce7</color>
+  <color name="controlColor">#77a8c7</color>
   <color name="controlAccent">#304A5A</color>
 
   <color name="whiteWhileLight">#000000</color>
   <color name="blackWhileLight">#ffffff</color>
 
+  <color name="current">#1f2e38</color>
   <color name="downloaded">@color/controlColor</color>
   <color name="cached">#aeaeae</color>
 
