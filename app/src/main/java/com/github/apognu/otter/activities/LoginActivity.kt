@@ -1,10 +1,13 @@
 package com.github.apognu.otter.activities
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.doOnLayout
 import androidx.lifecycle.lifecycleScope
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.LoginDialog
@@ -27,6 +30,8 @@ class LoginActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
 
     setContentView(R.layout.activity_login)
+
+    limitContainerWidth()
   }
 
   override fun onResume() {
@@ -77,6 +82,12 @@ class LoginActivity : AppCompatActivity() {
         hostname_field.error = message
       }
     }
+  }
+
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    super.onConfigurationChanged(newConfig)
+
+    limitContainerWidth()
   }
 
   private fun authedLogin(hostname: String, username: String, password: String) {
@@ -178,6 +189,18 @@ class LoginActivity : AppCompatActivity() {
 
         hostname_field.error = message
       }
+    }
+  }
+
+  private fun limitContainerWidth() {
+    container.doOnLayout {
+      if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE && container.width >= 1440) {
+        container.layoutParams.width = 1440
+      } else {
+        container.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+      }
+
+      container.requestLayout()
     }
   }
 }
