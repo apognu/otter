@@ -1,0 +1,6 @@
+Diverses améliorations des performances et de l'UI, quelques corrections de bugs et ces nouvelles fonctionnalités :
+
+ * Téléchargements : vous pouvez maintenant télécharger des albums et des pistes pour les écouter hors-ligne
+ * Les connexions non-chiffrées (HTTP) sont maintenant permises
+ * Une option a été ajoutée afin de n'afficher que votre propre musique
+ * Les radios sont maintenant disponibles quand connectés de façon anonyme

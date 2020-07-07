@@ -1,0 +1,6 @@
+Various UI and performance improvements, some bug fixes and the following new features:
+
+ * Offline music management: you can now download albums and tracks and listen to them while offline
+ * Cleartext traffic to Funkwhale instances is now allowed
+ * An option was added to only show your own music
+ * Radios are now available when logged in anonymously

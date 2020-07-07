@@ -24,6 +24,7 @@ Otter's features, as of this writing, are the following:
  * Track search
  * Queue management
  * Caching of played tracks (played tracks work offline)
+ * Download tracks for offline playback
  * Radios playback
  * Dark mode! 🎉
 
