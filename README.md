@@ -8,6 +8,8 @@
 
 Otter is a native Android music player for [Funkwhale](https://funkwhale.audio), native to both Android (developed in Kotlin) and to Funkwhale (uses its native API instead of Subsonic).
 
+You can get help and discuss Otter on Matrix on [#otter:matrix.org](https://matrix.to/#/#otter:matrix.org).
+
 ![Otter graphic](https://github.com/apognu/otter/raw/develop/app/src/main/play/listings/en-US/graphics/feature-graphic/1.png)
 
 ## State
