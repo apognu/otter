@@ -74,6 +74,10 @@ android {
         signingConfig = signingConfigs.getByName("release")
       }
 
+      resValue("string", "debug.hostname", "")
+      resValue("string", "debug.username", "")
+      resValue("string", "debug.password", "")
+
       isMinifyEnabled = true
       isShrinkResources = true
 
