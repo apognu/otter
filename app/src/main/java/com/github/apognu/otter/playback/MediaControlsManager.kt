@@ -18,7 +18,9 @@ import com.github.apognu.otter.utils.*
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class MediaControlsManager(val context: Service, private val scope: CoroutineScope, private val mediaSession: MediaSessionCompat) {
   companion object {
@@ -29,6 +31,27 @@ class MediaControlsManager(val context: Service, private val scope: CoroutineSco
   }
 
   private var notification: Notification? = null
+
+  fun buildTrackMetadata(track: Track?): MediaMetadataCompat {
+    track?.let {
+      val coverUrl = maybeNormalizeUrl(track.album.cover.original)
+
+      return MediaMetadataCompat.Builder().apply {
+        putString(MediaMetadataCompat.METADATA_KEY_TITLE, track.title)
+        putString(MediaMetadataCompat.METADATA_KEY_ARTIST, track.artist.name)
+        putLong(MediaMetadata.METADATA_KEY_DURATION, (track.bestUpload()?.duration?.toLong() ?: 0L) * 1000)
+
+        try {
+          runBlocking(IO) {
+            this@apply.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, Picasso.get().load(coverUrl).get())
+          }
+        } catch (e: Exception) {
+        }
+      }.build()
+    }
+
+    return MediaMetadataCompat.Builder().build()
+  }
 
   fun updateNotification(track: Track?, playing: Boolean) {
     if (notification == null && !playing) return
@@ -44,17 +67,6 @@ class MediaControlsManager(val context: Service, private val scope: CoroutineSco
         val openPendingIntent = PendingIntent.getActivity(context, 0, openIntent, 0)
 
         val coverUrl = maybeNormalizeUrl(track.album.cover.original)
-        val cover = coverUrl?.run { Picasso.get().load(coverUrl) }
-
-        mediaSession.setMetadata(MediaMetadataCompat.Builder().apply {
-          putString(MediaMetadata.METADATA_KEY_ARTIST, track.artist.name)
-          putString(MediaMetadata.METADATA_KEY_TITLE, track.title)
-          putLong(MediaMetadata.METADATA_KEY_DURATION, (track.bestUpload()?.duration?.toLong() ?: 0L) * 1000)
-
-          cover?.let {
-            try { putBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART, it.get()) } catch (_: Exception) {}
-          }
-        }.build())
 
         notification = NotificationCompat.Builder(
           context,
@@ -69,11 +81,13 @@ class MediaControlsManager(val context: Service, private val scope: CoroutineSco
           )
           .setSmallIcon(R.drawable.ottershape)
           .run {
-            if (cover != null) {
-              try { setLargeIcon(cover.get()) } catch (_: Exception) {}
+            coverUrl?.let {
+              try { setLargeIcon(Picasso.get().load(coverUrl).get()) } catch (_: Exception) {}
 
-              this
-            } else this
+              return@run this
+            }
+
+            this
           }
           .setContentTitle(track.title)
           .setContentText(track.artist.name)

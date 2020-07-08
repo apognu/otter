@@ -9,15 +9,15 @@ import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.os.Build
+import android.os.Bundle
 import android.os.IBinder
+import android.os.ResultReceiver
 import android.support.v4.media.session.MediaSessionCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import android.view.KeyEvent
 import com.github.apognu.otter.R
 import com.github.apognu.otter.utils.*
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.ExoPlaybackException
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
@@ -84,6 +84,13 @@ class PlayerService : Service() {
 
     mediaSession = MediaSessionCompat(this, applicationContext.packageName).apply {
       isActive = true
+      setPlaybackState(PlaybackStateCompat.Builder()
+        .setActions(
+          PlaybackStateCompat.ACTION_PLAY_PAUSE or
+          PlaybackStateCompat.ACTION_SEEK_TO or
+          PlaybackStateCompat.ACTION_SKIP_TO_NEXT or
+          PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+        ).build())
     }
 
     mediaControlsManager = MediaControlsManager(this, scope, mediaSession)
@@ -97,6 +104,30 @@ class PlayerService : Service() {
 
       MediaSessionConnector(mediaSession).also {
         it.setPlayer(this)
+        it.setMediaMetadataProvider {
+          mediaControlsManager.buildTrackMetadata(queue.current())
+        }
+
+        it.setQueueNavigator(object : MediaSessionConnector.QueueNavigator {
+          override fun onSkipToQueueItem(player: Player, controlDispatcher: ControlDispatcher, id: Long) {}
+
+          override fun onCurrentWindowIndexChanged(player: Player) {}
+
+          override fun onCommand(player: Player, controlDispatcher: ControlDispatcher, command: String, extras: Bundle?, cb: ResultReceiver?) = true
+
+          override fun getSupportedQueueNavigatorActions(player: Player): Long {
+            return PlaybackStateCompat.ACTION_PLAY_PAUSE or PlaybackStateCompat.ACTION_SKIP_TO_NEXT or PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+          }
+
+          override fun onSkipToNext(player: Player, controlDispatcher: ControlDispatcher) {}
+
+          override fun getActiveQueueItemId(player: Player?) = 0L
+
+          override fun onSkipToPrevious(player: Player, controlDispatcher: ControlDispatcher) {}
+
+          override fun onTimelineChanged(player: Player) {}
+        })
+
         it.setMediaButtonEventHandler { player, _, mediaButtonEvent ->
           mediaButtonEvent.extras?.getParcelable<KeyEvent>(Intent.EXTRA_KEY_EVENT)?.let { key ->
             if (key.action == KeyEvent.ACTION_UP) {
