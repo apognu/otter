@@ -15,13 +15,31 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.row_artist.view.*
 
 class ArtistsAdapter(val context: Context?, private val listener: OnArtistClickListener) : FunkwhaleAdapter<Artist, ArtistsAdapter.ViewHolder>() {
+  private var active: List<Artist> = mutableListOf()
+
   interface OnArtistClickListener {
     fun onClick(holder: View?, artist: Artist)
   }
 
-  override fun getItemCount() = data.size
+  init {
+    registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+      override fun onChanged() {
+        active = data.filter { it.albums?.isNotEmpty() ?: false }
 
-  override fun getItemId(position: Int) = data[position].id.toLong()
+        super.onChanged()
+      }
+
+      override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+        active = data.filter { it.albums?.isNotEmpty() ?: false }
+
+        super.onItemRangeInserted(positionStart, itemCount)
+      }
+    })
+  }
+
+  override fun getItemCount() = active.size
+
+  override fun getItemId(position: Int) = active[position].id.toLong()
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
     val view = LayoutInflater.from(context).inflate(R.layout.row_artist, parent, false)
@@ -32,7 +50,7 @@ class ArtistsAdapter(val context: Context?, private val listener: OnArtistClickL
   }
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-    val artist = data[position]
+    val artist = active[position]
 
     artist.albums?.let { albums ->
       if (albums.isNotEmpty()) {
@@ -59,7 +77,7 @@ class ArtistsAdapter(val context: Context?, private val listener: OnArtistClickL
     val albums = view.albums
 
     override fun onClick(view: View?) {
-      listener.onClick(view, data[layoutPosition])
+      listener.onClick(view, active[layoutPosition])
     }
   }
 }
