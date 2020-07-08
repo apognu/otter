@@ -41,9 +41,11 @@ abstract class Repository<D : Any, C : CacheItem<D>> {
     cacheId?.let { cacheId ->
       Cache.get(context, cacheId)?.let { reader ->
         uncache(reader)?.let { cache ->
-          emit(Response(Origin.Cache, cache.data, ceil(cache.data.size / AppContext.PAGE_SIZE.toDouble()).toInt(), false))
+          return@flow emit(Response(Origin.Cache, cache.data, ceil(cache.data.size / AppContext.PAGE_SIZE.toDouble()).toInt(), false))
         }
       }
+
+      return@flow emit(Response(Origin.Cache, listOf(), 1, false))
     }
   }.flowOn(IO)
 

@@ -10,10 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.repositories.HttpUpstream
 import com.github.apognu.otter.repositories.Repository
-import com.github.apognu.otter.utils.Cache
-import com.github.apognu.otter.utils.Event
-import com.github.apognu.otter.utils.EventBus
-import com.github.apognu.otter.utils.untilNetwork
+import com.github.apognu.otter.utils.*
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_artists.*
 import kotlinx.coroutines.Dispatchers.IO
@@ -105,6 +102,10 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
     }
 
     repository.fetch(upstreams, size).untilNetwork(lifecycleScope, IO) { data, isCache, page, hasMore ->
+      if (isCache && data.isEmpty()) {
+        fetch(Repository.Origin.Network.origin)
+      }
+
       lifecycleScope.launch(Main) {
         if (isCache) {
           adapter.data = data.toMutableList()
