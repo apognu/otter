@@ -5,7 +5,6 @@ import android.widget.Toast
 import com.google.android.exoplayer2.util.Log
 import com.preference.PowerPreference
 import java.net.URI
-import java.net.URL
 
 fun Context?.toast(message: String, length: Int = Toast.LENGTH_SHORT) {
   if (this != null) {
@@ -35,9 +34,7 @@ fun mustNormalizeUrl(rawUrl: String): String {
   val fallbackHost = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("hostname")
   val uri = URI(rawUrl).takeIf { it.host != null } ?: URI("$fallbackHost$rawUrl")
 
-  return uri.toURL().run {
-    URL("https", host, file)
-  }.toString()
+  return uri.toString()
 }
 
 fun toDurationString(duration: Long, showSeconds: Boolean = false): String {
