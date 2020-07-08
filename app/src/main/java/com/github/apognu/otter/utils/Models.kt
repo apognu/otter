@@ -71,7 +71,7 @@ data class Album(
   val artist: Artist,
   val title: String,
   val cover: Covers,
-  val release_date: String
+  val release_date: String?
 ) : SearchResult {
   data class Artist(val name: String)
 

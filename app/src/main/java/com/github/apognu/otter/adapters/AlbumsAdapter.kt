@@ -43,7 +43,7 @@ class AlbumsAdapter(val context: Context?, private val listener: OnAlbumClickLis
     holder.artist.text = album.artist.name
     holder.release_date.visibility = View.GONE
 
-    album.release_date.split('-').getOrNull(0)?.let { year ->
+    album.release_date?.split('-')?.getOrNull(0)?.let { year ->
       if (year.isNotEmpty()) {
         holder.release_date.visibility = View.VISIBLE
         holder.release_date.text = year
