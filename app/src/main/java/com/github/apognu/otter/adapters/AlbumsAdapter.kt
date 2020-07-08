@@ -41,12 +41,21 @@ class AlbumsAdapter(val context: Context?, private val listener: OnAlbumClickLis
 
     holder.title.text = album.title
     holder.artist.text = album.artist.name
+    holder.release_date.visibility = View.GONE
+
+    album.release_date.split('-').getOrNull(0)?.let { year ->
+      if (year.isNotEmpty()) {
+        holder.release_date.visibility = View.VISIBLE
+        holder.release_date.text = year
+      }
+    }
   }
 
   inner class ViewHolder(view: View, private val listener: OnAlbumClickListener) : RecyclerView.ViewHolder(view), View.OnClickListener {
     val art = view.art
     val title = view.title
     val artist = view.artist
+    val release_date = view.release_date
 
     override fun onClick(view: View?) {
       listener.onClick(view, data[layoutPosition])

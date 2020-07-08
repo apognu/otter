@@ -22,6 +22,7 @@
   <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_weight="1"
     android:orientation="vertical">
 
     <TextView
@@ -43,5 +44,12 @@
       tools:text="Muse" />
 
   </LinearLayout>
+
+  <TextView
+    android:id="@+id/release_date"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_weight="0"
+    android:background="@drawable/pill" />
 
 </LinearLayout>

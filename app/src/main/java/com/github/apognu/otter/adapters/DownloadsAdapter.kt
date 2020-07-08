@@ -79,7 +79,7 @@ class DownloadsAdapter(private val context: Context, private val listener: OnDow
           Download.STATE_QUEUED, Download.STATE_DOWNLOADING -> DownloadService.sendSetStopReason(context, PinService::class.java, download.contentId, 1, false)
 
           Download.STATE_FAILED -> {
-            Track(download.id, download.title, Artist(0, download.artist, listOf()), Album(0, Album.Artist(""), "", Covers("")), 0, listOf(Track.Upload(download.contentId, 0, 0))).also {
+            Track(download.id, download.title, Artist(0, download.artist, listOf()), Album(0, Album.Artist(""), "", Covers(""), ""), 0, listOf(Track.Upload(download.contentId, 0, 0))).also {
               PinService.download(context, it)
             }
           }

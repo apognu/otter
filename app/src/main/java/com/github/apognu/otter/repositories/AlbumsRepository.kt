@@ -17,8 +17,8 @@ class AlbumsRepository(override val context: Context?, artistId: Int? = null) : 
 
   override val upstream: Upstream<Album> by lazy {
     val url =
-      if (artistId == null) "/api/v1/albums/?playable=true"
-      else "/api/v1/albums/?playable=true&artist=$artistId"
+      if (artistId == null) "/api/v1/albums/?playable=true&ordering=title"
+      else "/api/v1/albums/?playable=true&artist=$artistId&ordering=release_date"
 
     HttpUpstream<Album, FunkwhaleResponse<Album>>(
       HttpUpstream.Behavior.Progressive,
