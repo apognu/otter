@@ -11,7 +11,7 @@ import java.io.BufferedReader
 
 class PlaylistsRepository(override val context: Context?) : Repository<Playlist, PlaylistsCache>() {
   override val cacheId = "tracks-playlists"
-  override val upstream = HttpUpstream<Playlist, FunkwhaleResponse<Playlist>>(HttpUpstream.Behavior.Progressive, "/api/v1/playlists/?playable=true", object : TypeToken<PlaylistsResponse>() {}.type)
+  override val upstream = HttpUpstream<Playlist, FunkwhaleResponse<Playlist>>(HttpUpstream.Behavior.Progressive, "/api/v1/playlists/?playable=true&ordering=name", object : TypeToken<PlaylistsResponse>() {}.type)
 
   override fun cache(data: List<Playlist>) = PlaylistsCache(data)
   override fun uncache(reader: BufferedReader) = gsonDeserializerOf(PlaylistsCache::class.java).deserialize(reader)
