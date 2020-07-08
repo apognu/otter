@@ -33,8 +33,9 @@ import kotlinx.coroutines.withContext
 class AlbumsFragment : FunkwhaleFragment<Album, AlbumsAdapter>() {
   override val viewRes = R.layout.fragment_albums
   override val recycler: RecyclerView get() = albums
+  override val alwaysRefresh = false
 
-  lateinit var artistTracksRepository: ArtistTracksRepository
+  private lateinit var artistTracksRepository: ArtistTracksRepository
 
   var artistId = 0
   var artistName = ""

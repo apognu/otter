@@ -21,6 +21,7 @@ import kotlinx.android.synthetic.main.fragment_artists.*
 class ArtistsFragment : FunkwhaleFragment<Artist, ArtistsAdapter>() {
   override val viewRes = R.layout.fragment_artists
   override val recycler: RecyclerView get() = artists
+  override val alwaysRefresh = false
 
   companion object {
     fun openAlbums(context: Context?, artist: Artist, fragment: Fragment? = null, art: String? = null) {

@@ -67,21 +67,21 @@ class SearchActivity : AppCompatActivity() {
           adapter.tracks.clear()
           adapter.notifyDataSetChanged()
 
-          artistsRepository.fetch(Repository.Origin.Network.origin).untilNetwork(lifecycleScope) { artists, _, _ ->
+          artistsRepository.fetch(Repository.Origin.Network.origin).untilNetwork(lifecycleScope) { artists, _, _, _ ->
             done++
 
             adapter.artists.addAll(artists)
             refresh()
           }
 
-          albumsRepository.fetch(Repository.Origin.Network.origin).untilNetwork(lifecycleScope) { albums, _, _ ->
+          albumsRepository.fetch(Repository.Origin.Network.origin).untilNetwork(lifecycleScope) { albums, _, _ ,_ ->
             done++
 
             adapter.albums.addAll(albums)
             refresh()
           }
 
-          tracksRepository.fetch(Repository.Origin.Network.origin).untilNetwork(lifecycleScope) { tracks, _, _ ->
+          tracksRepository.fetch(Repository.Origin.Network.origin).untilNetwork(lifecycleScope) { tracks, _, _, _ ->
             done++
 
             adapter.tracks.addAll(tracks)

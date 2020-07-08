@@ -17,10 +17,10 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
-inline fun <D> Flow<Repository.Response<D>>.untilNetwork(scope: CoroutineScope, context: CoroutineContext = Main, crossinline callback: (data: List<D>, isCache: Boolean, hasMore: Boolean) -> Unit) {
+inline fun <D> Flow<Repository.Response<D>>.untilNetwork(scope: CoroutineScope, context: CoroutineContext = Main, crossinline callback: (data: List<D>, isCache: Boolean, page: Int, hasMore: Boolean) -> Unit) {
   scope.launch(context) {
     collect { data ->
-      callback(data.data, data.origin == Repository.Origin.Cache, data.hasMore)
+      callback(data.data, data.origin == Repository.Origin.Cache, data.page, data.hasMore)
     }
   }
 }

@@ -408,7 +408,7 @@ class MainActivity : AppCompatActivity() {
       }
 
       now_playing_details_favorite?.let { now_playing_details_favorite ->
-        favoriteCheckRepository.fetch().untilNetwork(lifecycleScope, IO) { favorites, _, _ ->
+        favoriteCheckRepository.fetch().untilNetwork(lifecycleScope, IO) { favorites, _, _, _ ->
           lifecycleScope.launch(Main) {
             track.favorite = favorites.contains(track.id)
 

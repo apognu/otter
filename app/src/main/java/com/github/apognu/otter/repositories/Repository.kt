@@ -1,6 +1,7 @@
 package com.github.apognu.otter.repositories
 
 import android.content.Context
+import com.github.apognu.otter.utils.AppContext
 import com.github.apognu.otter.utils.Cache
 import com.github.apognu.otter.utils.CacheItem
 import kotlinx.coroutines.CoroutineScope
@@ -8,6 +9,7 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import java.io.BufferedReader
+import kotlin.math.ceil
 
 interface Upstream<D> {
   fun fetch(size: Int = 0): Flow<Repository.Response<D>>
@@ -21,7 +23,7 @@ abstract class Repository<D : Any, C : CacheItem<D>> {
     Network(0b10)
   }
 
-  data class Response<D>(val origin: Origin, val data: List<D>, val hasMore: Boolean)
+  data class Response<D>(val origin: Origin, val data: List<D>, val page: Int, val hasMore: Boolean)
 
   abstract val context: Context?
   abstract val cacheId: String?
@@ -39,7 +41,7 @@ abstract class Repository<D : Any, C : CacheItem<D>> {
     cacheId?.let { cacheId ->
       Cache.get(context, cacheId)?.let { reader ->
         uncache(reader)?.let { cache ->
-          emit(Response(Origin.Cache, cache.data, false))
+          emit(Response(Origin.Cache, cache.data, ceil(cache.data.size / AppContext.PAGE_SIZE.toDouble()).toInt(), false))
         }
       }
     }
@@ -48,8 +50,8 @@ abstract class Repository<D : Any, C : CacheItem<D>> {
   private fun fromNetwork(size: Int) = flow {
     upstream
       .fetch(size)
-      .map { response -> Response(Origin.Network, onDataFetched(response.data), response.hasMore) }
-      .collect { response -> emit(Response(Origin.Network, response.data, response.hasMore)) }
+      .map { response -> Response(Origin.Network, onDataFetched(response.data), response.page, response.hasMore) }
+      .collect { response -> emit(Response(Origin.Network, response.data, response.page, response.hasMore)) }
   }
 
   protected open fun onDataFetched(data: List<D>) = data

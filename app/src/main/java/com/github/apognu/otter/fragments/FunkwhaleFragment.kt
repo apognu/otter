@@ -28,14 +28,19 @@ abstract class FunkwhaleAdapter<D, VH : RecyclerView.ViewHolder> : RecyclerView.
 }
 
 abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment() {
+  val INITIAL_PAGES = 5
+  val OFFSCREEN_PAGES = 10
+
   abstract val viewRes: Int
   abstract val recycler: RecyclerView
   open val layoutManager: RecyclerView.LayoutManager get() = LinearLayoutManager(context)
+  open val alwaysRefresh = true
 
   lateinit var repository: Repository<D, *>
   lateinit var adapter: A
 
   private var initialFetched = false
+  private var moreLoading = false
   private var listener: Job? = null
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -51,7 +56,11 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
     (repository.upstream as? HttpUpstream<*, *>)?.let { upstream ->
       if (upstream.behavior == HttpUpstream.Behavior.Progressive) {
         recycler.setOnScrollChangeListener { _, _, _, _, _ ->
-          if (recycler.computeVerticalScrollOffset() > 0 && !recycler.canScrollVertically(1)) {
+          val offset = recycler.computeVerticalScrollOffset()
+          val left = recycler.computeVerticalScrollRange() - recycler.height - offset
+
+          if (initialFetched && !moreLoading && offset > 0 && left < (recycler.height * OFFSCREEN_PAGES)) {
+            moreLoading = true
             fetch(Repository.Origin.Network.origin, adapter.data.size)
           }
         }
@@ -60,7 +69,7 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
 
     fetch(Repository.Origin.Cache.origin)
 
-    if (adapter.data.isEmpty()) {
+    if (alwaysRefresh && adapter.data.isEmpty()) {
       fetch(Repository.Origin.Network.origin)
     }
   }
@@ -91,11 +100,11 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
   private fun fetch(upstreams: Int = Repository.Origin.Network.origin, size: Int = 0) {
     var first = size == 0
 
-    if (upstreams == Repository.Origin.Network.origin) {
+    if (!moreLoading && upstreams == Repository.Origin.Network.origin) {
       swiper?.isRefreshing = true
     }
 
-    repository.fetch(upstreams, size).untilNetwork(lifecycleScope, IO) { data, isCache, hasMore ->
+    repository.fetch(upstreams, size).untilNetwork(lifecycleScope, IO) { data, isCache, page, hasMore ->
       lifecycleScope.launch(Main) {
         if (isCache) {
           adapter.data = data.toMutableList()
@@ -112,10 +121,16 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
 
         adapter.data.addAll(data)
 
-        if (!hasMore) {
-          swiper?.isRefreshing = false
+        (repository.upstream as? HttpUpstream<*, *>)?.let { upstream ->
+          when (upstream.behavior) {
+            HttpUpstream.Behavior.Progressive -> if (!hasMore || page >= INITIAL_PAGES) swiper?.isRefreshing = false
+            HttpUpstream.Behavior.AtOnce -> if (!hasMore) swiper?.isRefreshing = false
+            HttpUpstream.Behavior.Single -> if (!hasMore) swiper?.isRefreshing = false
+          }
+        }
 
-          withContext(IO) {
+        when (hasMore) {
+          false -> withContext(IO) {
             if (adapter.data.isNotEmpty()) {
               try {
                 repository.cacheId?.let { cacheId ->
@@ -126,6 +141,21 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
                   )
                 }
               } catch (e: ConcurrentModificationException) {
+              }
+            }
+          }
+
+          true -> {
+            moreLoading = false
+
+            (repository.upstream as? HttpUpstream<*, *>)?.let { upstream ->
+              if (upstream.behavior == HttpUpstream.Behavior.Progressive) {
+                if (page < INITIAL_PAGES) {
+                  moreLoading = true
+                  fetch(Repository.Origin.Network.origin, adapter.data.size)
+                } else {
+                  initialFetched = true
+                }
               }
             }
           }

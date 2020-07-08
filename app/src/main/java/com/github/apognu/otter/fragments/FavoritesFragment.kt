@@ -19,6 +19,7 @@ import kotlinx.coroutines.withContext
 class FavoritesFragment : FunkwhaleFragment<Track, FavoritesAdapter>() {
   override val viewRes = R.layout.fragment_favorites
   override val recycler: RecyclerView get() = favorites
+  override val alwaysRefresh = false
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
