@@ -10,7 +10,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.repositories.HttpUpstream
 import com.github.apognu.otter.repositories.Repository
-import com.github.apognu.otter.utils.*
+import com.github.apognu.otter.utils.Cache
+import com.github.apognu.otter.utils.Event
+import com.github.apognu.otter.utils.EventBus
+import com.github.apognu.otter.utils.untilNetwork
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_artists.*
 import kotlinx.coroutines.Dispatchers.IO
@@ -103,7 +106,7 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
 
     repository.fetch(upstreams, size).untilNetwork(lifecycleScope, IO) { data, isCache, page, hasMore ->
       if (isCache && data.isEmpty()) {
-        fetch(Repository.Origin.Network.origin)
+        return@untilNetwork fetch(Repository.Origin.Network.origin)
       }
 
       lifecycleScope.launch(Main) {
@@ -130,33 +133,31 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
           }
         }
 
-        when (hasMore) {
-          false -> withContext(IO) {
-            if (adapter.data.isNotEmpty()) {
-              try {
-                repository.cacheId?.let { cacheId ->
-                  Cache.set(
-                    context,
-                    cacheId,
-                    Gson().toJson(repository.cache(adapter.data)).toByteArray()
-                  )
-                }
-              } catch (e: ConcurrentModificationException) {
+        withContext(IO) {
+          if (adapter.data.isNotEmpty()) {
+            try {
+              repository.cacheId?.let { cacheId ->
+                Cache.set(
+                  context,
+                  cacheId,
+                  Gson().toJson(repository.cache(adapter.data)).toByteArray()
+                )
               }
+            } catch (e: ConcurrentModificationException) {
             }
           }
+        }
 
-          true -> {
-            moreLoading = false
+        if (hasMore) {
+          moreLoading = false
 
-            (repository.upstream as? HttpUpstream<*, *>)?.let { upstream ->
-              if (upstream.behavior == HttpUpstream.Behavior.Progressive) {
-                if (page < INITIAL_PAGES) {
-                  moreLoading = true
-                  fetch(Repository.Origin.Network.origin, adapter.data.size)
-                } else {
-                  initialFetched = true
-                }
+          (repository.upstream as? HttpUpstream<*, *>)?.let { upstream ->
+            if (!isCache && upstream.behavior == HttpUpstream.Behavior.Progressive) {
+              if (page < INITIAL_PAGES) {
+                moreLoading = true
+                fetch(Repository.Origin.Network.origin, adapter.data.size)
+              } else {
+                initialFetched = true
               }
             }
           }
