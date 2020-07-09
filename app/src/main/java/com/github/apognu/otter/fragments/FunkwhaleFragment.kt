@@ -101,7 +101,9 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
     var first = size == 0
 
     if (!moreLoading && upstreams == Repository.Origin.Network.origin) {
-      swiper?.isRefreshing = true
+      lifecycleScope.launch(Main) {
+        swiper?.isRefreshing = true
+      }
     }
 
     repository.fetch(upstreams, size).untilNetwork(lifecycleScope, IO) { data, isCache, page, hasMore ->
