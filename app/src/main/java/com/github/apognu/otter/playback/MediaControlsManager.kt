@@ -6,8 +6,6 @@ import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.media.MediaMetadata
-import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -18,9 +16,7 @@ import com.github.apognu.otter.utils.*
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class MediaControlsManager(val context: Service, private val scope: CoroutineScope, private val mediaSession: MediaSessionCompat) {
   companion object {
@@ -31,27 +27,6 @@ class MediaControlsManager(val context: Service, private val scope: CoroutineSco
   }
 
   private var notification: Notification? = null
-
-  fun buildTrackMetadata(track: Track?): MediaMetadataCompat {
-    track?.let {
-      val coverUrl = maybeNormalizeUrl(track.album.cover.original)
-
-      return MediaMetadataCompat.Builder().apply {
-        putString(MediaMetadataCompat.METADATA_KEY_TITLE, track.title)
-        putString(MediaMetadataCompat.METADATA_KEY_ARTIST, track.artist.name)
-        putLong(MediaMetadata.METADATA_KEY_DURATION, (track.bestUpload()?.duration?.toLong() ?: 0L) * 1000)
-
-        try {
-          runBlocking(IO) {
-            this@apply.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, Picasso.get().load(coverUrl).get())
-          }
-        } catch (e: Exception) {
-        }
-      }.build()
-    }
-
-    return MediaMetadataCompat.Builder().build()
-  }
 
   fun updateNotification(track: Track?, playing: Boolean) {
     if (notification == null && !playing) return
@@ -82,7 +57,10 @@ class MediaControlsManager(val context: Service, private val scope: CoroutineSco
           .setSmallIcon(R.drawable.ottershape)
           .run {
             coverUrl?.let {
-              try { setLargeIcon(Picasso.get().load(coverUrl).get()) } catch (_: Exception) {}
+              try {
+                setLargeIcon(Picasso.get().load(coverUrl).get())
+              } catch (_: Exception) {
+              }
 
               return@run this
             }
@@ -114,17 +92,13 @@ class MediaControlsManager(val context: Service, private val scope: CoroutineSco
           .build()
 
         notification?.let {
-          NotificationManagerCompat.from(context).notify(AppContext.NOTIFICATION_MEDIA_CONTROL, it)
+          if (playing) {
+            context.startForeground(AppContext.NOTIFICATION_MEDIA_CONTROL, it)
+          } else {
+            NotificationManagerCompat.from(context).notify(AppContext.NOTIFICATION_MEDIA_CONTROL, it)
+          }
         }
-
-        if (playing) tick()
       }
-    }
-  }
-
-  fun tick() {
-    notification?.let {
-      context.startForeground(AppContext.NOTIFICATION_MEDIA_CONTROL, it)
     }
   }
 
@@ -138,16 +112,16 @@ class MediaControlsManager(val context: Service, private val scope: CoroutineSco
 
 class MediaControlActionReceiver : BroadcastReceiver() {
   override fun onReceive(context: Context?, intent: Intent?) {
-    when (intent?.action) {
-      MediaControlsManager.NOTIFICATION_ACTION_PREVIOUS.toString() -> CommandBus.send(
-        Command.PreviousTrack
-      )
-      MediaControlsManager.NOTIFICATION_ACTION_TOGGLE.toString() -> CommandBus.send(
-        Command.ToggleState
-      )
-      MediaControlsManager.NOTIFICATION_ACTION_NEXT.toString() -> CommandBus.send(
-        Command.NextTrack
-      )
+    val command = when (intent?.action) {
+      MediaControlsManager.NOTIFICATION_ACTION_PREVIOUS.toString() -> Command.PreviousTrack
+      MediaControlsManager.NOTIFICATION_ACTION_TOGGLE.toString() -> Command.ToggleState
+      MediaControlsManager.NOTIFICATION_ACTION_NEXT.toString() -> Command.NextTrack
+      else -> null
+    }
+
+    command?.let {
+      CommandBus.send(command)
+      CommandBus.send(Command.StartService(command))
     }
   }
 }

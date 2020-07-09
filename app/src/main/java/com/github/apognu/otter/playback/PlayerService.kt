@@ -8,28 +8,32 @@ import android.content.IntentFilter
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
+import android.media.MediaMetadata
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.os.ResultReceiver
-import android.support.v4.media.session.MediaSessionCompat
+import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.view.KeyEvent
+import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
 import com.github.apognu.otter.utils.*
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
-import kotlinx.coroutines.CoroutineScope
+import com.squareup.picasso.Picasso
+import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 
 class PlayerService : Service() {
+  companion object {
+    const val INITIAL_COMMAND_KEY = "start_command"
+  }
+
   private var started = false
   private val scope: CoroutineScope = CoroutineScope(Job() + Main)
 
@@ -40,8 +44,9 @@ class PlayerService : Service() {
 
   private lateinit var queue: QueueManager
   private lateinit var mediaControlsManager: MediaControlsManager
-  private lateinit var mediaSession: MediaSessionCompat
   private lateinit var player: SimpleExoPlayer
+
+  private val mediaMetadataBuilder = MediaMetadataCompat.Builder()
 
   private lateinit var playerEventListener: PlayerEventListener
   private val headphonesUnpluggedReceiver = HeadphonesUnpluggedReceiver()
@@ -51,7 +56,17 @@ class PlayerService : Service() {
   private lateinit var radioPlayer: RadioPlayer
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-    if (!started) watchEventBus()
+    if (!started) {
+      watchEventBus()
+
+      intent?.extras?.getString(INITIAL_COMMAND_KEY)?.let {
+        when (it) {
+          Command.ToggleState.toString() -> togglePlayback()
+          Command.NextTrack.toString() -> skipToNextTrack()
+          Command.PreviousTrack.toString() -> skipToPreviousTrack()
+        }
+      }
+    }
 
     started = true
 
@@ -82,18 +97,7 @@ class PlayerService : Service() {
       }
     }
 
-    mediaSession = MediaSessionCompat(this, applicationContext.packageName).apply {
-      isActive = true
-      setPlaybackState(PlaybackStateCompat.Builder()
-        .setActions(
-          PlaybackStateCompat.ACTION_PLAY_PAUSE or
-          PlaybackStateCompat.ACTION_SEEK_TO or
-          PlaybackStateCompat.ACTION_SKIP_TO_NEXT or
-          PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
-        ).build())
-    }
-
-    mediaControlsManager = MediaControlsManager(this, scope, mediaSession)
+    mediaControlsManager = MediaControlsManager(this, scope, Otter.get().mediaSession)
 
     player = SimpleExoPlayer.Builder(this).build().apply {
       playWhenReady = false
@@ -102,40 +106,21 @@ class PlayerService : Service() {
         addListener(it)
       }
 
-      MediaSessionConnector(mediaSession).also {
+      MediaSessionConnector(Otter.get().mediaSession).also {
         it.setPlayer(this)
+        it.setQueueNavigator(OtterQueueNavigator())
         it.setMediaMetadataProvider {
-          mediaControlsManager.buildTrackMetadata(queue.current())
+          buildTrackMetadata(queue.current())
         }
-
-        it.setQueueNavigator(object : MediaSessionConnector.QueueNavigator {
-          override fun onSkipToQueueItem(player: Player, controlDispatcher: ControlDispatcher, id: Long) {}
-
-          override fun onCurrentWindowIndexChanged(player: Player) {}
-
-          override fun onCommand(player: Player, controlDispatcher: ControlDispatcher, command: String, extras: Bundle?, cb: ResultReceiver?) = true
-
-          override fun getSupportedQueueNavigatorActions(player: Player): Long {
-            return PlaybackStateCompat.ACTION_PLAY_PAUSE or PlaybackStateCompat.ACTION_SKIP_TO_NEXT or PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
-          }
-
-          override fun onSkipToNext(player: Player, controlDispatcher: ControlDispatcher) {}
-
-          override fun getActiveQueueItemId(player: Player?) = 0L
-
-          override fun onSkipToPrevious(player: Player, controlDispatcher: ControlDispatcher) {}
-
-          override fun onTimelineChanged(player: Player) {}
-        })
 
         it.setMediaButtonEventHandler { player, _, mediaButtonEvent ->
           mediaButtonEvent.extras?.getParcelable<KeyEvent>(Intent.EXTRA_KEY_EVENT)?.let { key ->
             if (key.action == KeyEvent.ACTION_UP) {
               when (key.keyCode) {
-                KeyEvent.KEYCODE_MEDIA_PLAY -> state(true)
-                KeyEvent.KEYCODE_MEDIA_PAUSE -> state(false)
+                KeyEvent.KEYCODE_MEDIA_PLAY -> setPlaybackState(true)
+                KeyEvent.KEYCODE_MEDIA_PAUSE -> setPlaybackState(false)
                 KeyEvent.KEYCODE_MEDIA_NEXT -> player.next()
-                KeyEvent.KEYCODE_MEDIA_PREVIOUS -> previousTrack()
+                KeyEvent.KEYCODE_MEDIA_PREVIOUS -> skipToPreviousTrack()
               }
             }
           }
@@ -146,12 +131,12 @@ class PlayerService : Service() {
     }
 
     if (queue.current > -1) {
-      player.prepare(queue.datasources, true, true)
+      player.prepare(queue.datasources)
 
       Cache.get(this, "progress")?.let { progress ->
         player.seekTo(queue.current, progress.readLine().toLong())
 
-        val (current, duration, percent) = progress(true)
+        val (current, duration, percent) = getProgress(true)
 
         ProgressBus.send(current, duration, percent)
       }
@@ -179,7 +164,7 @@ class PlayerService : Service() {
             queue.replace(command.queue)
             player.prepare(queue.datasources, true, true)
 
-            state(true)
+            setPlaybackState(true)
 
             CommandBus.send(Command.RefreshTrack(queue.current()))
           }
@@ -193,22 +178,17 @@ class PlayerService : Service() {
             queue.current = command.index
             player.seekTo(command.index, C.TIME_UNSET)
 
-            state(true)
+            setPlaybackState(true)
 
             CommandBus.send(Command.RefreshTrack(queue.current()))
           }
 
-          is Command.ToggleState -> toggle()
-          is Command.SetState -> state(command.state)
+          is Command.ToggleState -> togglePlayback()
+          is Command.SetState -> setPlaybackState(command.state)
 
-          is Command.NextTrack -> {
-            player.next()
-
-            Cache.set(this@PlayerService, "progress", "0".toByteArray())
-            ProgressBus.send(0, 0, 0)
-          }
-          is Command.PreviousTrack -> previousTrack()
-          is Command.Seek -> progress(command.progress)
+          is Command.NextTrack -> skipToNextTrack()
+          is Command.PreviousTrack -> skipToPreviousTrack()
+          is Command.Seek -> seek(command.progress)
 
           is Command.ClearQueue -> queue.clear()
 
@@ -221,10 +201,6 @@ class PlayerService : Service() {
 
           is Command.PinTrack -> PinService.download(this@PlayerService, command.track)
           is Command.PinTracks -> command.tracks.forEach { PinService.download(this@PlayerService, it) }
-        }
-
-        if (player.playWhenReady) {
-          mediaControlsManager.tick()
         }
       }
     }
@@ -243,7 +219,7 @@ class PlayerService : Service() {
       while (true) {
         delay(1000)
 
-        val (current, duration, percent) = progress()
+        val (current, duration, percent) = getProgress()
 
         if (player.playWhenReady) {
           ProgressBus.send(current, duration, percent)
@@ -256,6 +232,8 @@ class PlayerService : Service() {
 
   @SuppressLint("NewApi")
   override fun onDestroy() {
+    scope.cancel()
+
     try {
       unregisterReceiver(headphonesUnpluggedReceiver)
     } catch (_: Exception) {
@@ -272,11 +250,8 @@ class PlayerService : Service() {
         audioManager.abandonAudioFocus(audioFocusChangeListener)
       })
 
-    mediaSession.isActive = false
-    mediaSession.release()
-
     player.removeListener(playerEventListener)
-    state(false)
+    setPlaybackState(false)
     player.release()
 
     stopForeground(true)
@@ -286,9 +261,9 @@ class PlayerService : Service() {
   }
 
   @SuppressLint("NewApi")
-  private fun state(state: Boolean) {
+  private fun setPlaybackState(state: Boolean) {
     if (!state) {
-      val (progress, _, _) = progress()
+      val (progress, _, _) = getProgress()
 
       Cache.set(this@PlayerService, "progress", progress.toString().toByteArray())
     }
@@ -329,11 +304,11 @@ class PlayerService : Service() {
     }
   }
 
-  private fun toggle() {
-    state(!player.playWhenReady)
+  private fun togglePlayback() {
+    setPlaybackState(!player.playWhenReady)
   }
 
-  private fun previousTrack() {
+  private fun skipToPreviousTrack() {
     if (player.currentPosition > 5000) {
       return player.seekTo(0)
     }
@@ -341,7 +316,14 @@ class PlayerService : Service() {
     player.previous()
   }
 
-  private fun progress(force: Boolean = false): Triple<Int, Int, Int> {
+  private fun skipToNextTrack() {
+    player.next()
+
+    Cache.set(this@PlayerService, "progress", "0".toByteArray())
+    ProgressBus.send(0, 0, 0)
+  }
+
+  private fun getProgress(force: Boolean = false): Triple<Int, Int, Int> {
     if (!player.playWhenReady && !force) return progressCache
 
     return queue.current()?.bestUpload()?.let { upload ->
@@ -354,7 +336,7 @@ class PlayerService : Service() {
     } ?: Triple(0, 0, 0)
   }
 
-  private fun progress(value: Int) {
+  private fun seek(value: Int) {
     val duration = ((queue.current()?.bestUpload()?.duration ?: 0) * (value.toFloat() / 100)) * 1000
 
     progressCache = Triple(duration.toInt(), queue.current()?.bestUpload()?.duration ?: 0, value)
@@ -362,6 +344,28 @@ class PlayerService : Service() {
     player.seekTo(duration.toLong())
   }
 
+  private fun buildTrackMetadata(track: Track?): MediaMetadataCompat {
+    track?.let {
+      val coverUrl = maybeNormalizeUrl(track.album.cover.original)
+
+      return mediaMetadataBuilder.apply {
+        putString(MediaMetadataCompat.METADATA_KEY_TITLE, track.title)
+        putString(MediaMetadataCompat.METADATA_KEY_ARTIST, track.artist.name)
+        putLong(MediaMetadata.METADATA_KEY_DURATION, (track.bestUpload()?.duration?.toLong() ?: 0L) * 1000)
+
+        try {
+          runBlocking(IO) {
+            this@apply.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, Picasso.get().load(coverUrl).get())
+          }
+        } catch (e: Exception) {
+        }
+      }.build()
+    }
+
+    return mediaMetadataBuilder.build()
+  }
+
+  @SuppressLint("NewApi")
   inner class PlayerEventListener : Player.EventListener {
     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
       super.onPlayerStateChanged(playWhenReady, playbackState)
@@ -388,7 +392,11 @@ class PlayerService : Service() {
 
           if (playbackState == Player.STATE_READY) {
             mediaControlsManager.updateNotification(queue.current(), false)
-            stopForeground(false)
+
+            Build.VERSION_CODES.N.onApi(
+              { stopForeground(STOP_FOREGROUND_DETACH) },
+              { stopForeground(false) }
+            )
           }
         }
       }
@@ -441,18 +449,18 @@ class PlayerService : Service() {
         AudioManager.AUDIOFOCUS_GAIN -> {
           player.volume = 1f
 
-          state(stateWhenLostFocus)
+          setPlaybackState(stateWhenLostFocus)
           stateWhenLostFocus = false
         }
 
         AudioManager.AUDIOFOCUS_LOSS -> {
           stateWhenLostFocus = false
-          state(false)
+          setPlaybackState(false)
         }
 
         AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
           stateWhenLostFocus = player.playWhenReady
-          state(false)
+          setPlaybackState(false)
         }
 
         AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
@@ -461,5 +469,34 @@ class PlayerService : Service() {
         }
       }
     }
+  }
+
+  inner class OtterQueueNavigator : MediaSessionConnector.QueueNavigator {
+    override fun onSkipToQueueItem(player: Player, controlDispatcher: ControlDispatcher, id: Long) {
+      CommandBus.send(Command.PlayTrack(id.toInt()))
+    }
+
+    override fun onCurrentWindowIndexChanged(player: Player) {}
+
+    override fun onCommand(player: Player, controlDispatcher: ControlDispatcher, command: String, extras: Bundle?, cb: ResultReceiver?) = true
+
+    override fun getSupportedQueueNavigatorActions(player: Player): Long {
+      return PlaybackStateCompat.ACTION_PLAY_PAUSE or
+        PlaybackStateCompat.ACTION_SKIP_TO_NEXT or
+        PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS or
+        PlaybackStateCompat.ACTION_SKIP_TO_QUEUE_ITEM
+    }
+
+    override fun onSkipToNext(player: Player, controlDispatcher: ControlDispatcher) {
+      skipToNextTrack()
+    }
+
+    override fun getActiveQueueItemId(player: Player?) = queue.current.toLong()
+
+    override fun onSkipToPrevious(player: Player, controlDispatcher: ControlDispatcher) {
+      skipToPreviousTrack()
+    }
+
+    override fun onTimelineChanged(player: Player) {}
   }
 }

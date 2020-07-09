@@ -286,6 +286,12 @@ class MainActivity : AppCompatActivity() {
     lifecycleScope.launch(Main) {
       CommandBus.get().collect { command ->
         when (command) {
+          is Command.StartService -> {
+            startService(Intent(this@MainActivity, PlayerService::class.java).apply {
+              putExtra(PlayerService.INITIAL_COMMAND_KEY, command.command.toString())
+            })
+          }
+
           is Command.RefreshTrack -> refreshCurrentTrack(command.track)
         }
       }

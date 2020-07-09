@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.launch
 
 sealed class Command {
+  class StartService(val command: Command) : Command()
   object RefreshService : Command()
 
   object ToggleState : Command()
