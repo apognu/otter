@@ -62,6 +62,7 @@ android {
 
   buildTypes {
     getByName("debug") {
+      applicationIdSuffix = ".dev"
       isDebuggable = true
 
       resValue("string", "debug.hostname", props.getProperty("debug.hostname", ""))
