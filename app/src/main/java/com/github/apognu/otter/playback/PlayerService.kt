@@ -97,6 +97,8 @@ class PlayerService : Service() {
       }
     }
 
+    Otter.get().mediaSession.active = true
+
     mediaControlsManager = MediaControlsManager(this, scope, Otter.get().mediaSession.session)
 
     player = SimpleExoPlayer.Builder(this).build().apply {
