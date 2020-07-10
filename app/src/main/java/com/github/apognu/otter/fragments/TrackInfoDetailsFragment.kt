@@ -53,7 +53,7 @@ class TrackInfoDetailsFragment : DialogFragment() {
       properties.add(Pair(R.string.track_info_details_track_copyright, getString("trackCopyright")))
       properties.add(Pair(R.string.track_info_details_track_license, getString("trackLicense")))
       properties.add(Pair(R.string.track_info_details_track_duration, getString("trackDuration")))
-      properties.add(Pair(R.string.track_info_details_track_position, getString("trackPosition")))
+      properties.add(Pair(R.string.track_info_details_track_position, getInt("trackPosition").toString()))
       properties.add(Pair(R.string.track_info_details_track_bitrate, getString("trackBitrate")))
       properties.add(Pair(R.string.track_info_details_track_instance, getString("trackInstance")))
     }

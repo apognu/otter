@@ -178,9 +178,13 @@ abstract class OtterFragment<D : Any, A : OtterAdapter<D, *>> : Fragment() {
   }
 
   private fun needsMoreOffscreenPages(): Boolean {
-    val offset = recycler.computeVerticalScrollOffset()
-    val left = recycler.computeVerticalScrollRange() - recycler.height - offset
+    view?.let {
+      val offset = recycler.computeVerticalScrollOffset()
+      val left = recycler.computeVerticalScrollRange() - recycler.height - offset
 
-    return left < (recycler.height * OFFSCREEN_PAGES)
+      return left < (recycler.height * OFFSCREEN_PAGES)
+    }
+
+    return false
   }
 }
