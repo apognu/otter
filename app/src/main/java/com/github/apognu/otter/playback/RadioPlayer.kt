@@ -121,7 +121,7 @@ class RadioPlayer(val context: Context, val scope: CoroutineScope) {
           .authorize()
           .awaitObjectResult(gsonDeserializerOf(Track::class.java))
 
-        val favorites = favoritedRepository.fetch(Repository.Origin.Network.origin)
+        val favorites = favoritedRepository.fetch(Repository.Origin.Cache.origin)
           .map { it.data }
           .toList()
           .flatten()

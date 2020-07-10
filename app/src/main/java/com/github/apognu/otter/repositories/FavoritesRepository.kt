@@ -9,6 +9,7 @@ import com.github.kittinunf.fuel.gson.gsonDeserializerOf
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.io.BufferedReader
@@ -19,6 +20,8 @@ class FavoritesRepository(override val context: Context?) : Repository<Track, Tr
 
   override fun cache(data: List<Track>) = TracksCache(data)
   override fun uncache(reader: BufferedReader) = gsonDeserializerOf(TracksCache::class.java).deserialize(reader)
+
+  private val favoritedRepository = FavoritedRepository(context)
 
   override fun onDataFetched(data: List<Track>): List<Track> = runBlocking {
     val downloaded = TracksRepository.getDownloadedIds() ?: listOf()
@@ -51,6 +54,8 @@ class FavoritesRepository(override val context: Context?) : Repository<Track, Tr
         .header("Content-Type", "application/json")
         .body(Gson().toJson(body))
         .awaitByteArrayResponseResult()
+
+      favoritedRepository.fetch().map { Cache.set(context, favoritedRepository.cacheId, Gson().toJson(favoritedRepository.cache(it.data)).toByteArray()) }
     }
   }
 
@@ -68,6 +73,8 @@ class FavoritesRepository(override val context: Context?) : Repository<Track, Tr
         .header("Content-Type", "application/json")
         .body(Gson().toJson(body))
         .awaitByteArrayResponseResult()
+
+      favoritedRepository.fetch().map { Cache.set(context, favoritedRepository.cacheId, Gson().toJson(favoritedRepository.cache(it.data)).toByteArray()) }
     }
   }
 }

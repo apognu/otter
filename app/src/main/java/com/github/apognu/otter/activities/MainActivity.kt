@@ -42,6 +42,8 @@ import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -75,6 +77,8 @@ class MainActivity : AppCompatActivity() {
 
   override fun onResume() {
     super.onResume()
+
+    favoriteCheckRepository.fetch().map { Cache.set(this, favoriteCheckRepository.cacheId, Gson().toJson(favoriteCheckRepository.cache(it.data)).toByteArray()) }
 
     startService(Intent(this, PlayerService::class.java))
     DownloadService.start(this, PinService::class.java)

@@ -42,18 +42,20 @@ class HttpUpstream<D : Any, R : FunkwhaleResponse<D>>(val behavior: Behavior, pr
         val data = response.getData()
 
         when (behavior) {
+          Behavior.Single -> emit(Repository.Response(Repository.Origin.Network, data, page, false))
           Behavior.Progressive -> emit(Repository.Response(Repository.Origin.Network, data, page, response.next != null))
+
           else -> {
             emit(Repository.Response(Repository.Origin.Network, data, page, response.next != null))
 
-            fetch(size + data.size).collect { emit(it) }
+            if (response.next != null) fetch(size + data.size).collect { emit(it) }
           }
         }
       },
       { error ->
         when (error.exception) {
           is RefreshError -> EventBus.send(Event.LogOut)
-          else -> emit(Repository.Response(Repository.Origin.Network, listOf(), page,false))
+          else -> emit(Repository.Response(Repository.Origin.Network, listOf(), page, false))
         }
       }
     )
