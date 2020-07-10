@@ -34,15 +34,22 @@
       android:name="com.github.apognu.otter.activities.LoginActivity"
       android:configChanges="screenSize|orientation"
       android:launchMode="singleInstance" />
+
     <activity android:name="com.github.apognu.otter.activities.MainActivity" />
+
     <activity
       android:name="com.github.apognu.otter.activities.SearchActivity"
       android:launchMode="singleTop" />
+
     <activity android:name="com.github.apognu.otter.activities.DownloadsActivity" />
+
     <activity android:name="com.github.apognu.otter.activities.SettingsActivity" />
+
     <activity android:name="com.github.apognu.otter.activities.LicencesActivity" />
 
-    <service android:name="com.github.apognu.otter.playback.PlayerService" android:foregroundServiceType="mediaPlayback" />
+    <service
+      android:name="com.github.apognu.otter.playback.PlayerService"
+      android:foregroundServiceType="mediaPlayback" />
 
     <service
       android:name=".playback.PinService"

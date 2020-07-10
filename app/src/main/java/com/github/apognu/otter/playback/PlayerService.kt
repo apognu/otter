@@ -10,17 +10,15 @@ import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.media.MediaMetadata
 import android.os.Build
-import android.os.Bundle
 import android.os.IBinder
-import android.os.ResultReceiver
 import android.support.v4.media.MediaMetadataCompat
-import android.support.v4.media.session.PlaybackStateCompat
-import android.view.KeyEvent
 import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
 import com.github.apognu.otter.utils.*
-import com.google.android.exoplayer2.*
-import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
+import com.google.android.exoplayer2.C
+import com.google.android.exoplayer2.ExoPlaybackException
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.squareup.picasso.Picasso
@@ -61,6 +59,8 @@ class PlayerService : Service() {
 
       intent?.extras?.getString(INITIAL_COMMAND_KEY)?.let {
         when (it) {
+          Command.SetState(true).toString() -> setPlaybackState(true)
+          Command.SetState(false).toString() -> setPlaybackState(false)
           Command.ToggleState.toString() -> togglePlayback()
           Command.NextTrack.toString() -> skipToNextTrack()
           Command.PreviousTrack.toString() -> skipToPreviousTrack()
@@ -97,7 +97,7 @@ class PlayerService : Service() {
       }
     }
 
-    mediaControlsManager = MediaControlsManager(this, scope, Otter.get().mediaSession)
+    mediaControlsManager = MediaControlsManager(this, scope, Otter.get().mediaSession.session)
 
     player = SimpleExoPlayer.Builder(this).build().apply {
       playWhenReady = false
@@ -105,28 +105,13 @@ class PlayerService : Service() {
       playerEventListener = PlayerEventListener().also {
         addListener(it)
       }
+    }
 
-      MediaSessionConnector(Otter.get().mediaSession).also {
-        it.setPlayer(this)
-        it.setQueueNavigator(OtterQueueNavigator())
-        it.setMediaMetadataProvider {
-          buildTrackMetadata(queue.current())
-        }
+    Otter.get().mediaSession.connector.apply {
+      setPlayer(player)
 
-        it.setMediaButtonEventHandler { player, _, mediaButtonEvent ->
-          mediaButtonEvent.extras?.getParcelable<KeyEvent>(Intent.EXTRA_KEY_EVENT)?.let { key ->
-            if (key.action == KeyEvent.ACTION_UP) {
-              when (key.keyCode) {
-                KeyEvent.KEYCODE_MEDIA_PLAY -> setPlaybackState(true)
-                KeyEvent.KEYCODE_MEDIA_PAUSE -> setPlaybackState(false)
-                KeyEvent.KEYCODE_MEDIA_NEXT -> player.next()
-                KeyEvent.KEYCODE_MEDIA_PREVIOUS -> skipToPreviousTrack()
-              }
-            }
-          }
-
-          true
-        }
+      setMediaMetadataProvider {
+        buildTrackMetadata(queue.current())
       }
     }
 
@@ -249,6 +234,8 @@ class PlayerService : Service() {
         @Suppress("DEPRECATION")
         audioManager.abandonAudioFocus(audioFocusChangeListener)
       })
+
+    Otter.get().mediaSession.active = false
 
     player.removeListener(playerEventListener)
     setPlaybackState(false)
@@ -469,34 +456,5 @@ class PlayerService : Service() {
         }
       }
     }
-  }
-
-  inner class OtterQueueNavigator : MediaSessionConnector.QueueNavigator {
-    override fun onSkipToQueueItem(player: Player, controlDispatcher: ControlDispatcher, id: Long) {
-      CommandBus.send(Command.PlayTrack(id.toInt()))
-    }
-
-    override fun onCurrentWindowIndexChanged(player: Player) {}
-
-    override fun onCommand(player: Player, controlDispatcher: ControlDispatcher, command: String, extras: Bundle?, cb: ResultReceiver?) = true
-
-    override fun getSupportedQueueNavigatorActions(player: Player): Long {
-      return PlaybackStateCompat.ACTION_PLAY_PAUSE or
-        PlaybackStateCompat.ACTION_SKIP_TO_NEXT or
-        PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS or
-        PlaybackStateCompat.ACTION_SKIP_TO_QUEUE_ITEM
-    }
-
-    override fun onSkipToNext(player: Player, controlDispatcher: ControlDispatcher) {
-      skipToNextTrack()
-    }
-
-    override fun getActiveQueueItemId(player: Player?) = queue.current.toLong()
-
-    override fun onSkipToPrevious(player: Player, controlDispatcher: ControlDispatcher) {
-      skipToPreviousTrack()
-    }
-
-    override fun onTimelineChanged(player: Player) {}
   }
 }

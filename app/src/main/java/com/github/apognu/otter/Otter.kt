@@ -1,9 +1,8 @@
 package com.github.apognu.otter
 
 import android.app.Application
-import android.support.v4.media.session.MediaSessionCompat
-import android.support.v4.media.session.PlaybackStateCompat
 import androidx.appcompat.app.AppCompatDelegate
+import com.github.apognu.otter.playback.MediaSession
 import com.github.apognu.otter.playback.QueueManager
 import com.github.apognu.otter.utils.*
 import com.google.android.exoplayer2.database.ExoDatabaseProvider
@@ -62,25 +61,7 @@ class Otter : Application() {
     }
   }
 
-  private val playbackStateBuilder = PlaybackStateCompat.Builder().apply {
-    setActions(
-      PlaybackStateCompat.ACTION_PLAY_PAUSE or
-        PlaybackStateCompat.ACTION_PLAY or
-        PlaybackStateCompat.ACTION_PAUSE or
-        PlaybackStateCompat.ACTION_SKIP_TO_NEXT or
-        PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS or
-        PlaybackStateCompat.ACTION_SEEK_TO or
-        PlaybackStateCompat.ACTION_SKIP_TO_QUEUE_ITEM
-    )
-  }
-
-  val mediaSession: MediaSessionCompat by lazy {
-    MediaSessionCompat(this, applicationContext.packageName).apply {
-      setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS or MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS)
-      setPlaybackState(playbackStateBuilder.build())
-      isActive = true
-    }
-  }
+  val mediaSession = MediaSession(this)
 
   override fun onCreate() {
     super.onCreate()

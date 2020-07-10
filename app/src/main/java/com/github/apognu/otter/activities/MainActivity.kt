@@ -6,6 +6,7 @@ import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Bitmap
+import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.*
@@ -43,7 +44,6 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -291,9 +291,18 @@ class MainActivity : AppCompatActivity() {
       CommandBus.get().collect { command ->
         when (command) {
           is Command.StartService -> {
-            startService(Intent(this@MainActivity, PlayerService::class.java).apply {
-              putExtra(PlayerService.INITIAL_COMMAND_KEY, command.command.toString())
-            })
+            Build.VERSION_CODES.O.onApi(
+              {
+                startForegroundService(Intent(this@MainActivity, PlayerService::class.java).apply {
+                  putExtra(PlayerService.INITIAL_COMMAND_KEY, command.command.toString())
+                })
+              },
+              {
+                startService(Intent(this@MainActivity, PlayerService::class.java).apply {
+                  putExtra(PlayerService.INITIAL_COMMAND_KEY, command.command.toString())
+                })
+              }
+            )
           }
 
           is Command.RefreshTrack -> refreshCurrentTrack(command.track)
