@@ -84,6 +84,8 @@
     <string name="track_info_details_artist">Artiste</string>
     <string name="track_info_details_album">Album</string>
     <string name="track_info_details_track_title">Nom de piste</string>
+    <string name="track_info_details_track_copyright">Copyright</string>
+    <string name="track_info_details_track_license">Licence</string>
     <string name="track_info_details_track_duration">Durée</string>
     <string name="track_info_details_track_position">Position dans l\'album</string>
     <string name="track_info_details_track_bitrate">Bitrate</string>

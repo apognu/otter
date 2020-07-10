@@ -96,17 +96,29 @@ data class Artist(
 }
 
 data class Track(
-  val id: Int,
+  val id: Int = 0,
   val title: String,
   val artist: Artist,
   val album: Album,
-  val position: Int,
-  val uploads: List<Upload>
+  val position: Int = 0,
+  val uploads: List<Upload> = listOf(),
+  val copyright: String? = null,
+  val license: String? = null
 ) : SearchResult {
   var current: Boolean = false
   var favorite: Boolean = false
   var cached: Boolean = false
   var downloaded: Boolean = false
+
+  companion object {
+    fun fromDownload(download: DownloadInfo): Track = Track(
+      id = download.id,
+      title = download.title,
+      artist = Artist(0, download.artist, listOf()),
+      album = Album(0, Album.Artist(""), "", Covers(""), ""),
+      uploads = listOf(Upload(download.contentId, 0, 0))
+    )
+  }
 
   data class Upload(
     val listen_url: String,

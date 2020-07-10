@@ -24,6 +24,8 @@ class TrackInfoDetailsFragment : DialogFragment() {
           "artistName" to track.artist.name,
           "albumTitle" to track.album.title,
           "trackTitle" to track.title,
+          "trackCopyright" to track.copyright,
+          "trackLicense" to track.license,
           "trackPosition" to track.position,
           "trackDuration" to track.bestUpload()?.duration?.toLong()?.let { toDurationString(it, showSeconds = true) },
           "trackBitrate" to track.bestUpload()?.bitrate?.let { "${it / 1000} Kbps" },
@@ -48,6 +50,8 @@ class TrackInfoDetailsFragment : DialogFragment() {
       properties.add(Pair(R.string.track_info_details_artist, getString("artistName")))
       properties.add(Pair(R.string.track_info_details_album, getString("albumTitle")))
       properties.add(Pair(R.string.track_info_details_track_title, getString("trackTitle")))
+      properties.add(Pair(R.string.track_info_details_track_copyright, getString("trackCopyright")))
+      properties.add(Pair(R.string.track_info_details_track_license, getString("trackLicense")))
       properties.add(Pair(R.string.track_info_details_track_duration, getString("trackDuration")))
       properties.add(Pair(R.string.track_info_details_track_position, getString("trackPosition")))
       properties.add(Pair(R.string.track_info_details_track_bitrate, getString("trackBitrate")))
