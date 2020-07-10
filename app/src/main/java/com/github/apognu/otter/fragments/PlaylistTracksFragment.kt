@@ -19,7 +19,7 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class PlaylistTracksFragment : FunkwhaleFragment<PlaylistTrack, PlaylistTracksAdapter>() {
+class PlaylistTracksFragment : OtterFragment<PlaylistTrack, PlaylistTracksAdapter>() {
   override val viewRes = R.layout.fragment_tracks
   override val recycler: RecyclerView get() = tracks
 

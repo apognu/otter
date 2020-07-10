@@ -14,7 +14,7 @@ import com.github.apognu.otter.utils.AppContext
 import com.github.apognu.otter.utils.Playlist
 import kotlinx.android.synthetic.main.fragment_playlists.*
 
-class PlaylistsFragment : FunkwhaleFragment<Playlist, PlaylistsAdapter>() {
+class PlaylistsFragment : OtterFragment<Playlist, PlaylistsAdapter>() {
   override val viewRes = R.layout.fragment_playlists
   override val recycler: RecyclerView get() = playlists
   override val alwaysRefresh = false

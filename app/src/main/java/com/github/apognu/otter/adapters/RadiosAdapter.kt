@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
-import com.github.apognu.otter.fragments.FunkwhaleAdapter
+import com.github.apognu.otter.fragments.OtterAdapter
 import com.github.apognu.otter.utils.AppContext
 import com.github.apognu.otter.utils.Event
 import com.github.apognu.otter.utils.EventBus
@@ -20,7 +20,7 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class RadiosAdapter(val context: Context?, val scope: CoroutineScope, private val listener: OnRadioClickListener) : FunkwhaleAdapter<Radio, RadiosAdapter.ViewHolder>() {
+class RadiosAdapter(val context: Context?, val scope: CoroutineScope, private val listener: OnRadioClickListener) : OtterAdapter<Radio, RadiosAdapter.ViewHolder>() {
   interface OnRadioClickListener {
     fun onClick(holder: ViewHolder, radio: Radio)
   }

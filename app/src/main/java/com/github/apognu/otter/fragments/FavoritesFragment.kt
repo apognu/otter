@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class FavoritesFragment : FunkwhaleFragment<Track, FavoritesAdapter>() {
+class FavoritesFragment : OtterFragment<Track, FavoritesAdapter>() {
   override val viewRes = R.layout.fragment_favorites
   override val recycler: RecyclerView get() = favorites
   override val alwaysRefresh = false

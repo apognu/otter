@@ -18,7 +18,7 @@ import com.github.apognu.otter.utils.Artist
 import com.github.apognu.otter.utils.onViewPager
 import kotlinx.android.synthetic.main.fragment_artists.*
 
-class ArtistsFragment : FunkwhaleFragment<Artist, ArtistsAdapter>() {
+class ArtistsFragment : OtterFragment<Artist, ArtistsAdapter>() {
   override val viewRes = R.layout.fragment_artists
   override val recycler: RecyclerView get() = artists
   override val alwaysRefresh = false

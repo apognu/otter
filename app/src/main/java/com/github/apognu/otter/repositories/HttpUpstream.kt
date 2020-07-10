@@ -18,7 +18,7 @@ import java.io.Reader
 import java.lang.reflect.Type
 import kotlin.math.ceil
 
-class HttpUpstream<D : Any, R : FunkwhaleResponse<D>>(val behavior: Behavior, private val url: String, private val type: Type) : Upstream<D> {
+class HttpUpstream<D : Any, R : OtterResponse<D>>(val behavior: Behavior, private val url: String, private val type: Type) : Upstream<D> {
   enum class Behavior {
     Single, AtOnce, Progressive
   }
@@ -61,7 +61,7 @@ class HttpUpstream<D : Any, R : FunkwhaleResponse<D>>(val behavior: Behavior, pr
     )
   }.flowOn(IO)
 
-  class GenericDeserializer<T : FunkwhaleResponse<*>>(val type: Type) : ResponseDeserializable<T> {
+  class GenericDeserializer<T : OtterResponse<*>>(val type: Type) : ResponseDeserializable<T> {
     override fun deserialize(reader: Reader): T? {
       return Gson().fromJson(reader, type)
     }

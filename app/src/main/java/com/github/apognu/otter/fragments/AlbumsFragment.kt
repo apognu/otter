@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class AlbumsFragment : FunkwhaleFragment<Album, AlbumsAdapter>() {
+class AlbumsFragment : OtterFragment<Album, AlbumsAdapter>() {
   override val viewRes = R.layout.fragment_albums
   override val recycler: RecyclerView get() = albums
   override val alwaysRefresh = false

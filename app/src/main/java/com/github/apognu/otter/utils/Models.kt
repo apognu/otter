@@ -17,42 +17,42 @@ class RadiosCache(data: List<Radio>) : CacheItem<Radio>(data)
 class FavoritedCache(data: List<Int>) : CacheItem<Int>(data)
 class QueueCache(data: List<Track>) : CacheItem<Track>(data)
 
-abstract class FunkwhaleResponse<D : Any> {
+abstract class OtterResponse<D : Any> {
   abstract val count: Int
   abstract val next: String?
 
   abstract fun getData(): List<D>
 }
 
-data class UserResponse(override val count: Int, override val next: String?, val results: List<Artist>) : FunkwhaleResponse<Artist>() {
+data class UserResponse(override val count: Int, override val next: String?, val results: List<Artist>) : OtterResponse<Artist>() {
   override fun getData() = results
 }
 
-data class ArtistsResponse(override val count: Int, override val next: String?, val results: List<Artist>) : FunkwhaleResponse<Artist>() {
+data class ArtistsResponse(override val count: Int, override val next: String?, val results: List<Artist>) : OtterResponse<Artist>() {
   override fun getData() = results
 }
 
-data class AlbumsResponse(override val count: Int, override val next: String?, val results: AlbumList) : FunkwhaleResponse<Album>() {
+data class AlbumsResponse(override val count: Int, override val next: String?, val results: AlbumList) : OtterResponse<Album>() {
   override fun getData() = results
 }
 
-data class TracksResponse(override val count: Int, override val next: String?, val results: List<Track>) : FunkwhaleResponse<Track>() {
+data class TracksResponse(override val count: Int, override val next: String?, val results: List<Track>) : OtterResponse<Track>() {
   override fun getData() = results
 }
 
-data class FavoritedResponse(override val count: Int, override val next: String?, val results: List<Favorited>) : FunkwhaleResponse<Int>() {
+data class FavoritedResponse(override val count: Int, override val next: String?, val results: List<Favorited>) : OtterResponse<Int>() {
   override fun getData() = results.map { it.track }
 }
 
-data class PlaylistsResponse(override val count: Int, override val next: String?, val results: List<Playlist>) : FunkwhaleResponse<Playlist>() {
+data class PlaylistsResponse(override val count: Int, override val next: String?, val results: List<Playlist>) : OtterResponse<Playlist>() {
   override fun getData() = results
 }
 
-data class PlaylistTracksResponse(override val count: Int, override val next: String?, val results: List<PlaylistTrack>) : FunkwhaleResponse<PlaylistTrack>() {
+data class PlaylistTracksResponse(override val count: Int, override val next: String?, val results: List<PlaylistTrack>) : OtterResponse<PlaylistTrack>() {
   override fun getData() = results
 }
 
-data class RadiosResponse(override val count: Int, override val next: String?, val results: List<Radio>) : FunkwhaleResponse<Radio>() {
+data class RadiosResponse(override val count: Int, override val next: String?, val results: List<Radio>) : OtterResponse<Radio>() {
   override fun getData() = results
 }
 

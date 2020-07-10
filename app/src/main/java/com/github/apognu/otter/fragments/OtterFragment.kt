@@ -20,11 +20,11 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-abstract class FunkwhaleAdapter<D, VH : RecyclerView.ViewHolder> : RecyclerView.Adapter<VH>() {
+abstract class OtterAdapter<D, VH : RecyclerView.ViewHolder> : RecyclerView.Adapter<VH>() {
   var data: MutableList<D> = mutableListOf()
 }
 
-abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment() {
+abstract class OtterFragment<D : Any, A : OtterAdapter<D, *>> : Fragment() {
   val OFFSCREEN_PAGES = 20
 
   abstract val viewRes: Int

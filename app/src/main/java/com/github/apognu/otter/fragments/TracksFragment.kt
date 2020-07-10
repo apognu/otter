@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class TracksFragment : FunkwhaleFragment<Track, TracksAdapter>() {
+class TracksFragment : OtterFragment<Track, TracksAdapter>() {
   override val viewRes = R.layout.fragment_tracks
   override val recycler: RecyclerView get() = tracks
 

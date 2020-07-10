@@ -15,7 +15,7 @@ import com.github.apognu.otter.utils.Album
 import com.github.apognu.otter.utils.AppContext
 import kotlinx.android.synthetic.main.fragment_albums_grid.*
 
-class AlbumsGridFragment : FunkwhaleFragment<Album, AlbumsGridAdapter>() {
+class AlbumsGridFragment : OtterFragment<Album, AlbumsGridAdapter>() {
   override val viewRes = R.layout.fragment_albums_grid
   override val recycler: RecyclerView get() = albums
   override val layoutManager get() = GridLayoutManager(context, 3)

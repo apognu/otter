@@ -6,14 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
-import com.github.apognu.otter.fragments.FunkwhaleAdapter
+import com.github.apognu.otter.fragments.OtterAdapter
 import com.github.apognu.otter.utils.Playlist
 import com.github.apognu.otter.utils.toDurationString
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.row_playlist.view.*
 
-class PlaylistsAdapter(val context: Context?, private val listener: OnPlaylistClickListener) : FunkwhaleAdapter<Playlist, PlaylistsAdapter.ViewHolder>() {
+class PlaylistsAdapter(val context: Context?, private val listener: OnPlaylistClickListener) : OtterAdapter<Playlist, PlaylistsAdapter.ViewHolder>() {
   interface OnPlaylistClickListener {
     fun onClick(holder: View?, playlist: Playlist)
   }

@@ -13,7 +13,7 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class RadiosFragment : FunkwhaleFragment<Radio, RadiosAdapter>() {
+class RadiosFragment : OtterFragment<Radio, RadiosAdapter>() {
   override val viewRes = R.layout.fragment_radios
   override val recycler: RecyclerView get() = radios
   override val alwaysRefresh = false
