@@ -105,6 +105,8 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
 
     repository.fetch(upstreams, size).untilNetwork(lifecycleScope, IO) { data, isCache, _, hasMore ->
       if (isCache && data.isEmpty()) {
+        moreLoading = false
+
         return@untilNetwork fetch(Repository.Origin.Network.origin)
       }
 
