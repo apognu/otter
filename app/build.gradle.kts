@@ -62,8 +62,11 @@ android {
 
   buildTypes {
     getByName("debug") {
-      applicationIdSuffix = ".dev"
       isDebuggable = true
+      applicationIdSuffix = ".dev"
+      manifestPlaceholders = mapOf(
+        "app_name" to "Otter (develop)"
+      )
 
       resValue("string", "debug.hostname", props.getProperty("debug.hostname", ""))
       resValue("string", "debug.username", props.getProperty("debug.username", ""))
@@ -71,6 +74,10 @@ android {
     }
 
     getByName("release") {
+      manifestPlaceholders = mapOf(
+        "app_name" to "Otter"
+      )
+
       if (props.hasProperty("signing.store")) {
         signingConfig = signingConfigs.getByName("release")
       }
