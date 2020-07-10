@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 class RadiosFragment : FunkwhaleFragment<Radio, RadiosAdapter>() {
   override val viewRes = R.layout.fragment_radios
   override val recycler: RecyclerView get() = radios
+  override val alwaysRefresh = false
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

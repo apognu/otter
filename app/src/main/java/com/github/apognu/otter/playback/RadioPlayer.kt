@@ -35,11 +35,6 @@ class RadioPlayer(val context: Context, val scope: CoroutineScope) {
   private val favoritedRepository = FavoritedRepository(context)
 
   init {
-    Cache.get(context, "radio_type")?.readLine()?.log()
-    Cache.get(context, "radio_id")?.readLine()?.log()
-    Cache.get(context, "radio_session")?.readLine()?.log()
-    Cache.get(context, "radio_cookie")?.readLine()?.log()
-
     Cache.get(context, "radio_type")?.readLine()?.let { radio_type ->
       Cache.get(context, "radio_id")?.readLine()?.toInt()?.let { radio_id ->
         Cache.get(context, "radio_session")?.readLine()?.toInt()?.let { radio_session ->

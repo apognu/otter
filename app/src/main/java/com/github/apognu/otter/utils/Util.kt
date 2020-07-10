@@ -12,12 +12,8 @@ fun Context?.toast(message: String, length: Int = Toast.LENGTH_SHORT) {
   }
 }
 
-fun Any.log(message: String) {
-  Log.d("FUNKWHALE", "${this.javaClass.simpleName}: $message")
-}
-
-fun Any.log() {
-  Log.d("FUNKWHALE", this.toString())
+fun Any.log(message: Any) {
+  Log.d("OTTER", "${javaClass.simpleName}: $message")
 }
 
 fun maybeNormalizeUrl(rawUrl: String?): String? {

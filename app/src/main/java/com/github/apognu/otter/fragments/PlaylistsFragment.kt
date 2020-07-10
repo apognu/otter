@@ -17,6 +17,7 @@ import kotlinx.android.synthetic.main.fragment_playlists.*
 class PlaylistsFragment : FunkwhaleFragment<Playlist, PlaylistsAdapter>() {
   override val viewRes = R.layout.fragment_playlists
   override val recycler: RecyclerView get() = playlists
+  override val alwaysRefresh = false
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

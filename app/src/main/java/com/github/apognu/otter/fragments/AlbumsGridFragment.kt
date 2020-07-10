@@ -19,6 +19,7 @@ class AlbumsGridFragment : FunkwhaleFragment<Album, AlbumsGridAdapter>() {
   override val viewRes = R.layout.fragment_albums_grid
   override val recycler: RecyclerView get() = albums
   override val layoutManager get() = GridLayoutManager(context, 3)
+  override val alwaysRefresh = false
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

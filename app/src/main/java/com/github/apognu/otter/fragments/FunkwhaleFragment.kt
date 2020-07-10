@@ -10,10 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.repositories.HttpUpstream
 import com.github.apognu.otter.repositories.Repository
-import com.github.apognu.otter.utils.Cache
-import com.github.apognu.otter.utils.Event
-import com.github.apognu.otter.utils.EventBus
-import com.github.apognu.otter.utils.untilNetwork
+import com.github.apognu.otter.utils.*
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_artists.*
 import kotlinx.coroutines.Dispatchers.IO
@@ -28,8 +25,7 @@ abstract class FunkwhaleAdapter<D, VH : RecyclerView.ViewHolder> : RecyclerView.
 }
 
 abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment() {
-  val INITIAL_PAGES = 5
-  val OFFSCREEN_PAGES = 10
+  val OFFSCREEN_PAGES = 20
 
   abstract val viewRes: Int
   abstract val recycler: RecyclerView
@@ -39,7 +35,6 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
   lateinit var repository: Repository<D, *>
   lateinit var adapter: A
 
-  private var initialFetched = false
   private var moreLoading = false
   private var listener: Job? = null
 
@@ -57,10 +52,10 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
       if (upstream.behavior == HttpUpstream.Behavior.Progressive) {
         recycler.setOnScrollChangeListener { _, _, _, _, _ ->
           val offset = recycler.computeVerticalScrollOffset()
-          val left = recycler.computeVerticalScrollRange() - recycler.height - offset
 
-          if (initialFetched && !moreLoading && offset > 0 && left < (recycler.height * OFFSCREEN_PAGES)) {
+          if (!moreLoading && offset > 0 && needsMoreOffscreenPages()) {
             moreLoading = true
+
             fetch(Repository.Origin.Network.origin, adapter.data.size)
           }
         }
@@ -106,13 +101,17 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
       }
     }
 
-    repository.fetch(upstreams, size).untilNetwork(lifecycleScope, IO) { data, isCache, page, hasMore ->
+    moreLoading = true
+
+    repository.fetch(upstreams, size).untilNetwork(lifecycleScope, IO) { data, isCache, _, hasMore ->
       if (isCache && data.isEmpty()) {
         return@untilNetwork fetch(Repository.Origin.Network.origin)
       }
 
       lifecycleScope.launch(Main) {
         if (isCache) {
+          moreLoading = false
+
           adapter.data = data.toMutableList()
           adapter.notifyDataSetChanged()
 
@@ -126,14 +125,6 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
         onDataFetched(data)
 
         adapter.data.addAll(data)
-
-        (repository.upstream as? HttpUpstream<*, *>)?.let { upstream ->
-          when (upstream.behavior) {
-            HttpUpstream.Behavior.Progressive -> if (!hasMore || page >= INITIAL_PAGES) swiper?.isRefreshing = false
-            HttpUpstream.Behavior.AtOnce -> if (!hasMore) swiper?.isRefreshing = false
-            HttpUpstream.Behavior.Single -> if (!hasMore) swiper?.isRefreshing = false
-          }
-        }
 
         withContext(IO) {
           if (adapter.data.isNotEmpty()) {
@@ -151,17 +142,24 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
         }
 
         if (hasMore) {
-          moreLoading = false
-
           (repository.upstream as? HttpUpstream<*, *>)?.let { upstream ->
             if (!isCache && upstream.behavior == HttpUpstream.Behavior.Progressive) {
-              if (page < INITIAL_PAGES) {
-                moreLoading = true
+              if (first || needsMoreOffscreenPages()) {
                 fetch(Repository.Origin.Network.origin, adapter.data.size)
               } else {
-                initialFetched = true
+                moreLoading = false
               }
+            } else {
+              moreLoading = false
             }
+          }
+        }
+
+        (repository.upstream as? HttpUpstream<*, *>)?.let { upstream ->
+          when (upstream.behavior) {
+            HttpUpstream.Behavior.Progressive -> if (!hasMore || !moreLoading) swiper?.isRefreshing = false
+            HttpUpstream.Behavior.AtOnce -> if (!hasMore) swiper?.isRefreshing = false
+            HttpUpstream.Behavior.Single -> if (!hasMore) swiper?.isRefreshing = false
           }
         }
 
@@ -175,5 +173,12 @@ abstract class FunkwhaleFragment<D : Any, A : FunkwhaleAdapter<D, *>> : Fragment
         }
       }
     }
+  }
+
+  private fun needsMoreOffscreenPages(): Boolean {
+    val offset = recycler.computeVerticalScrollOffset()
+    val left = recycler.computeVerticalScrollRange() - recycler.height - offset
+
+    return left < (recycler.height * OFFSCREEN_PAGES)
   }
 }
