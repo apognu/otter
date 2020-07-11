@@ -38,7 +38,7 @@ class TracksRepository(override val context: Context?, albumId: Int) : Repositor
   }
 
   override fun onDataFetched(data: List<Track>): List<Track> = runBlocking {
-    val favorites = FavoritedRepository(context).fetch(Origin.Network.origin)
+    val favorites = FavoritedRepository(context).fetch(Origin.Cache.origin)
       .map { it.data }
       .toList()
       .flatten()

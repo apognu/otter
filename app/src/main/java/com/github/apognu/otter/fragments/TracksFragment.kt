@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.adapters.TracksAdapter
+import com.github.apognu.otter.repositories.FavoritedRepository
 import com.github.apognu.otter.repositories.FavoritesRepository
 import com.github.apognu.otter.repositories.TracksRepository
 import com.github.apognu.otter.utils.*
@@ -27,6 +28,7 @@ class TracksFragment : OtterFragment<Track, TracksAdapter>() {
   override val recycler: RecyclerView get() = tracks
 
   lateinit var favoritesRepository: FavoritesRepository
+  lateinit var favoritedRepository: FavoritedRepository
 
   private var albumId = 0
   private var albumArtist = ""
@@ -59,6 +61,7 @@ class TracksFragment : OtterFragment<Track, TracksAdapter>() {
     adapter = TracksAdapter(context, FavoriteListener())
     repository = TracksRepository(context, albumId)
     favoritesRepository = FavoritesRepository(context)
+    favoritedRepository = FavoritedRepository(context)
 
     watchEventBus()
   }
@@ -147,7 +150,10 @@ class TracksFragment : OtterFragment<Track, TracksAdapter>() {
     lifecycleScope.launch(Main) {
       CommandBus.get().collect { command ->
         when (command) {
-          is Command.RefreshTrack -> refreshCurrentTrack(command.track)
+          is Command.RefreshTrack -> {
+            log("${command.track?.title} -> ${command.track?.favorite}")
+            refreshCurrentTrack(command.track)
+          }
         }
       }
     }
@@ -185,6 +191,7 @@ class TracksFragment : OtterFragment<Track, TracksAdapter>() {
       adapter.currentTrack = track.apply {
         current = true
       }
+
       adapter.notifyDataSetChanged()
     }
   }

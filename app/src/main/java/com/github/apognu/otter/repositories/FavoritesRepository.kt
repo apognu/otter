@@ -1,6 +1,7 @@
 package com.github.apognu.otter.repositories
 
 import android.content.Context
+import androidx.lifecycle.lifecycleScope
 import com.github.apognu.otter.Otter
 import com.github.apognu.otter.utils.*
 import com.github.kittinunf.fuel.Fuel
@@ -8,6 +9,7 @@ import com.github.kittinunf.fuel.coroutines.awaitByteArrayResponseResult
 import com.github.kittinunf.fuel.gson.gsonDeserializerOf
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -55,7 +57,7 @@ class FavoritesRepository(override val context: Context?) : Repository<Track, Tr
         .body(Gson().toJson(body))
         .awaitByteArrayResponseResult()
 
-      favoritedRepository.fetch().map { Cache.set(context, favoritedRepository.cacheId, Gson().toJson(favoritedRepository.cache(it.data)).toByteArray()) }
+      favoritedRepository.update(context, scope)
     }
   }
 
@@ -74,7 +76,7 @@ class FavoritesRepository(override val context: Context?) : Repository<Track, Tr
         .body(Gson().toJson(body))
         .awaitByteArrayResponseResult()
 
-      favoritedRepository.fetch().map { Cache.set(context, favoritedRepository.cacheId, Gson().toJson(favoritedRepository.cache(it.data)).toByteArray()) }
+      favoritedRepository.update(context, scope)
     }
   }
 }
@@ -85,4 +87,10 @@ class FavoritedRepository(override val context: Context?) : Repository<Int, Favo
 
   override fun cache(data: List<Int>) = FavoritedCache(data)
   override fun uncache(reader: BufferedReader) = gsonDeserializerOf(FavoritedCache::class.java).deserialize(reader)
+
+  fun update(context: Context?, scope: CoroutineScope) {
+    fetch(Origin.Network.origin).untilNetwork(scope, IO) { favorites, _, _, _ ->
+      Cache.set(context, cacheId, Gson().toJson(cache(favorites)).toByteArray())
+    }
+  }
 }

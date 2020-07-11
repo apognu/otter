@@ -43,7 +43,6 @@ import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -53,7 +52,7 @@ class MainActivity : AppCompatActivity() {
   }
 
   private val favoriteRepository = FavoritesRepository(this)
-  private val favoriteCheckRepository = FavoritedRepository(this)
+  private val favoritedRepository = FavoritedRepository(this)
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -78,7 +77,7 @@ class MainActivity : AppCompatActivity() {
   override fun onResume() {
     super.onResume()
 
-    favoriteCheckRepository.fetch().map { Cache.set(this, favoriteCheckRepository.cacheId, Gson().toJson(favoriteCheckRepository.cache(it.data)).toByteArray()) }
+    favoritedRepository.update(this, lifecycleScope)
 
     startService(Intent(this, PlayerService::class.java))
     DownloadService.start(this, PinService::class.java)
@@ -427,7 +426,7 @@ class MainActivity : AppCompatActivity() {
       }
 
       now_playing_details_favorite?.let { now_playing_details_favorite ->
-        favoriteCheckRepository.fetch().untilNetwork(lifecycleScope, IO) { favorites, _, _, _ ->
+        favoritedRepository.fetch().untilNetwork(lifecycleScope, IO) { favorites, _, _, _ ->
           lifecycleScope.launch(Main) {
             track.favorite = favorites.contains(track.id)
 
