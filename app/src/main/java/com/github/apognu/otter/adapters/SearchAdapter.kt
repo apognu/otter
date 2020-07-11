@@ -214,6 +214,7 @@ class SearchAdapter(private val context: Context?, private val listener: OnSearc
                 when (it.itemId) {
                   R.id.track_add_to_queue -> CommandBus.send(Command.AddToQueue(listOf(track)))
                   R.id.track_play_next -> CommandBus.send(Command.PlayNext(track))
+                  R.id.track_pin -> CommandBus.send(Command.PinTrack(track))
                   R.id.queue_remove -> CommandBus.send(Command.RemoveFromQueue(track))
                 }
 
@@ -225,6 +226,15 @@ class SearchAdapter(private val context: Context?, private val listener: OnSearc
           }
         }
       }
+    }
+  }
+
+  fun getPositionOf(type: ResultType, position: Int): Int {
+    return when (type) {
+      ResultType.Artist -> position + 1
+      ResultType.Album -> position + artists.size + 2
+      ResultType.Track -> artists.size + albums.size + SECTION_COUNT + position
+      else -> 0
     }
   }
 

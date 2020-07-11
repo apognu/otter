@@ -10,10 +10,13 @@ import com.github.apognu.otter.adapters.SearchAdapter
 import com.github.apognu.otter.fragments.AlbumsFragment
 import com.github.apognu.otter.fragments.ArtistsFragment
 import com.github.apognu.otter.repositories.*
-import com.github.apognu.otter.utils.Album
-import com.github.apognu.otter.utils.Artist
-import com.github.apognu.otter.utils.untilNetwork
+import com.github.apognu.otter.utils.*
+import com.google.android.exoplayer2.offline.Download
 import kotlinx.android.synthetic.main.activity_search.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.net.URLEncoder
 import java.util.*
 
@@ -43,6 +46,14 @@ class SearchActivity : AppCompatActivity() {
 
   override fun onResume() {
     super.onResume()
+
+    lifecycleScope.launch(Dispatchers.IO) {
+      EventBus.get().collect { message ->
+        when (message) {
+          is Event.DownloadChanged -> refreshDownloadedTrack(message.download)
+        }
+      }
+    }
 
     artistsRepository = ArtistsSearchRepository(this@SearchActivity, "")
     albumsRepository = AlbumsSearchRepository(this@SearchActivity, "")
@@ -111,6 +122,20 @@ class SearchActivity : AppCompatActivity() {
 
     if (done == 3) {
       search_spinner.visibility = View.INVISIBLE
+    }
+  }
+
+  private suspend fun refreshDownloadedTrack(download: Download) {
+    if (download.state == Download.STATE_COMPLETED) {
+      download.getMetadata()?.let { info ->
+        adapter.tracks.withIndex().associate { it.value to it.index }.filter { it.key.id == info.id }.toList().getOrNull(0)?.let { match ->
+          log(match)
+          withContext(Dispatchers.Main) {
+            adapter.tracks[match.second].downloaded = true
+            adapter.notifyItemChanged(adapter.getPositionOf(SearchAdapter.ResultType.Track, match.second))
+          }
+        }
+      }
     }
   }
 
