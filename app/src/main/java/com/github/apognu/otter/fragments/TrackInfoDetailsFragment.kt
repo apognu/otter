@@ -22,7 +22,7 @@ class TrackInfoDetailsFragment : DialogFragment() {
       return TrackInfoDetailsFragment().apply {
         arguments = bundleOf(
           "artistName" to track.artist.name,
-          "albumTitle" to track.album.title,
+          "albumTitle" to track.album?.title,
           "trackTitle" to track.title,
           "trackCopyright" to track.copyright,
           "trackLicense" to track.license,

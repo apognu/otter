@@ -358,14 +358,14 @@ class MainActivity : AppCompatActivity() {
       now_playing_details_toggle.icon = getDrawable(R.drawable.pause)
 
       Picasso.get()
-        .maybeLoad(maybeNormalizeUrl(track.album.cover.original))
+        .maybeLoad(maybeNormalizeUrl(track.album?.cover?.original))
         .fit()
         .centerCrop()
         .into(now_playing_cover)
 
       now_playing_details_cover?.let { now_playing_details_cover ->
         Picasso.get()
-          .maybeLoad(maybeNormalizeUrl(track.album.cover.original))
+          .maybeLoad(maybeNormalizeUrl(track.album?.cover?.original))
           .fit()
           .centerCrop()
           .transform(RoundedCornersTransformation(16, 0))
@@ -379,7 +379,7 @@ class MainActivity : AppCompatActivity() {
           }.widthPixels
 
           val backgroundCover = Picasso.get()
-            .maybeLoad(maybeNormalizeUrl(track.album.cover.original))
+            .maybeLoad(maybeNormalizeUrl(track.album?.cover?.original))
             .get()
             .run { Bitmap.createScaledBitmap(this, width, width, false).toDrawable(resources) }
             .apply {
@@ -410,7 +410,7 @@ class MainActivity : AppCompatActivity() {
 
             setOnMenuItemClickListener {
               when (it.itemId) {
-                R.id.track_info_artist -> ArtistsFragment.openAlbums(this@MainActivity, track.artist, art = track.album.cover.original)
+                R.id.track_info_artist -> ArtistsFragment.openAlbums(this@MainActivity, track.artist, art = track.album?.cover?.original)
                 R.id.track_info_album -> AlbumsFragment.openTracks(this@MainActivity, track.album)
                 R.id.track_info_details -> TrackInfoDetailsFragment.new(track).show(supportFragmentManager, "dialog")
               }

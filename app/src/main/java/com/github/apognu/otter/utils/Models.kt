@@ -99,7 +99,7 @@ data class Track(
   val id: Int = 0,
   val title: String,
   val artist: Artist,
-  val album: Album,
+  val album: Album?,
   val position: Int = 0,
   val uploads: List<Upload> = listOf(),
   val copyright: String? = null,
@@ -143,7 +143,7 @@ data class Track(
     }
   }
 
-  override fun cover() = album.cover.original
+  override fun cover() = album?.cover?.original
   override fun title() = title
   override fun subtitle() = artist.name
 }

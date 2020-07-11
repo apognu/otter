@@ -54,7 +54,11 @@ class AlbumsFragment : OtterFragment<Album, AlbumsAdapter>() {
       }
     }
 
-    fun openTracks(context: Context?, album: Album, fragment: Fragment? = null) {
+    fun openTracks(context: Context?, album: Album?, fragment: Fragment? = null) {
+      if (album == null) {
+        return
+      }
+
       (context as? MainActivity)?.let {
         fragment?.let { fragment ->
           fragment.onViewPager {

@@ -342,7 +342,7 @@ class PlayerService : Service() {
 
   private fun buildTrackMetadata(track: Track?): MediaMetadataCompat {
     track?.let {
-      val coverUrl = maybeNormalizeUrl(track.album.cover.original)
+      val coverUrl = maybeNormalizeUrl(track.album?.cover?.original)
 
       return mediaMetadataBuilder.apply {
         putString(MediaMetadataCompat.METADATA_KEY_TITLE, track.title)
