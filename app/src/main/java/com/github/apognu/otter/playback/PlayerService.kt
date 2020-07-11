@@ -217,6 +217,16 @@ class PlayerService : Service() {
 
   override fun onBind(intent: Intent?): IBinder? = null
 
+  override fun onTaskRemoved(rootIntent: Intent?) {
+    super.onTaskRemoved(rootIntent)
+
+    if (!player.playWhenReady) {
+      mediaControlsManager.updateNotification(queue.current(), false)
+
+      stopSelf()
+    }
+  }
+
   @SuppressLint("NewApi")
   override fun onDestroy() {
     scope.cancel()
@@ -242,9 +252,6 @@ class PlayerService : Service() {
     player.removeListener(playerEventListener)
     setPlaybackState(false)
     player.release()
-
-    stopForeground(true)
-    stopSelf()
 
     super.onDestroy()
   }
