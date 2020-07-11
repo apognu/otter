@@ -12,6 +12,7 @@ import com.github.apognu.otter.fragments.ArtistsFragment
 import com.github.apognu.otter.repositories.*
 import com.github.apognu.otter.utils.Album
 import com.github.apognu.otter.utils.Artist
+import com.github.apognu.otter.utils.log
 import com.github.apognu.otter.utils.untilNetwork
 import kotlinx.android.synthetic.main.activity_search.*
 import java.net.URLEncoder
@@ -42,6 +43,11 @@ class SearchActivity : AppCompatActivity() {
   override fun onResume() {
     super.onResume()
 
+    artistsRepository = ArtistsSearchRepository(this@SearchActivity, "")
+    albumsRepository = AlbumsSearchRepository(this@SearchActivity, "")
+    tracksRepository = TracksSearchRepository(this@SearchActivity, "")
+    favoritesRepository = FavoritesRepository(this@SearchActivity)
+
     search.requestFocus()
 
     search.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
@@ -53,10 +59,9 @@ class SearchActivity : AppCompatActivity() {
 
           val query = URLEncoder.encode(it, "UTF-8")
 
-          tracksRepository = TracksSearchRepository(this@SearchActivity, query.toLowerCase(Locale.ROOT))
-          albumsRepository = AlbumsSearchRepository(this@SearchActivity, query.toLowerCase(Locale.ROOT))
-          artistsRepository = ArtistsSearchRepository(this@SearchActivity, query.toLowerCase(Locale.ROOT))
-          favoritesRepository = FavoritesRepository(this@SearchActivity)
+          artistsRepository.query = query.toLowerCase(Locale.ROOT)
+          albumsRepository.query = query.toLowerCase(Locale.ROOT)
+          tracksRepository.query = query.toLowerCase(Locale.ROOT)
 
           search_spinner.visibility = View.VISIBLE
           search_empty.visibility = View.GONE

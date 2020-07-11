@@ -10,9 +10,10 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import java.io.BufferedReader
 
-class TracksSearchRepository(override val context: Context?, query: String) : Repository<Track, TracksCache>() {
+class TracksSearchRepository(override val context: Context?, var query: String) : Repository<Track, TracksCache>() {
   override val cacheId: String? = null
-  override val upstream = HttpUpstream<Track, OtterResponse<Track>>(HttpUpstream.Behavior.AtOnce, "/api/v1/tracks/?playable=true&q=$query", object : TypeToken<TracksResponse>() {}.type)
+  override val upstream: Upstream<Track>
+    get() = HttpUpstream(HttpUpstream.Behavior.AtOnce, "/api/v1/tracks/?playable=true&q=$query", object : TypeToken<TracksResponse>() {}.type)
 
   override fun cache(data: List<Track>) = TracksCache(data)
   override fun uncache(reader: BufferedReader) = gsonDeserializerOf(TracksCache::class.java).deserialize(reader)
@@ -40,17 +41,19 @@ class TracksSearchRepository(override val context: Context?, query: String) : Re
   }
 }
 
-class ArtistsSearchRepository(override val context: Context?, query: String) : Repository<Artist, ArtistsCache>() {
+class ArtistsSearchRepository(override val context: Context?, var query: String) : Repository<Artist, ArtistsCache>() {
   override val cacheId: String? = null
-  override val upstream = HttpUpstream<Artist, OtterResponse<Artist>>(HttpUpstream.Behavior.AtOnce, "/api/v1/artists/?playable=true&q=$query", object : TypeToken<ArtistsResponse>() {}.type)
+  override val upstream: Upstream<Artist>
+    get() = HttpUpstream(HttpUpstream.Behavior.AtOnce, "/api/v1/artists/?playable=true&q=$query", object : TypeToken<ArtistsResponse>() {}.type)
 
   override fun cache(data: List<Artist>) = ArtistsCache(data)
   override fun uncache(reader: BufferedReader) = gsonDeserializerOf(ArtistsCache::class.java).deserialize(reader)
 }
 
-class AlbumsSearchRepository(override val context: Context?, query: String) : Repository<Album, AlbumsCache>() {
+class AlbumsSearchRepository(override val context: Context?, var query: String) : Repository<Album, AlbumsCache>() {
   override val cacheId: String? = null
-  override val upstream = HttpUpstream<Album, OtterResponse<Album>>(HttpUpstream.Behavior.AtOnce, "/api/v1/albums/?playable=true&q=$query", object : TypeToken<AlbumsResponse>() {}.type)
+  override val upstream: Upstream<Album>
+    get() = HttpUpstream(HttpUpstream.Behavior.AtOnce, "/api/v1/albums/?playable=true&q=$query", object : TypeToken<AlbumsResponse>() {}.type)
 
   override fun cache(data: List<Album>) = AlbumsCache(data)
   override fun uncache(reader: BufferedReader) = gsonDeserializerOf(AlbumsCache::class.java).deserialize(reader)
