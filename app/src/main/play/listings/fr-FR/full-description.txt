@@ -1,6 +1,8 @@
 Otter est un lecteur de musique basique qui vous permet de profiter du contenu audio de votre instance Funkwhale.
 
-Cette application nécessite un compte sur un instance Funkwhale pour fonctionner.
+Cette application nécessite un compte sur une instance Funkwhale pour fonctionner.
+
+Vous pouvez obtenir de l'aide ou participer au développement d'Otter en vous rendant sur notre projet GitHub ou nous rejoindre sur Matrix.
 
 Code source : https://github.com/apognu/otter
 Funkwhale : https://funkwhale.audio

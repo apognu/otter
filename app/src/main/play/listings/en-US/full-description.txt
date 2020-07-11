@@ -2,5 +2,8 @@ Otter is a simple music player that allows you to stream the audio content of yo
 
 This app requires an account on a Funkwhale instance to work.
 
+You can get support or take a part in Otter's development by visiting our GitHub project or join us on Matrix.
+
 Source code : https://github.com/apognu/otter
+Matrix room: https://matrix.to/#/#otter:matrix.org
 Funkwhale : https://funkwhale.audio
