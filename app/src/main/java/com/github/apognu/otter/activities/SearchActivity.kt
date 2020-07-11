@@ -12,7 +12,6 @@ import com.github.apognu.otter.fragments.ArtistsFragment
 import com.github.apognu.otter.repositories.*
 import com.github.apognu.otter.utils.Album
 import com.github.apognu.otter.utils.Artist
-import com.github.apognu.otter.utils.log
 import com.github.apognu.otter.utils.untilNetwork
 import kotlinx.android.synthetic.main.activity_search.*
 import java.net.URLEncoder
@@ -38,6 +37,8 @@ class SearchActivity : AppCompatActivity() {
       results.layoutManager = LinearLayoutManager(this)
       results.adapter = it
     }
+
+    search.requestFocus()
   }
 
   override fun onResume() {
@@ -47,8 +48,6 @@ class SearchActivity : AppCompatActivity() {
     albumsRepository = AlbumsSearchRepository(this@SearchActivity, "")
     tracksRepository = TracksSearchRepository(this@SearchActivity, "")
     favoritesRepository = FavoritesRepository(this@SearchActivity)
-
-    search.requestFocus()
 
     search.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
       override fun onQueryTextSubmit(rawQuery: String?): Boolean {
@@ -79,7 +78,7 @@ class SearchActivity : AppCompatActivity() {
             refresh()
           }
 
-          albumsRepository.fetch(Repository.Origin.Network.origin).untilNetwork(lifecycleScope) { albums, _, _ ,_ ->
+          albumsRepository.fetch(Repository.Origin.Network.origin).untilNetwork(lifecycleScope) { albums, _, _, _ ->
             done++
 
             adapter.albums.addAll(albums)

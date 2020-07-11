@@ -150,10 +150,7 @@ class TracksFragment : OtterFragment<Track, TracksAdapter>() {
     lifecycleScope.launch(Main) {
       CommandBus.get().collect { command ->
         when (command) {
-          is Command.RefreshTrack -> {
-            log("${command.track?.title} -> ${command.track?.favorite}")
-            refreshCurrentTrack(command.track)
-          }
+          is Command.RefreshTrack -> refreshCurrentTrack(command.track)
         }
       }
     }
