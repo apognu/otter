@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <color name="surface">#121212</color>
+  <color name="elevatedSurface">#191919</color>
 
   <color name="colorPrimary">#283f4e</color>
   <color name="colorAccent">#f1b44f</color>

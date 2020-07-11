@@ -5,6 +5,7 @@
   android:id="@+id/now_playing_root"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
+  android:background="@color/elevatedSurface"
   android:orientation="vertical">
 
   <LinearLayout
@@ -97,10 +98,10 @@
     android:id="@+id/now_playing_details"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="32dp"
-    android:paddingEnd="32dp"
     android:orientation="vertical"
-    android:paddingTop="16dp">
+    android:paddingStart="32dp"
+    android:paddingTop="16dp"
+    android:paddingEnd="32dp">
 
     <TextView
       android:id="@+id/now_playing_details_title"

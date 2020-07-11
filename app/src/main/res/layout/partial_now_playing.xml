@@ -5,6 +5,7 @@
   android:id="@+id/now_playing_root"
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
+  android:background="@color/elevatedSurface"
   android:orientation="vertical">
 
   <LinearLayout
@@ -126,18 +127,10 @@
         android:layout_height="32dp"
         android:layout_gravity="top|end"
         android:layout_margin="8dp"
+        android:background="@drawable/circle"
         android:contentDescription="@string/alt_track_info"
-        android:src="@drawable/more" />
-
-      <ImageButton
-        android:id="@+id/now_playing_details_favorite"
-        style="@style/IconButton"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="8dp"
-        android:contentDescription="@string/alt_album_cover"
-        android:src="@drawable/favorite" />
+        android:src="@drawable/more"
+        android:tint="@color/controlForeground" />
 
     </FrameLayout>
 
@@ -150,19 +143,44 @@
       android:orientation="vertical"
       android:paddingTop="16dp">
 
-      <TextView
-        android:id="@+id/now_playing_details_title"
+      <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/itemTitle"
-        android:textSize="18sp"
-        tools:text="Supermassive Black Hole" />
+        android:orientation="horizontal">
 
-      <TextView
-        android:id="@+id/now_playing_details_artist"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:text="Muse" />
+        <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:orientation="vertical">
+
+          <TextView
+            android:id="@+id/now_playing_details_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/itemTitle"
+            android:textSize="18sp"
+            tools:text="Supermassive Black Hole" />
+
+          <TextView
+            android:id="@+id/now_playing_details_artist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Muse" />
+
+        </LinearLayout>
+
+        <ImageButton
+          android:id="@+id/now_playing_details_favorite"
+          style="@style/IconButton"
+          android:layout_width="24dp"
+          android:layout_height="24dp"
+          android:layout_gravity="bottom|end"
+          android:layout_margin="8dp"
+          android:contentDescription="@string/alt_album_cover"
+          android:src="@drawable/favorite" />
+
+      </LinearLayout>
 
       <SeekBar
         android:id="@+id/now_playing_details_progress"
