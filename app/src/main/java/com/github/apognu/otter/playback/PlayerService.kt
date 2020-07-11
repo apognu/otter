@@ -12,6 +12,7 @@ import android.media.MediaMetadata
 import android.os.Build
 import android.os.IBinder
 import android.support.v4.media.MediaMetadataCompat
+import androidx.core.app.NotificationManagerCompat
 import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
 import com.github.apognu.otter.utils.*
@@ -221,8 +222,7 @@ class PlayerService : Service() {
     super.onTaskRemoved(rootIntent)
 
     if (!player.playWhenReady) {
-      mediaControlsManager.updateNotification(queue.current(), false)
-
+      NotificationManagerCompat.from(this).cancelAll()
       stopSelf()
     }
   }
