@@ -57,9 +57,13 @@ class RadiosAdapter(val context: Context?, val scope: CoroutineScope, private va
     }
   }
 
-  override fun getItemCount() = instanceRadios.size + data.size + 2
+  override fun getItemId(position: Int) = when (getItemViewType(position)) {
+    RowType.InstanceRadio.ordinal -> (-position - 1).toLong()
+    RowType.Header.ordinal -> Long.MIN_VALUE
+    else -> getRadioAt(position).id.toLong()
+  }
 
-  override fun getItemId(position: Int) = data[position].id.toLong()
+  override fun getItemCount() = instanceRadios.size + data.size + 2
 
   override fun getItemViewType(position: Int): Int {
     return when {

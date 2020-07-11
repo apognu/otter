@@ -20,6 +20,8 @@ class AlbumsAdapter(val context: Context?, private val listener: OnAlbumClickLis
     fun onClick(view: View?, album: Album)
   }
 
+  override fun getItemId(position: Int): Long = data[position].id.toLong()
+
   override fun getItemCount() = data.size
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

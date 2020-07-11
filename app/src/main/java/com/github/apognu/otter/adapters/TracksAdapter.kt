@@ -25,11 +25,9 @@ class TracksAdapter(private val context: Context?, private val favoriteListener:
 
   var currentTrack: Track? = null
 
-  override fun getItemCount() = data.size
+  override fun getItemId(position: Int): Long = data[position].id.toLong()
 
-  override fun getItemId(position: Int): Long {
-    return data[position].id.toLong()
-  }
+  override fun getItemCount() = data.size
 
   override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
     super.onAttachedToRecyclerView(recyclerView)

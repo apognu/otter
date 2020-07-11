@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.github.apognu.otter.repositories.HttpUpstream
 import com.github.apognu.otter.repositories.Repository
 import com.github.apognu.otter.utils.*
@@ -22,6 +23,12 @@ import kotlinx.coroutines.withContext
 
 abstract class OtterAdapter<D, VH : RecyclerView.ViewHolder> : RecyclerView.Adapter<VH>() {
   var data: MutableList<D> = mutableListOf()
+
+  init {
+    super.setHasStableIds(true)
+  }
+
+  abstract override fun getItemId(position: Int): Long
 }
 
 abstract class OtterFragment<D : Any, A : OtterAdapter<D, *>> : Fragment() {
@@ -46,6 +53,7 @@ abstract class OtterFragment<D : Any, A : OtterAdapter<D, *>> : Fragment() {
     super.onViewCreated(view, savedInstanceState)
 
     recycler.layoutManager = layoutManager
+    (recycler.itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
     recycler.adapter = adapter
 
     (repository.upstream as? HttpUpstream<*, *>)?.let { upstream ->
