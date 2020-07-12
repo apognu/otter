@@ -14,7 +14,6 @@ import com.github.apognu.otter.R
 import com.github.apognu.otter.activities.MainActivity
 import com.github.apognu.otter.utils.AppContext
 import com.github.apognu.otter.utils.Track
-import com.github.apognu.otter.utils.log
 import com.github.apognu.otter.utils.maybeNormalizeUrl
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
@@ -29,8 +28,6 @@ class MediaControlsManager(val context: Service, private val scope: CoroutineSco
   private var notification: Notification? = null
 
   fun updateNotification(track: Track?, playing: Boolean) {
-    "updateNotification".log()
-
     if (notification == null && !playing) return
 
     track?.let {

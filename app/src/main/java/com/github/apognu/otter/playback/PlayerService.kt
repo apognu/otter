@@ -12,6 +12,7 @@ import android.media.MediaMetadata
 import android.os.Build
 import android.os.IBinder
 import android.support.v4.media.MediaMetadataCompat
+import android.view.KeyEvent
 import androidx.core.app.NotificationManagerCompat
 import androidx.media.session.MediaButtonReceiver
 import com.github.apognu.otter.Otter
@@ -58,7 +59,15 @@ class PlayerService : Service() {
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
     intent?.action?.let {
       if (it == Intent.ACTION_MEDIA_BUTTON) {
-        MediaButtonReceiver.handleIntent(Otter.get().mediaSession.session, intent)
+        intent.extras?.getParcelable<KeyEvent>(Intent.EXTRA_KEY_EVENT)?.let { key ->
+          when (key.keyCode) {
+            KeyEvent.KEYCODE_MEDIA_PLAY, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> {
+              if (hasAudioFocus(true)) MediaButtonReceiver.handleIntent(Otter.get().mediaSession.session, intent)
+              Unit
+            }
+            else -> MediaButtonReceiver.handleIntent(Otter.get().mediaSession.session, intent)
+          }
+        }
       }
     }
 
@@ -71,6 +80,7 @@ class PlayerService : Service() {
     return START_STICKY
   }
 
+  @SuppressLint("NewApi")
   override fun onCreate() {
     super.onCreate()
 
@@ -79,7 +89,7 @@ class PlayerService : Service() {
 
     audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    Build.VERSION_CODES.O.onApi {
       audioFocusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN).run {
         setAudioAttributes(AudioAttributes.Builder().run {
           setUsage(AudioAttributes.USAGE_MEDIA)
@@ -253,7 +263,6 @@ class PlayerService : Service() {
     super.onDestroy()
   }
 
-  @SuppressLint("NewApi")
   private fun setPlaybackState(state: Boolean) {
     if (!state) {
       val (progress, _, _) = getProgress()
@@ -265,32 +274,7 @@ class PlayerService : Service() {
       player.prepare(queue.datasources)
     }
 
-    var allowed = !state
-
-    if (!allowed) {
-      Build.VERSION_CODES.O.onApi(
-        {
-          audioFocusRequest?.let {
-            allowed = when (audioManager.requestAudioFocus(it)) {
-              AudioManager.AUDIOFOCUS_REQUEST_GRANTED -> true
-              else -> false
-            }
-          }
-        },
-        {
-
-          @Suppress("DEPRECATION")
-          audioManager.requestAudioFocus(audioFocusChangeListener, AudioAttributes.CONTENT_TYPE_MUSIC, AudioManager.AUDIOFOCUS_GAIN).let {
-            allowed = when (it) {
-              AudioManager.AUDIOFOCUS_REQUEST_GRANTED -> true
-              else -> false
-            }
-          }
-        }
-      )
-    }
-
-    if (allowed) {
+    if (hasAudioFocus(state)) {
       player.playWhenReady = state
 
       EventBus.send(Event.StateChanged(state))
@@ -356,6 +340,36 @@ class PlayerService : Service() {
     }
 
     return mediaMetadataBuilder.build()
+  }
+
+  @SuppressLint("NewApi")
+  private fun hasAudioFocus(state: Boolean): Boolean {
+    var allowed = !state
+
+    if (!allowed) {
+      Build.VERSION_CODES.O.onApi(
+        {
+          audioFocusRequest?.let {
+            allowed = when (audioManager.requestAudioFocus(it)) {
+              AudioManager.AUDIOFOCUS_REQUEST_GRANTED -> true
+              else -> false
+            }
+          }
+        },
+        {
+
+          @Suppress("DEPRECATION")
+          audioManager.requestAudioFocus(audioFocusChangeListener, AudioAttributes.CONTENT_TYPE_MUSIC, AudioManager.AUDIOFOCUS_GAIN).let {
+            allowed = when (it) {
+              AudioManager.AUDIOFOCUS_REQUEST_GRANTED -> true
+              else -> false
+            }
+          }
+        }
+      )
+    }
+
+    return allowed
   }
 
   @SuppressLint("NewApi")
