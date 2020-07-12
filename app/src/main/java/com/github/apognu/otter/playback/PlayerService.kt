@@ -13,6 +13,7 @@ import android.os.Build
 import android.os.IBinder
 import android.support.v4.media.MediaMetadataCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.media.session.MediaButtonReceiver
 import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
 import com.github.apognu.otter.utils.*
@@ -55,18 +56,14 @@ class PlayerService : Service() {
   private lateinit var radioPlayer: RadioPlayer
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    intent?.action?.let {
+      if (it == Intent.ACTION_MEDIA_BUTTON) {
+        MediaButtonReceiver.handleIntent(Otter.get().mediaSession.session, intent)
+      }
+    }
+
     if (!started) {
       watchEventBus()
-
-      intent?.extras?.getString(INITIAL_COMMAND_KEY)?.let {
-        when (it) {
-          Command.SetState(true).toString() -> setPlaybackState(true)
-          Command.SetState(false).toString() -> setPlaybackState(false)
-          Command.ToggleState.toString() -> togglePlayback()
-          Command.NextTrack.toString() -> skipToNextTrack()
-          Command.PreviousTrack.toString() -> skipToPreviousTrack()
-        }
-      }
     }
 
     started = true
@@ -98,8 +95,6 @@ class PlayerService : Service() {
       }
     }
 
-    Otter.get().mediaSession.active = true
-
     mediaControlsManager = MediaControlsManager(this, scope, Otter.get().mediaSession.session)
 
     player = SimpleExoPlayer.Builder(this).build().apply {
@@ -109,6 +104,8 @@ class PlayerService : Service() {
         addListener(it)
       }
     }
+
+    Otter.get().mediaSession.active = true
 
     Otter.get().mediaSession.connector.apply {
       setPlayer(player)
@@ -247,11 +244,11 @@ class PlayerService : Service() {
         audioManager.abandonAudioFocus(audioFocusChangeListener)
       })
 
-    Otter.get().mediaSession.active = false
-
     player.removeListener(playerEventListener)
     setPlaybackState(false)
     player.release()
+
+    Otter.get().mediaSession.active = false
 
     super.onDestroy()
   }
@@ -401,8 +398,10 @@ class PlayerService : Service() {
     override fun onTracksChanged(trackGroups: TrackGroupArray, trackSelections: TrackSelectionArray) {
       super.onTracksChanged(trackGroups, trackSelections)
 
-      queue.current = player.currentWindowIndex
-      mediaControlsManager.updateNotification(queue.current(), player.playWhenReady)
+      if (queue.current != player.currentWindowIndex) {
+        queue.current = player.currentWindowIndex
+        mediaControlsManager.updateNotification(queue.current(), player.playWhenReady)
+      }
 
       if (queue.get().isNotEmpty() && queue.current() == queue.get().last() && radioPlayer.isActive()) {
         scope.launch(IO) {

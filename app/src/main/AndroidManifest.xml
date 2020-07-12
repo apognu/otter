@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
   package="com.github.apognu.otter">
 
   <uses-permission android:name="android.permission.INTERNET" />
@@ -19,7 +20,7 @@
     android:usesCleartextTraffic="true">
 
     <activity
-      android:name="com.github.apognu.otter.activities.SplashActivity"
+      android:name=".activities.SplashActivity"
       android:launchMode="singleInstance"
       android:noHistory="true">
 
@@ -33,36 +34,48 @@
     </activity>
 
     <activity
-      android:name="com.github.apognu.otter.activities.LoginActivity"
+      android:name=".activities.LoginActivity"
       android:configChanges="screenSize|orientation"
       android:launchMode="singleInstance" />
 
-    <activity android:name="com.github.apognu.otter.activities.MainActivity" />
+    <activity android:name=".activities.MainActivity" />
 
     <activity
-      android:name="com.github.apognu.otter.activities.SearchActivity"
+      android:name=".activities.SearchActivity"
       android:launchMode="singleTop" />
 
-    <activity android:name="com.github.apognu.otter.activities.DownloadsActivity" />
+    <activity android:name=".activities.DownloadsActivity" />
 
-    <activity android:name="com.github.apognu.otter.activities.SettingsActivity" />
+    <activity android:name=".activities.SettingsActivity" />
 
-    <activity android:name="com.github.apognu.otter.activities.LicencesActivity" />
+    <activity android:name=".activities.LicencesActivity" />
 
     <service
-      android:name="com.github.apognu.otter.playback.PlayerService"
-      android:foregroundServiceType="mediaPlayback" />
+      android:name=".playback.PlayerService"
+      android:foregroundServiceType="mediaPlayback">
+
+      <intent-filter>
+        <action android:name="android.intent.action.MEDIA_BUTTON" />
+      </intent-filter>
+
+    </service>
 
     <service
       android:name=".playback.PinService"
       android:exported="false">
+
       <intent-filter>
         <action android:name="com.google.android.exoplayer.downloadService.action.RESTART" />
         <category android:name="android.intent.category.DEFAULT" />
       </intent-filter>
+
     </service>
 
-    <receiver android:name="com.github.apognu.otter.playback.MediaControlActionReceiver" />
+    <receiver android:name="androidx.media.session.MediaButtonReceiver">
+      <intent-filter>
+        <action android:name="android.intent.action.MEDIA_BUTTON" />
+      </intent-filter>
+    </receiver>
 
   </application>
 

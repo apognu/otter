@@ -3,16 +3,19 @@ package com.github.apognu.otter.playback
 import android.app.Notification
 import android.app.PendingIntent
 import android.app.Service
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
 import android.support.v4.media.session.MediaSessionCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.media.app.NotificationCompat.MediaStyle
+import androidx.media.session.MediaButtonReceiver
 import com.github.apognu.otter.R
 import com.github.apognu.otter.activities.MainActivity
-import com.github.apognu.otter.utils.*
+import com.github.apognu.otter.utils.AppContext
+import com.github.apognu.otter.utils.Track
+import com.github.apognu.otter.utils.log
+import com.github.apognu.otter.utils.maybeNormalizeUrl
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
@@ -21,14 +24,13 @@ import kotlinx.coroutines.launch
 class MediaControlsManager(val context: Service, private val scope: CoroutineScope, private val mediaSession: MediaSessionCompat) {
   companion object {
     const val NOTIFICATION_ACTION_OPEN_QUEUE = 0
-    const val NOTIFICATION_ACTION_PREVIOUS = 1
-    const val NOTIFICATION_ACTION_TOGGLE = 2
-    const val NOTIFICATION_ACTION_NEXT = 3
   }
 
   private var notification: Notification? = null
 
   fun updateNotification(track: Track?, playing: Boolean) {
+    "updateNotification".log()
+
     if (notification == null && !playing) return
 
     track?.let {
@@ -74,19 +76,19 @@ class MediaControlsManager(val context: Service, private val scope: CoroutineSco
           .addAction(
             action(
               R.drawable.previous, context.getString(R.string.control_previous),
-              NOTIFICATION_ACTION_PREVIOUS
+              PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
             )
           )
           .addAction(
             action(
               stateIcon, context.getString(R.string.control_toggle),
-              NOTIFICATION_ACTION_TOGGLE
+              PlaybackStateCompat.ACTION_PLAY_PAUSE
             )
           )
           .addAction(
             action(
               R.drawable.next, context.getString(R.string.control_next),
-              NOTIFICATION_ACTION_NEXT
+              PlaybackStateCompat.ACTION_SKIP_TO_NEXT
             )
           )
           .build()
@@ -102,26 +104,9 @@ class MediaControlsManager(val context: Service, private val scope: CoroutineSco
     }
   }
 
-  private fun action(icon: Int, title: String, id: Int): NotificationCompat.Action {
-    val intent = Intent(context, MediaControlActionReceiver::class.java).apply { action = id.toString() }
-    val pendingIntent = PendingIntent.getBroadcast(context, id, intent, 0)
-
-    return NotificationCompat.Action.Builder(icon, title, pendingIntent).build()
-  }
-}
-
-class MediaControlActionReceiver : BroadcastReceiver() {
-  override fun onReceive(context: Context?, intent: Intent?) {
-    val command = when (intent?.action) {
-      MediaControlsManager.NOTIFICATION_ACTION_PREVIOUS.toString() -> Command.PreviousTrack
-      MediaControlsManager.NOTIFICATION_ACTION_TOGGLE.toString() -> Command.ToggleState
-      MediaControlsManager.NOTIFICATION_ACTION_NEXT.toString() -> Command.NextTrack
-      else -> null
-    }
-
-    command?.let {
-      CommandBus.send(command)
-      CommandBus.send(Command.StartService(command))
+  private fun action(icon: Int, title: String, id: Long): NotificationCompat.Action {
+    return MediaButtonReceiver.buildMediaButtonPendingIntent(context, id).run {
+      NotificationCompat.Action.Builder(icon, title, this).build()
     }
   }
 }
