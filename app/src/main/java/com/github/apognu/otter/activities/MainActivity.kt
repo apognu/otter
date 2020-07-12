@@ -78,15 +78,14 @@ class MainActivity : AppCompatActivity() {
   override fun onResume() {
     super.onResume()
 
-    (container as? DisableableFrameLayout)?.callback = object : DisableableFrameLayout.Callback {
-      override fun shouldRegisterTouch(): Boolean {
-        if (now_playing.isOpened()) {
-          now_playing.close()
-          return false
-        }
+    (container as? DisableableFrameLayout)?.setShouldRegisterTouch { _ ->
+      if (now_playing.isOpened()) {
+        now_playing.close()
 
-        return true
+        return@setShouldRegisterTouch false
       }
+
+      true
     }
 
     favoritedRepository.update(this, lifecycleScope)
