@@ -72,7 +72,7 @@ class NowPlayingView : MaterialCardView {
   }
 
   inner class OnGestureDetection : GestureDetector.SimpleOnGestureListener() {
-    var maxHeight = 0
+    private var maxHeight = 0
     private var minHeight = 0
     private var maxMargin = 0
 
@@ -99,8 +99,6 @@ class NowPlayingView : MaterialCardView {
     override fun onDown(e: MotionEvent): Boolean {
       initialTouchY = e.rawY
       lastTouchY = e.rawY
-
-      flingAnimator?.cancel()
 
       return true
     }

@@ -29,6 +29,7 @@ import com.github.apognu.otter.repositories.FavoritedRepository
 import com.github.apognu.otter.repositories.FavoritesRepository
 import com.github.apognu.otter.repositories.Repository
 import com.github.apognu.otter.utils.*
+import com.github.apognu.otter.views.DisableableFrameLayout
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitStringResponse
 import com.google.android.exoplayer2.Player
@@ -76,6 +77,17 @@ class MainActivity : AppCompatActivity() {
 
   override fun onResume() {
     super.onResume()
+
+    (container as? DisableableFrameLayout)?.callback = object : DisableableFrameLayout.Callback {
+      override fun shouldRegisterTouch(): Boolean {
+        if (now_playing.isOpened()) {
+          now_playing.close()
+          return false
+        }
+
+        return true
+      }
+    }
 
     favoritedRepository.update(this, lifecycleScope)
 

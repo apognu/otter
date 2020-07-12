@@ -5,7 +5,7 @@
   android:layout_width="match_parent"
   android:layout_height="match_parent">
 
-  <FrameLayout
+  <com.github.apognu.otter.views.DisableableFrameLayout
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
