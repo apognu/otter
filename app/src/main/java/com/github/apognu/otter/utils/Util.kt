@@ -12,8 +12,29 @@ fun Context?.toast(message: String, length: Int = Toast.LENGTH_SHORT) {
   }
 }
 
-fun Any.log(message: Any) {
-  Log.d("OTTER", "${javaClass.simpleName}: $message")
+private fun logClassName(): String {
+  val known = setOf(
+    "dalvik.system.VMStack",
+    "java.lang.Thread",
+    "com.github.apognu.otter.utils.UtilKt"
+  )
+
+  Thread.currentThread().stackTrace.forEach {
+    if (!known.contains(it.className)) {
+      val className = it.className.split('.').last()
+      val line = it.lineNumber
+
+      return "$className:$line"
+    }
+  }
+
+  return "UNKNOWN"
+}
+
+fun Any?.log(prefix: String? = null) {
+  prefix?.let {
+    Log.d("OTTER", "${logClassName()} - $prefix: $this")
+  } ?: Log.d("OTTER", "${logClassName()} - $this")
 }
 
 fun maybeNormalizeUrl(rawUrl: String?): String? {

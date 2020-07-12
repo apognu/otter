@@ -129,7 +129,6 @@ class SearchActivity : AppCompatActivity() {
     if (download.state == Download.STATE_COMPLETED) {
       download.getMetadata()?.let { info ->
         adapter.tracks.withIndex().associate { it.value to it.index }.filter { it.key.id == info.id }.toList().getOrNull(0)?.let { match ->
-          log(match)
           withContext(Dispatchers.Main) {
             adapter.tracks[match.second].downloaded = true
             adapter.notifyItemChanged(adapter.getPositionOf(SearchAdapter.ResultType.Track, match.second))

@@ -93,7 +93,7 @@ class OtterQueueNavigator : MediaSessionConnector.QueueNavigator {
     CommandBus.send(Command.NextTrack)
   }
 
-  override fun getActiveQueueItemId(player: Player?) = 0L
+  override fun getActiveQueueItemId(player: Player?) = player?.currentWindowIndex?.toLong() ?: 0
 
   override fun onSkipToPrevious(player: Player, controlDispatcher: ControlDispatcher) {
     CommandBus.send(Command.PreviousTrack)
