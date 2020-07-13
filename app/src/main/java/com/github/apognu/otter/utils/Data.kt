@@ -1,12 +1,11 @@
 package com.github.apognu.otter.utils
 
 import android.content.Context
-import com.github.apognu.otter.activities.FwCredentials
+import com.github.apognu.otter.models.api.Credentials
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.FuelError
 import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
 import com.github.kittinunf.fuel.coroutines.awaitObjectResult
-import com.github.kittinunf.fuel.gson.gsonDeserializerOf
 import com.github.kittinunf.result.Result
 import com.preference.PowerPreference
 import java.io.BufferedReader
@@ -23,7 +22,9 @@ object HTTP {
       "password" to PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("password")
     ).toList()
 
-    val result = Fuel.post(mustNormalizeUrl("/api/v1/token"), body).awaitObjectResult(gsonDeserializerOf(FwCredentials::class.java))
+    val result = Fuel
+      .post(mustNormalizeUrl("/api/v1/token"), body)
+      .awaitObjectResult<Credentials>(AppContext.deserializer())
 
     return result.fold(
       { data ->
@@ -42,7 +43,7 @@ object HTTP {
       }
     }
 
-    val (_, response, result) = request.awaitObjectResponseResult(gsonDeserializerOf(T::class.java))
+    val (_, response, result) = request.awaitObjectResponseResult<T>(AppContext.deserializer())
 
     if (response.statusCode == 401) {
       return retryGet(url)
@@ -59,7 +60,7 @@ object HTTP {
         }
       }
 
-      request.awaitObjectResult(gsonDeserializerOf(T::class.java))
+      request.awaitObjectResult(AppContext.deserializer())
     } else {
       Result.Failure(FuelError.wrap(RefreshError))
     }

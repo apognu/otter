@@ -5,18 +5,24 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
 import com.github.apognu.otter.adapters.SearchAdapter
 import com.github.apognu.otter.fragments.AlbumsFragment
 import com.github.apognu.otter.fragments.ArtistsFragment
+import com.github.apognu.otter.models.dao.toDao
 import com.github.apognu.otter.repositories.*
 import com.github.apognu.otter.utils.*
+import com.github.apognu.otter.models.domain.Album
+import com.github.apognu.otter.models.domain.Artist
+import com.github.apognu.otter.models.domain.Track
 import com.google.android.exoplayer2.offline.Download
 import kotlinx.android.synthetic.main.activity_search.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.net.URLEncoder
 import java.util.*
 
@@ -47,7 +53,7 @@ class SearchActivity : AppCompatActivity() {
   override fun onResume() {
     super.onResume()
 
-    lifecycleScope.launch(Dispatchers.IO) {
+    lifecycleScope.launch(IO) {
       EventBus.get().collect { message ->
         when (message) {
           is Event.DownloadChanged -> refreshDownloadedTrack(message.download)
@@ -82,25 +88,52 @@ class SearchActivity : AppCompatActivity() {
           adapter.tracks.clear()
           adapter.notifyDataSetChanged()
 
-          artistsRepository.fetch(Repository.Origin.Network.origin).untilNetwork(lifecycleScope) { artists, _, _, _ ->
+          artistsRepository.fetch().untilNetwork(lifecycleScope, IO) { artists, _, _ ->
             done++
 
-            adapter.artists.addAll(artists)
-            refresh()
+            artists.forEach {
+              Otter.get().database.artists().run {
+                insert(it.toDao())
+
+                adapter.artists.add(Artist.fromDecoratedEntity(getDecoratedBlocking(it.id)))
+              }
+            }
+
+            lifecycleScope.launch(Main) {
+              refresh()
+            }
           }
 
-          albumsRepository.fetch(Repository.Origin.Network.origin).untilNetwork(lifecycleScope) { albums, _, _, _ ->
+          albumsRepository.fetch().untilNetwork(lifecycleScope, IO) { albums, _, _ ->
             done++
 
-            adapter.albums.addAll(albums)
-            refresh()
+            albums.forEach {
+              Otter.get().database.albums().run {
+                insert(it.toDao())
+
+                adapter.albums.add(Album.fromDecoratedEntity(getDecoratedBlocking(it.id)))
+              }
+            }
+
+            lifecycleScope.launch(Main) {
+              refresh()
+            }
           }
 
-          tracksRepository.fetch(Repository.Origin.Network.origin).untilNetwork(lifecycleScope) { tracks, _, _, _ ->
+          tracksRepository.fetch().untilNetwork(lifecycleScope, IO) { tracks, _, _ ->
             done++
 
-            adapter.tracks.addAll(tracks)
-            refresh()
+            tracks.forEach {
+              Otter.get().database.tracks().run {
+                insertWithAssocs(it)
+
+                adapter.tracks.add(Track.fromDecoratedEntity(getDecoratedBlocking(it.id)))
+              }
+            }
+
+            lifecycleScope.launch(Main) {
+              refresh()
+            }
           }
         }
 
@@ -127,14 +160,14 @@ class SearchActivity : AppCompatActivity() {
 
   private suspend fun refreshDownloadedTrack(download: Download) {
     if (download.state == Download.STATE_COMPLETED) {
-      download.getMetadata()?.let { info ->
+      /* download.getMetadata()?.let { info ->
         adapter.tracks.withIndex().associate { it.value to it.index }.filter { it.key.id == info.id }.toList().getOrNull(0)?.let { match ->
           withContext(Dispatchers.Main) {
             adapter.tracks[match.second].downloaded = true
             adapter.notifyItemChanged(adapter.getPositionOf(SearchAdapter.ResultType.Track, match.second))
           }
         }
-      }
+      } */
     }
   }
 

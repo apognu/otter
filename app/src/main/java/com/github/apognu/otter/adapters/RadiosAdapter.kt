@@ -6,11 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
+import com.github.apognu.otter.models.dao.RadioEntity
 import com.github.apognu.otter.fragments.OtterAdapter
 import com.github.apognu.otter.utils.AppContext
 import com.github.apognu.otter.utils.Event
 import com.github.apognu.otter.utils.EventBus
-import com.github.apognu.otter.utils.Radio
 import com.github.apognu.otter.views.LoadingImageView
 import com.preference.PowerPreference
 import kotlinx.android.synthetic.main.row_radio.view.*
@@ -20,9 +20,9 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class RadiosAdapter(val context: Context?, val scope: CoroutineScope, private val listener: OnRadioClickListener) : OtterAdapter<Radio, RadiosAdapter.ViewHolder>() {
+class RadiosAdapter(val context: Context?, val scope: CoroutineScope, private val listener: OnRadioClickListener) : OtterAdapter<RadioEntity, RadiosAdapter.ViewHolder>() {
   interface OnRadioClickListener {
-    fun onClick(holder: ViewHolder, radio: Radio)
+    fun onClick(holder: ViewHolder, radio: RadioEntity)
   }
 
   enum class RowType {
@@ -31,26 +31,26 @@ class RadiosAdapter(val context: Context?, val scope: CoroutineScope, private va
     UserRadio
   }
 
-  private val instanceRadios: List<Radio> by lazy {
+  private val instanceRadios: List<RadioEntity> by lazy {
     context?.let {
       return@lazy when (val username = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("actor_username")) {
         "" -> listOf(
-          Radio(0, "random", context.getString(R.string.radio_random_title), context.getString(R.string.radio_random_description))
+          RadioEntity(0, "random", context.getString(R.string.radio_random_title), context.getString(R.string.radio_random_description))
         )
 
         else -> listOf(
-          Radio(0, "actor_content", context.getString(R.string.radio_your_content_title), context.getString(R.string.radio_your_content_description), username),
-          Radio(0, "random", context.getString(R.string.radio_random_title), context.getString(R.string.radio_random_description)),
-          Radio(0, "favorites", context.getString(R.string.favorites), context.getString(R.string.radio_favorites_description)),
-          Radio(0, "less-listened", context.getString(R.string.radio_less_listened_title), context.getString(R.string.radio_less_listened_description))
+          RadioEntity(0, "actor_content", context.getString(R.string.radio_your_content_title), context.getString(R.string.radio_your_content_description), username),
+          RadioEntity(0, "random", context.getString(R.string.radio_random_title), context.getString(R.string.radio_random_description)),
+          RadioEntity(0, "favorites", context.getString(R.string.favorites), context.getString(R.string.radio_favorites_description)),
+          RadioEntity(0, "less-listened", context.getString(R.string.radio_less_listened_title), context.getString(R.string.radio_less_listened_description))
         )
       }
     }
 
-    listOf<Radio>()
+    listOf<RadioEntity>()
   }
 
-  private fun getRadioAt(position: Int): Radio {
+  private fun getRadioAt(position: Int): RadioEntity {
     return when (getItemViewType(position)) {
       RowType.InstanceRadio.ordinal -> instanceRadios[position - 1]
       else -> data[position - instanceRadios.size - 2]

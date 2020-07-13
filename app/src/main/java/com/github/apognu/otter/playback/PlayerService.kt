@@ -17,7 +17,10 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.media.session.MediaButtonReceiver
 import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
+import com.github.apognu.otter.models.dao.RadioEntity
+import com.github.apognu.otter.models.domain.Track
 import com.github.apognu.otter.utils.*
+import com.github.apognu.otter.viewmodels.PlayerStateViewModel
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.Player
@@ -133,7 +136,7 @@ class PlayerService : Service() {
 
         val (current, duration, percent) = getProgress(true)
 
-        ProgressBus.send(current, duration, percent)
+        PlayerStateViewModel.get().position.postValue(Triple(current, duration, percent))
       }
     }
 
@@ -145,11 +148,9 @@ class PlayerService : Service() {
       CommandBus.get().collect { command ->
         when (command) {
           is Command.RefreshService -> {
-            EventBus.send(Event.QueueChanged)
-
             if (queue.metadata.isNotEmpty()) {
-              CommandBus.send(Command.RefreshTrack(queue.current()))
-              EventBus.send(Event.StateChanged(player.playWhenReady))
+              PlayerStateViewModel.get()._track.postValue(queue.current())
+              PlayerStateViewModel.get().isPlaying.postValue(player.playWhenReady)
             }
           }
 
@@ -193,6 +194,7 @@ class PlayerService : Service() {
 
           is Command.PlayRadio -> {
             queue.clear()
+            // TOBEREDONE
             radioPlayer.play(command.radio)
           }
 
@@ -205,23 +207,11 @@ class PlayerService : Service() {
     }
 
     scope.launch(Main) {
-      RequestBus.get().collect { request ->
-        when (request) {
-          is Request.GetCurrentTrack -> request.channel?.offer(Response.CurrentTrack(queue.current()))
-          is Request.GetState -> request.channel?.offer(Response.State(player.playWhenReady))
-          is Request.GetQueue -> request.channel?.offer(Response.Queue(queue.get()))
-        }
-      }
-    }
-
-    scope.launch(Main) {
       while (true) {
         delay(1000)
 
-        val (current, duration, percent) = getProgress()
-
         if (player.playWhenReady) {
-          ProgressBus.send(current, duration, percent)
+          PlayerStateViewModel.get().position.postValue(getProgress())
         }
       }
     }
@@ -281,7 +271,7 @@ class PlayerService : Service() {
     if (hasAudioFocus(state)) {
       player.playWhenReady = state
 
-      EventBus.send(Event.StateChanged(state))
+      PlayerStateViewModel.get().isPlaying.postValue(state)
     }
   }
 
@@ -301,7 +291,7 @@ class PlayerService : Service() {
     player.next()
 
     Cache.set(this@PlayerService, "progress", "0".toByteArray())
-    ProgressBus.send(0, 0, 0)
+    PlayerStateViewModel.get().position.postValue(Triple(0, 0, 0))
   }
 
   private fun getProgress(force: Boolean = false): Triple<Int, Int, Int> {
@@ -331,7 +321,7 @@ class PlayerService : Service() {
 
       return mediaMetadataBuilder.apply {
         putString(MediaMetadataCompat.METADATA_KEY_TITLE, track.title)
-        putString(MediaMetadataCompat.METADATA_KEY_ARTIST, track.artist.name)
+        putString(MediaMetadataCompat.METADATA_KEY_ARTIST, track.artist?.name)
         putLong(MediaMetadata.METADATA_KEY_DURATION, (track.bestUpload()?.duration?.toLong() ?: 0L) * 1000)
 
         try {
@@ -381,24 +371,22 @@ class PlayerService : Service() {
     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
       super.onPlayerStateChanged(playWhenReady, playbackState)
 
-      EventBus.send(Event.StateChanged(playWhenReady))
+      PlayerStateViewModel.get().isPlaying.postValue(playWhenReady)
 
       if (queue.current == -1) {
-        CommandBus.send(Command.RefreshTrack(queue.current()))
+        PlayerStateViewModel.get()._track.postValue(queue.current())
       }
 
       when (playWhenReady) {
         true -> {
           when (playbackState) {
             Player.STATE_READY -> mediaControlsManager.updateNotification(queue.current(), true)
-            Player.STATE_BUFFERING -> EventBus.send(Event.Buffering(true))
+            Player.STATE_BUFFERING -> PlayerStateViewModel.get().isBuffering.postValue(true)
             Player.STATE_ENDED -> {
               setPlaybackState(false)
 
               queue.current = 0
               player.seekTo(0, C.TIME_UNSET)
-
-              ProgressBus.send(0, 0, 0)
             }
 
             Player.STATE_IDLE -> {
@@ -408,11 +396,11 @@ class PlayerService : Service() {
             }
           }
 
-          if (playbackState != Player.STATE_BUFFERING) EventBus.send(Event.Buffering(false))
+          if (playbackState != Player.STATE_BUFFERING) PlayerStateViewModel.get().isBuffering.postValue(false)
         }
 
         false -> {
-          EventBus.send(Event.Buffering(false))
+          PlayerStateViewModel.get().isBuffering.postValue(false)
 
           Build.VERSION_CODES.N.onApi(
             { stopForeground(STOP_FOREGROUND_DETACH) },
@@ -446,7 +434,7 @@ class PlayerService : Service() {
 
       Cache.set(this@PlayerService, "current", queue.current.toString().toByteArray())
 
-      CommandBus.send(Command.RefreshTrack(queue.current()))
+      PlayerStateViewModel.get()._track.postValue(queue.current())
     }
 
     override fun onPositionDiscontinuity(reason: Int) {

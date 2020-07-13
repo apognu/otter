@@ -13,7 +13,11 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
+import com.github.apognu.otter.models.api.FunkwhaleTrack
 import com.github.apognu.otter.utils.*
+import com.github.apognu.otter.models.domain.Album
+import com.github.apognu.otter.models.domain.Artist
+import com.github.apognu.otter.models.domain.Track
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.row_track.view.*
@@ -41,7 +45,7 @@ class SearchAdapter(private val context: Context?, private val listener: OnSearc
   var albums: MutableList<Album> = mutableListOf()
   var tracks: MutableList<Track> = mutableListOf()
 
-  var currentTrack: Track? = null
+  var currentTrack: FunkwhaleTrack? = null
 
   override fun getItemCount() = SECTION_COUNT + artists.size + albums.size + tracks.size
 
@@ -169,10 +173,10 @@ class SearchAdapter(private val context: Context?, private val listener: OnSearc
     if (resultType == ResultType.Track.ordinal) {
       (item as? Track)?.let { track ->
         context?.let { context ->
-          if (track == currentTrack || track.current) {
+          /* if (track == currentTrack || track.current) {
             holder.title.setTypeface(holder.title.typeface, Typeface.BOLD)
             holder.artist.setTypeface(holder.artist.typeface, Typeface.BOLD)
-          }
+          } */
 
           when (track.favorite) {
             true -> holder.favorite.setColorFilter(context.getColor(R.color.colorFavorite))
@@ -180,13 +184,7 @@ class SearchAdapter(private val context: Context?, private val listener: OnSearc
           }
 
           holder.favorite.setOnClickListener {
-            favoriteListener?.let {
-              favoriteListener.onToggleFavorite(track.id, !track.favorite)
-
-              tracks[position - artists.size - albums.size - SECTION_COUNT].favorite = !track.favorite
-
-              notifyItemChanged(position)
-            }
+            favoriteListener?.onToggleFavorite(track.id, !track.favorite)
           }
 
           when (track.cached || track.downloaded) {

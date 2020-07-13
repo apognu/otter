@@ -2,7 +2,6 @@ package com.github.apognu.otter.activities
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
-import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Bitmap
@@ -10,7 +9,6 @@ import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.*
-import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
@@ -21,15 +19,19 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.github.apognu.otter.Otter
+import androidx.lifecycle.observe
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.*
+import com.github.apognu.otter.models.dao.RealmArtist
+import com.github.apognu.otter.models.domain.Track
 import com.github.apognu.otter.playback.MediaControlsManager
 import com.github.apognu.otter.playback.PinService
 import com.github.apognu.otter.playback.PlayerService
 import com.github.apognu.otter.repositories.FavoritedRepository
 import com.github.apognu.otter.repositories.FavoritesRepository
-import com.github.apognu.otter.repositories.Repository
 import com.github.apognu.otter.utils.*
+import com.github.apognu.otter.viewmodels.PlayerStateViewModel
+import com.github.apognu.otter.viewmodels.QueueViewModel
 import com.github.apognu.otter.views.DisableableFrameLayout
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitStringResponse
@@ -38,6 +40,7 @@ import com.google.android.exoplayer2.offline.DownloadService
 import com.google.gson.Gson
 import com.preference.PowerPreference
 import com.squareup.picasso.Picasso
+import io.realm.Realm
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.partial_now_playing.*
@@ -53,7 +56,8 @@ class MainActivity : AppCompatActivity() {
     LOGOUT(1001)
   }
 
-  private val favoriteRepository = FavoritesRepository(this)
+  private val queueViewModel = QueueViewModel.get()
+  private val favoritesRepository = FavoritesRepository(this)
   private val favoritedRepository = FavoritedRepository(this)
   private var menu: Menu? = null
 
@@ -75,12 +79,51 @@ class MainActivity : AppCompatActivity() {
       .commit()
 
     watchEventBus()
+
+    PlayerStateViewModel.get().isPlaying.observe(this) { isPlaying ->
+      when (isPlaying) {
+        true -> {
+          now_playing_toggle.icon = getDrawable(R.drawable.pause)
+          now_playing_details_toggle.icon = getDrawable(R.drawable.pause)
+        }
+
+        false -> {
+          now_playing_toggle.icon = getDrawable(R.drawable.play)
+          now_playing_details_toggle.icon = getDrawable(R.drawable.play)
+        }
+      }
+    }
+
+    PlayerStateViewModel.get().isBuffering.observe(this) { isBuffering ->
+      when (isBuffering) {
+        true -> now_playing_buffering.visibility = View.VISIBLE
+        false -> now_playing_buffering.visibility = View.GONE
+      }
+    }
+
+    PlayerStateViewModel.get().track.observe(this) { track ->
+      refreshCurrentTrack(track)
+    }
+
+    PlayerStateViewModel.get().position.observe(this) { (current, duration, percent) ->
+      now_playing_progress.progress = percent
+      now_playing_details_progress.progress = percent
+
+      val currentMins = (current / 1000) / 60
+      val currentSecs = (current / 1000) % 60
+
+      val durationMins = duration / 60
+      val durationSecs = duration % 60
+
+      now_playing_details_progress_current.text = "%02d:%02d".format(currentMins, currentSecs)
+      now_playing_details_progress_duration.text = "%02d:%02d".format(durationMins, durationSecs)
+    }
   }
 
   override fun onResume() {
     super.onResume()
 
-    (container as? DisableableFrameLayout)?.setShouldRegisterTouch { _ ->
+    container?.setShouldRegisterTouch { _ ->
       if (now_playing.isOpened()) {
         now_playing.close()
 
@@ -90,7 +133,17 @@ class MainActivity : AppCompatActivity() {
       true
     }
 
-    favoritedRepository.update(this, lifecycleScope)
+    landscape_queue?.setShouldRegisterTouch { _ ->
+      if (now_playing.isOpened()) {
+        now_playing.close()
+
+        return@setShouldRegisterTouch false
+      }
+
+      true
+    }
+
+    favoritedRepository.update()
 
     startService(Intent(this, PlayerService::class.java))
     DownloadService.start(this, PinService::class.java)
@@ -257,6 +310,11 @@ class MainActivity : AppCompatActivity() {
 
         stopService(Intent(this@MainActivity, PlayerService::class.java))
         startActivity(this)
+
+        databaseList().forEach {
+          deleteDatabase(it)
+        }
+
         finish()
       }
     }
@@ -300,13 +358,6 @@ class MainActivity : AppCompatActivity() {
 
           is Event.PlaybackError -> toast(message.message)
 
-          is Event.Buffering -> {
-            when (message.value) {
-              true -> now_playing_buffering.visibility = View.VISIBLE
-              false -> now_playing_buffering.visibility = View.GONE
-            }
-          }
-
           is Event.PlaybackStopped -> {
             if (now_playing.visibility == View.VISIBLE) {
               (container.layoutParams as? ViewGroup.MarginLayoutParams)?.let {
@@ -332,30 +383,6 @@ class MainActivity : AppCompatActivity() {
           }
 
           is Event.TrackFinished -> incrementListenCount(message.track)
-
-          is Event.StateChanged -> {
-            when (message.playing) {
-              true -> {
-                now_playing_toggle.icon = getDrawable(R.drawable.pause)
-                now_playing_details_toggle.icon = getDrawable(R.drawable.pause)
-              }
-
-              false -> {
-                now_playing_toggle.icon = getDrawable(R.drawable.play)
-                now_playing_details_toggle.icon = getDrawable(R.drawable.play)
-              }
-            }
-          }
-
-          is Event.QueueChanged -> {
-            findViewById<View>(R.id.nav_queue)?.let { view ->
-              ObjectAnimator.ofFloat(view, View.ROTATION, 0f, 360f).let {
-                it.duration = 500
-                it.interpolator = AccelerateDecelerateInterpolator()
-                it.start()
-              }
-            }
-          }
         }
       }
     }
@@ -377,25 +404,7 @@ class MainActivity : AppCompatActivity() {
               }
             )
           }
-
-          is Command.RefreshTrack -> refreshCurrentTrack(command.track)
         }
-      }
-    }
-
-    lifecycleScope.launch(Main) {
-      ProgressBus.get().collect { (current, duration, percent) ->
-        now_playing_progress.progress = percent
-        now_playing_details_progress.progress = percent
-
-        val currentMins = (current / 1000) / 60
-        val currentSecs = (current / 1000) % 60
-
-        val durationMins = duration / 60
-        val durationSecs = duration % 60
-
-        now_playing_details_progress_current.text = "%02d:%02d".format(currentMins, currentSecs)
-        now_playing_details_progress_duration.text = "%02d:%02d".format(durationMins, durationSecs)
       }
     }
   }
@@ -424,15 +433,15 @@ class MainActivity : AppCompatActivity() {
       }
 
       now_playing_title.text = track.title
-      now_playing_album.text = track.artist.name
+      now_playing_album.text = track.artist?.name
       now_playing_toggle.icon = getDrawable(R.drawable.pause)
 
       now_playing_details_title.text = track.title
-      now_playing_details_artist.text = track.artist.name
+      now_playing_details_artist.text = track.artist?.name
       now_playing_details_toggle.icon = getDrawable(R.drawable.pause)
 
       Picasso.get()
-        .maybeLoad(maybeNormalizeUrl(track.album?.cover?.urls?.original))
+        .maybeLoad(maybeNormalizeUrl(track.album?.cover))
         .fit()
         .centerCrop()
         .into(now_playing_cover)
@@ -499,34 +508,22 @@ class MainActivity : AppCompatActivity() {
         }
       }
 
-      now_playing_details_favorite?.let { now_playing_details_favorite ->
-        favoritedRepository.fetch().untilNetwork(lifecycleScope, IO) { favorites, _, _, _ ->
-          lifecycleScope.launch(Main) {
-            track.favorite = favorites.contains(track.id)
+      when (track.favorite) {
+        true -> now_playing_details_favorite.setColorFilter(getColor(R.color.colorFavorite))
+        false -> now_playing_details_favorite.setColorFilter(getColor(R.color.controlForeground))
+      }
 
-            when (track.favorite) {
-              true -> now_playing_details_favorite.setColorFilter(getColor(R.color.colorFavorite))
-              false -> now_playing_details_favorite.setColorFilter(getColor(R.color.controlForeground))
-            }
-          }
-        }
-
-        now_playing_details_favorite.setOnClickListener {
-          when (track.favorite) {
-            true -> {
-              favoriteRepository.deleteFavorite(track.id)
-              now_playing_details_favorite.setColorFilter(getColor(R.color.controlForeground))
-            }
-
-            false -> {
-              favoriteRepository.addFavorite(track.id)
-              now_playing_details_favorite.setColorFilter(getColor(R.color.colorFavorite))
-            }
+      now_playing_details_favorite.setOnClickListener {
+        when (track.favorite) {
+          true -> {
+            favoritesRepository.deleteFavorite(track.id)
+            // now_playing_details_favorite.setColorFilter(getColor(R.color.controlForeground))
           }
 
-          track.favorite = !track.favorite
-
-          favoriteRepository.fetch(Repository.Origin.Network.origin)
+          false -> {
+            favoritesRepository.addFavorite(track.id)
+            // now_playing_details_favorite.setColorFilter(getColor(R.color.colorFavorite))
+          }
         }
       }
     }

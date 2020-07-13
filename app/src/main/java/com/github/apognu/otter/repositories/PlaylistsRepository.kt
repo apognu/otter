@@ -1,18 +1,19 @@
 package com.github.apognu.otter.repositories
 
 import android.content.Context
-import com.github.apognu.otter.utils.OtterResponse
-import com.github.apognu.otter.utils.Playlist
-import com.github.apognu.otter.utils.PlaylistsCache
-import com.github.apognu.otter.utils.PlaylistsResponse
-import com.github.kittinunf.fuel.gson.gsonDeserializerOf
-import com.google.gson.reflect.TypeToken
-import java.io.BufferedReader
+import com.github.apognu.otter.Otter
+import com.github.apognu.otter.models.api.FunkwhalePlaylist
+import com.github.apognu.otter.models.dao.toDao
 
-class PlaylistsRepository(override val context: Context?) : Repository<Playlist, PlaylistsCache>() {
-  override val cacheId = "tracks-playlists"
-  override val upstream = HttpUpstream<Playlist, OtterResponse<Playlist>>(HttpUpstream.Behavior.Progressive, "/api/v1/playlists/?playable=true&ordering=name", object : TypeToken<PlaylistsResponse>() {}.type)
+class PlaylistsRepository(override val context: Context?) : Repository<FunkwhalePlaylist>() {
+  override val upstream =
+    HttpUpstream(HttpUpstream.Behavior.Progressive, "/api/v1/playlists/?playable=true&ordering=name", FunkwhalePlaylist.serializer())
 
-  override fun cache(data: List<Playlist>) = PlaylistsCache(data)
-  override fun uncache(reader: BufferedReader) = gsonDeserializerOf(PlaylistsCache::class.java).deserialize(reader)
+  override fun onDataFetched(data: List<FunkwhalePlaylist>): List<FunkwhalePlaylist> {
+    data.forEach {
+      Otter.get().database.playlists().insert(it.toDao())
+    }
+
+    return super.onDataFetched(data)
+  }
 }

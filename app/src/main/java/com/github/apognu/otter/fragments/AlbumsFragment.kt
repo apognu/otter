@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
@@ -16,21 +17,21 @@ import androidx.transition.Slide
 import com.github.apognu.otter.R
 import com.github.apognu.otter.activities.MainActivity
 import com.github.apognu.otter.adapters.AlbumsAdapter
+import com.github.apognu.otter.models.api.FunkwhaleAlbum
 import com.github.apognu.otter.repositories.AlbumsRepository
 import com.github.apognu.otter.repositories.ArtistTracksRepository
-import com.github.apognu.otter.repositories.Repository
 import com.github.apognu.otter.utils.*
+import com.github.apognu.otter.models.domain.Album
+import com.github.apognu.otter.viewmodels.AlbumsViewModel
+import com.github.apognu.otter.models.domain.Artist
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.fragment_albums.*
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
-class AlbumsFragment : OtterFragment<Album, AlbumsAdapter>() {
+class AlbumsFragment : LiveOtterFragment<FunkwhaleAlbum, Album, AlbumsAdapter>() {
+  override lateinit var liveData: LiveData<List<Album>>
   override val viewRes = R.layout.fragment_albums
   override val recycler: RecyclerView get() = albums
   override val alwaysRefresh = false
@@ -92,13 +93,15 @@ class AlbumsFragment : OtterFragment<Album, AlbumsAdapter>() {
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-
     arguments?.apply {
       artistId = getInt("artistId")
       artistName = getString("artistName") ?: ""
       artistArt = getString("artistArt") ?: ""
     }
+
+    liveData = AlbumsViewModel(artistId).albums
+
+    super.onCreate(savedInstanceState)
 
     adapter = AlbumsAdapter(context, OnAlbumClickListener())
     repository = AlbumsRepository(context, artistId)
@@ -132,19 +135,18 @@ class AlbumsFragment : OtterFragment<Album, AlbumsAdapter>() {
       play.isClickable = false
 
       lifecycleScope.launch(IO) {
-        artistTracksRepository.fetch(Repository.Origin.Network.origin)
-          .map { it.data }
-          .toList()
-          .flatten()
-          .shuffled()
-          .also {
-            CommandBus.send(Command.ReplaceQueue(it))
+        artistTracksRepository.fetch().untilNetwork(lifecycleScope) { _, _, _ ->
+          loader.stop()
 
-            withContext(Main) {
-              play.icon = requireContext().getDrawable(R.drawable.play)
-              play.isClickable = true
+          play.icon = requireContext().getDrawable(R.drawable.play)
+          play.isClickable = true
+
+          lifecycleScope.launch(IO) {
+            AlbumsViewModel(artistId).tracks().also {
+              CommandBus.send(Command.ReplaceQueue(it.shuffled()))
             }
           }
+        }
       }
     }
   }

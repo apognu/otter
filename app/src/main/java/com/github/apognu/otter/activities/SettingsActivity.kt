@@ -16,6 +16,7 @@ import com.github.apognu.otter.R
 import com.github.apognu.otter.utils.Cache
 import com.github.apognu.otter.utils.Command
 import com.github.apognu.otter.utils.CommandBus
+import kotlinx.serialization.ImplicitReflectionSerializer
 
 class SettingsActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,6 +36,7 @@ class SettingsActivity : AppCompatActivity() {
   fun getThemeResId(): Int = R.style.AppTheme
 }
 
+@ImplicitReflectionSerializer
 class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
   override fun onResume() {
     super.onResume()

@@ -13,12 +13,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.OtterAdapter
 import com.github.apognu.otter.utils.*
+import com.github.apognu.otter.models.domain.Track
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.row_track.view.*
 import java.util.*
 
-class PlaylistTracksAdapter(private val context: Context?, private val favoriteListener: OnFavoriteListener? = null, val fromQueue: Boolean = false) : OtterAdapter<PlaylistTrack, PlaylistTracksAdapter.ViewHolder>() {
+class PlaylistTracksAdapter(private val context: Context?, private val favoriteListener: OnFavoriteListener? = null, val fromQueue: Boolean = false) : OtterAdapter<Track, PlaylistTracksAdapter.ViewHolder>() {
   interface OnFavoriteListener {
     fun onToggleFavorite(id: Int, state: Boolean)
   }
@@ -30,7 +31,7 @@ class PlaylistTracksAdapter(private val context: Context?, private val favoriteL
   override fun getItemCount() = data.size
 
   override fun getItemId(position: Int): Long {
-    return data[position].track.id.toLong()
+    return data[position].id.toLong()
   }
 
   override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -56,38 +57,33 @@ class PlaylistTracksAdapter(private val context: Context?, private val favoriteL
     val track = data[position]
 
     Picasso.get()
-      .maybeLoad(maybeNormalizeUrl(track.track.album?.cover()))
+      .maybeLoad(maybeNormalizeUrl(track.album?.cover()))
       .fit()
       .placeholder(R.drawable.cover)
       .transform(RoundedCornersTransformation(16, 0))
       .into(holder.cover)
 
-    holder.title.text = track.track.title
-    holder.artist.text = track.track.artist.name
+    holder.title.text = track.title
+    holder.artist.text = track.artist?.name
 
     context?.let {
       holder.itemView.background = context.getDrawable(R.drawable.ripple)
     }
 
-    if (track.track == currentTrack || track.track.current) {
+    if (track == currentTrack) {
       context?.let {
         holder.itemView.background = context.getDrawable(R.drawable.current)
       }
     }
 
     context?.let {
-      when (track.track.favorite) {
+      when (track.favorite) {
         true -> holder.favorite.setColorFilter(context.getColor(R.color.colorFavorite))
         false -> holder.favorite.setColorFilter(context.getColor(R.color.colorSelected))
       }
 
       holder.favorite.setOnClickListener {
-        favoriteListener?.let {
-          favoriteListener.onToggleFavorite(track.track.id, !track.track.favorite)
-
-          track.track.favorite = !track.track.favorite
-          notifyItemChanged(position)
-        }
+        favoriteListener?.onToggleFavorite(track.id, !track.favorite)
       }
     }
 
@@ -98,9 +94,9 @@ class PlaylistTracksAdapter(private val context: Context?, private val favoriteL
 
           setOnMenuItemClickListener {
             when (it.itemId) {
-              R.id.track_add_to_queue -> CommandBus.send(Command.AddToQueue(listOf(track.track)))
-              R.id.track_play_next -> CommandBus.send(Command.PlayNext(track.track))
-              R.id.queue_remove -> CommandBus.send(Command.RemoveFromQueue(track.track))
+              R.id.track_add_to_queue -> CommandBus.send(Command.AddToQueue(listOf(track)))
+              R.id.track_play_next -> CommandBus.send(Command.PlayNext(track))
+              R.id.queue_remove -> CommandBus.send(Command.RemoveFromQueue(track))
             }
 
             true
@@ -152,8 +148,8 @@ class PlaylistTracksAdapter(private val context: Context?, private val favoriteL
       when (fromQueue) {
         true -> CommandBus.send(Command.PlayTrack(layoutPosition))
         false -> {
-          data.subList(layoutPosition, data.size).plus(data.subList(0, layoutPosition)).apply {
-            CommandBus.send(Command.ReplaceQueue(this.map { it.track }))
+          data.subList(layoutPosition, data.size).plus(data.subList(0, layoutPosition)).also { track ->
+            CommandBus.send(Command.ReplaceQueue(track))
 
             context.toast("All tracks were added to your queue")
           }

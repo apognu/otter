@@ -6,7 +6,10 @@ import android.content.Intent
 import android.net.Uri
 import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
+import com.github.apognu.otter.models.api.DownloadInfo
 import com.github.apognu.otter.utils.*
+import com.github.apognu.otter.viewmodels.DownloadsViewModel
+import com.github.apognu.otter.models.domain.Track
 import com.google.android.exoplayer2.offline.Download
 import com.google.android.exoplayer2.offline.DownloadManager
 import com.google.android.exoplayer2.offline.DownloadRequest
@@ -17,8 +20,6 @@ import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import java.util.*
 
 class PinService : DownloadService(AppContext.NOTIFICATION_DOWNLOADS) {
@@ -33,7 +34,7 @@ class PinService : DownloadService(AppContext.NOTIFICATION_DOWNLOADS) {
             track.id,
             url,
             track.title,
-            track.artist.name,
+            track.artist?.name ?: "",
             null
           )
         ).toByteArray()
@@ -48,15 +49,13 @@ class PinService : DownloadService(AppContext.NOTIFICATION_DOWNLOADS) {
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
     buildResumeDownloadsIntent(this, PinService::class.java, true)
 
-    scope.launch(Main) {
-      RequestBus.get().collect { request ->
-        when (request) {
-          is Request.GetDownloads -> request.channel?.offer(Response.Downloads(getDownloads()))
-        }
-      }
-    }
-
     return super.onStartCommand(intent, flags, startId)
+  }
+
+  override fun onCreate() {
+    super.onCreate()
+
+    DownloadsViewModel.get().cursor.postValue(getDownloads())
   }
 
   override fun getDownloadManager() = Otter.get().exoDownloadManager.apply {
@@ -77,7 +76,15 @@ class PinService : DownloadService(AppContext.NOTIFICATION_DOWNLOADS) {
     override fun onDownloadChanged(downloadManager: DownloadManager, download: Download) {
       super.onDownloadChanged(downloadManager, download)
 
-      EventBus.send(Event.DownloadChanged(download))
+      if (download.state != Download.STATE_REMOVING) {
+        EventBus.send(Event.DownloadChanged(download))
+      }
+    }
+
+    override fun onDownloadRemoved(downloadManager: DownloadManager, download: Download) {
+      super.onDownloadRemoved(downloadManager, download)
+
+      DownloadsViewModel.get().cursor.postValue(getDownloads())
     }
   }
 }

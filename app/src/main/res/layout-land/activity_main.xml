@@ -11,7 +11,7 @@
     android:baselineAligned="false"
     android:orientation="horizontal">
 
-    <FrameLayout
+    <com.github.apognu.otter.views.DisableableFrameLayout
       android:id="@+id/container"
       android:layout_width="0dp"
       android:layout_height="match_parent"
@@ -19,7 +19,7 @@
       android:layout_weight="1"
       app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <FrameLayout
+    <com.github.apognu.otter.views.DisableableFrameLayout
       android:id="@+id/landscape_queue"
       android:layout_width="0dp"
       android:layout_height="match_parent"

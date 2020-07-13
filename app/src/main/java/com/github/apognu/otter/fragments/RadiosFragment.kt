@@ -6,14 +6,18 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.adapters.RadiosAdapter
+import com.github.apognu.otter.models.api.FunkwhaleRadio
+import com.github.apognu.otter.models.dao.RadioEntity
 import com.github.apognu.otter.repositories.RadiosRepository
 import com.github.apognu.otter.utils.*
+import com.github.apognu.otter.viewmodels.RadiosViewModel
 import kotlinx.android.synthetic.main.fragment_radios.*
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class RadiosFragment : OtterFragment<Radio, RadiosAdapter>() {
+class RadiosFragment : LiveOtterFragment<FunkwhaleRadio, RadioEntity, RadiosAdapter>() {
+  override val liveData = RadiosViewModel().radios
   override val viewRes = R.layout.fragment_radios
   override val recycler: RecyclerView get() = radios
   override val alwaysRefresh = false
@@ -26,13 +30,14 @@ class RadiosFragment : OtterFragment<Radio, RadiosAdapter>() {
   }
 
   inner class RadioClickListener : RadiosAdapter.OnRadioClickListener {
-    override fun onClick(holder: RadiosAdapter.ViewHolder, radio: Radio) {
+    override fun onClick(holder: RadiosAdapter.ViewHolder, radio: RadioEntity) {
       holder.spin()
       recycler.forEach {
         it.isEnabled = false
         it.isClickable = false
       }
 
+      // TOBEREDONE
       CommandBus.send(Command.PlayRadio(radio))
 
       lifecycleScope.launch(Main) {

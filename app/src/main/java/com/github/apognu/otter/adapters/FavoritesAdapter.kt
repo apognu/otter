@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.OtterAdapter
 import com.github.apognu.otter.utils.*
+import com.github.apognu.otter.models.domain.Track
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.row_track.view.*
@@ -51,7 +52,7 @@ class FavoritesAdapter(private val context: Context?, private val favoriteListen
       .into(holder.cover)
 
     holder.title.text = favorite.title
-    holder.artist.text = favorite.artist.name
+    holder.artist.text = favorite.artist?.name
 
     context?.let {
       holder.itemView.background = context.getDrawable(R.drawable.ripple)

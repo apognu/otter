@@ -3,13 +3,16 @@ package com.github.apognu.otter.activities
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
 import com.github.apognu.otter.adapters.DownloadsAdapter
 import com.github.apognu.otter.utils.Event
 import com.github.apognu.otter.utils.EventBus
 import com.github.apognu.otter.utils.getMetadata
+import com.github.apognu.otter.viewmodels.DownloadsViewModel
 import com.google.android.exoplayer2.offline.Download
 import kotlinx.android.synthetic.main.activity_downloads.*
 import kotlinx.coroutines.Dispatchers.Default
@@ -27,13 +30,18 @@ class DownloadsActivity : AppCompatActivity() {
 
     setContentView(R.layout.activity_downloads)
 
-    downloads.itemAnimator = null
+    (downloads.itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
 
-    adapter = DownloadsAdapter(this, DownloadChangedListener()).also {
+    adapter = DownloadsAdapter(this).also {
       it.setHasStableIds(true)
 
       downloads.layoutManager = LinearLayoutManager(this)
       downloads.adapter = it
+    }
+
+    DownloadsViewModel.get().downloads.observe(this) { downloads ->
+      adapter.downloads = downloads.toMutableList()
+      adapter.notifyDataSetChanged()
     }
 
     lifecycleScope.launch(Default) {
@@ -54,40 +62,20 @@ class DownloadsActivity : AppCompatActivity() {
         }
       }
     }
-
-    refresh()
-  }
-
-  private fun refresh() {
-    lifecycleScope.launch(Main) {
-      val cursor = Otter.get().exoDownloadManager.downloadIndex.getDownloads()
-
-      adapter.downloads.clear()
-
-      while (cursor.moveToNext()) {
-        val download = cursor.download
-
-        download.getMetadata()?.let { info ->
-          adapter.downloads.add(info.apply {
-            this.download = download
-          })
-        }
-      }
-
-      adapter.notifyDataSetChanged()
-    }
   }
 
   private suspend fun refreshTrack(download: Download) {
     download.getMetadata()?.let { info ->
       adapter.downloads.withIndex().associate { it.value to it.index }.filter { it.key.id == info.id }.toList().getOrNull(0)?.let { match ->
         if (download.state != info.download?.state) {
-          withContext(Main) {
-            adapter.downloads[match.second] = info.apply {
-              this.download = download
-            }
+          adapter.downloads.getOrNull(match.second)?.let {
+            withContext(Main) {
+              adapter.downloads[match.second] = info.apply {
+                this.download = download
+              }
 
-            adapter.notifyItemChanged(match.second)
+              adapter.notifyItemChanged(match.second)
+            }
           }
         }
       }
@@ -113,13 +101,6 @@ class DownloadsActivity : AppCompatActivity() {
           }
         }
       }
-    }
-  }
-
-  inner class DownloadChangedListener : DownloadsAdapter.OnDownloadChangedListener {
-    override fun onItemRemoved(index: Int) {
-      adapter.downloads.removeAt(index)
-      adapter.notifyDataSetChanged()
     }
   }
 }

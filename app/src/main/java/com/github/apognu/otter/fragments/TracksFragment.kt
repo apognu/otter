@@ -6,14 +6,20 @@ import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.adapters.TracksAdapter
+import com.github.apognu.otter.models.api.FunkwhaleTrack
+import com.github.apognu.otter.models.domain.Album
+import com.github.apognu.otter.models.domain.Track
 import com.github.apognu.otter.repositories.FavoritedRepository
 import com.github.apognu.otter.repositories.FavoritesRepository
 import com.github.apognu.otter.repositories.TracksRepository
 import com.github.apognu.otter.utils.*
+import com.github.apognu.otter.viewmodels.*
 import com.google.android.exoplayer2.offline.Download
 import com.preference.PowerPreference
 import com.squareup.picasso.Picasso
@@ -25,7 +31,8 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class TracksFragment : OtterFragment<Track, TracksAdapter>() {
+class TracksFragment : LiveOtterFragment<FunkwhaleTrack, Track, TracksAdapter>() {
+  override lateinit var liveData: LiveData<List<Track>>
   override val viewRes = R.layout.fragment_tracks
   override val recycler: RecyclerView get() = tracks
 
@@ -40,25 +47,35 @@ class TracksFragment : OtterFragment<Track, TracksAdapter>() {
   companion object {
     fun new(album: Album): TracksFragment {
       return TracksFragment().apply {
-        arguments = bundleOf(
-          "albumId" to album.id,
-          "albumArtist" to album.artist.name,
-          "albumTitle" to album.title,
-          "albumCover" to album.cover()
-        )
+        arguments = bundleOf("albumId" to album.id)
       }
     }
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-
     arguments?.apply {
       albumId = getInt("albumId")
-      albumArtist = getString("albumArtist") ?: ""
-      albumTitle = getString("albumTitle") ?: ""
-      albumCover = getString("albumCover") ?: ""
     }
+
+    liveData = TracksViewModel(albumId).tracks
+
+    AlbumViewModel(albumId).album.observe(this) {
+      title.text = it.title
+
+      Picasso.get()
+        .maybeLoad(maybeNormalizeUrl(it.cover))
+        .noFade()
+        .fit()
+        .centerCrop()
+        .transform(RoundedCornersTransformation(16, 0))
+        .into(cover)
+
+      ArtistViewModel(it.artist_id).artist.observe(this) {
+        artist.text = it.name
+      }
+    }
+
+    super.onCreate(savedInstanceState)
 
     adapter = TracksAdapter(context, FavoriteListener())
     repository = TracksRepository(context, albumId)
@@ -68,32 +85,8 @@ class TracksFragment : OtterFragment<Track, TracksAdapter>() {
     watchEventBus()
   }
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
-
-    Picasso.get()
-      .maybeLoad(maybeNormalizeUrl(albumCover))
-      .noFade()
-      .fit()
-      .centerCrop()
-      .transform(RoundedCornersTransformation(16, 0))
-      .into(cover)
-
-    artist.text = albumArtist
-    title.text = albumTitle
-  }
-
   override fun onResume() {
     super.onResume()
-
-    lifecycleScope.launch(Main) {
-      RequestBus.send(Request.GetCurrentTrack).wait<Response.CurrentTrack>()?.let { response ->
-        adapter.currentTrack = response.track
-        adapter.notifyDataSetChanged()
-      }
-
-      refreshDownloadedTracks()
-    }
 
     var coverHeight: Float? = null
 
@@ -171,24 +164,16 @@ class TracksFragment : OtterFragment<Track, TracksAdapter>() {
         }
       }
     }
-
-    lifecycleScope.launch(Main) {
-      CommandBus.get().collect { command ->
-        when (command) {
-          is Command.RefreshTrack -> refreshCurrentTrack(command.track)
-        }
-      }
-    }
   }
 
   private suspend fun refreshDownloadedTracks() {
     val downloaded = TracksRepository.getDownloadedIds() ?: listOf()
 
     withContext(Main) {
-      adapter.data = adapter.data.map {
+      /* adapter.data = adapter.data.map {
         it.downloaded = downloaded.contains(it.id)
         it
-      }.toMutableList()
+      }.toMutableList() */
 
       adapter.notifyDataSetChanged()
     }
@@ -198,23 +183,12 @@ class TracksFragment : OtterFragment<Track, TracksAdapter>() {
     if (download.state == Download.STATE_COMPLETED) {
       download.getMetadata()?.let { info ->
         adapter.data.withIndex().associate { it.value to it.index }.filter { it.key.id == info.id }.toList().getOrNull(0)?.let { match ->
-          withContext(Main) {
+          /* withContext(Main) {
             adapter.data[match.second].downloaded = true
             adapter.notifyItemChanged(match.second)
-          }
+          } */
         }
       }
-    }
-  }
-
-  private fun refreshCurrentTrack(track: Track?) {
-    track?.let {
-      adapter.currentTrack?.current = false
-      adapter.currentTrack = track.apply {
-        current = true
-      }
-
-      adapter.notifyDataSetChanged()
     }
   }
 

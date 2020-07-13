@@ -2,9 +2,14 @@ package com.github.apognu.otter
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.room.Room
+import com.github.apognu.otter.models.dao.OtterDatabase
 import com.github.apognu.otter.playback.MediaSession
 import com.github.apognu.otter.playback.QueueManager
-import com.github.apognu.otter.utils.*
+import com.github.apognu.otter.utils.AppContext
+import com.github.apognu.otter.utils.Cache
+import com.github.apognu.otter.utils.Command
+import com.github.apognu.otter.utils.Event
 import com.google.android.exoplayer2.database.ExoDatabaseProvider
 import com.google.android.exoplayer2.offline.DefaultDownloadIndex
 import com.google.android.exoplayer2.offline.DefaultDownloaderFactory
@@ -14,8 +19,8 @@ import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvicto
 import com.google.android.exoplayer2.upstream.cache.NoOpCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.preference.PowerPreference
+import io.realm.Realm
 import kotlinx.coroutines.channels.BroadcastChannel
-import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -30,8 +35,12 @@ class Otter : Application() {
 
   val eventBus: BroadcastChannel<Event> = BroadcastChannel(10)
   val commandBus: BroadcastChannel<Command> = BroadcastChannel(10)
-  val requestBus: BroadcastChannel<Request> = BroadcastChannel(10)
-  val progressBus: BroadcastChannel<Triple<Int, Int, Int>> = ConflatedBroadcastChannel()
+
+  val database: OtterDatabase by lazy {
+    Room
+      .databaseBuilder(this, OtterDatabase::class.java, "otter")
+      .build()
+  }
 
   private val exoDatabase: ExoDatabaseProvider by lazy { ExoDatabaseProvider(this) }
 
@@ -65,6 +74,8 @@ class Otter : Application() {
 
   override fun onCreate() {
     super.onCreate()
+
+    Realm.init(this)
 
     defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
 

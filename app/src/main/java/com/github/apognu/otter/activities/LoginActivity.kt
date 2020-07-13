@@ -11,20 +11,21 @@ import androidx.core.view.doOnLayout
 import androidx.lifecycle.lifecycleScope
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.LoginDialog
+import com.github.apognu.otter.models.api.Credentials
 import com.github.apognu.otter.utils.AppContext
 import com.github.apognu.otter.utils.Userinfo
+import com.github.apognu.otter.utils.log
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
-import com.github.kittinunf.fuel.gson.gsonDeserializerOf
 import com.github.kittinunf.result.Result
 import com.google.gson.Gson
 import com.preference.PowerPreference
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
+import kotlinx.serialization.ImplicitReflectionSerializer
 
-data class FwCredentials(val token: String, val non_field_errors: List<String>?)
-
+@ImplicitReflectionSerializer
 class LoginActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -102,11 +103,13 @@ class LoginActivity : AppCompatActivity() {
 
     lifecycleScope.launch(Main) {
       try {
-        val (_, response, result) = Fuel.post("$hostname/api/v1/token/", body)
-          .awaitObjectResponseResult(gsonDeserializerOf(FwCredentials::class.java))
+        val (_, response, result) =
+          Fuel
+            .post("$hostname/api/v1/token/", body)
+            .awaitObjectResponseResult<Credentials>(AppContext.deserializer())
 
         when (result) {
-          is Result.Success -> {
+          is Result.Success<*> -> {
             PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).apply {
               setString("hostname", hostname)
               setBoolean("anonymous", false)
@@ -128,7 +131,7 @@ class LoginActivity : AppCompatActivity() {
           is Result.Failure -> {
             dialog.dismiss()
 
-            val error = Gson().fromJson(String(response.data), FwCredentials::class.java)
+            val error = Gson().fromJson(String(response.data), Credentials::class.java)
 
             hostname_field.error = null
             username_field.error = null
@@ -160,7 +163,7 @@ class LoginActivity : AppCompatActivity() {
     lifecycleScope.launch(Main) {
       try {
         val (_, _, result) = Fuel.get("$hostname/api/v1/tracks/")
-          .awaitObjectResponseResult(gsonDeserializerOf(FwCredentials::class.java))
+          .awaitObjectResponseResult<Credentials>(AppContext.deserializer())
 
         when (result) {
           is Result.Success -> {

@@ -10,12 +10,15 @@ import androidx.transition.Slide
 import com.github.apognu.otter.R
 import com.github.apognu.otter.activities.MainActivity
 import com.github.apognu.otter.adapters.AlbumsGridAdapter
+import com.github.apognu.otter.models.api.FunkwhaleAlbum
 import com.github.apognu.otter.repositories.AlbumsRepository
-import com.github.apognu.otter.utils.Album
 import com.github.apognu.otter.utils.AppContext
+import com.github.apognu.otter.models.domain.Album
+import com.github.apognu.otter.viewmodels.AlbumsViewModel
 import kotlinx.android.synthetic.main.fragment_albums_grid.*
 
-class AlbumsGridFragment : OtterFragment<Album, AlbumsGridAdapter>() {
+class AlbumsGridFragment : LiveOtterFragment<FunkwhaleAlbum, Album, AlbumsGridAdapter>() {
+  override val liveData = AlbumsViewModel().albums
   override val viewRes = R.layout.fragment_albums_grid
   override val recycler: RecyclerView get() = albums
   override val layoutManager get() = GridLayoutManager(context, 3)

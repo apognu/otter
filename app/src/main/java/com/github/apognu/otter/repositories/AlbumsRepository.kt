@@ -1,32 +1,28 @@
 package com.github.apognu.otter.repositories
 
 import android.content.Context
-import com.github.apognu.otter.utils.Album
-import com.github.apognu.otter.utils.AlbumsCache
-import com.github.apognu.otter.utils.AlbumsResponse
-import com.github.apognu.otter.utils.OtterResponse
-import com.github.kittinunf.fuel.gson.gsonDeserializerOf
-import com.google.gson.reflect.TypeToken
-import java.io.BufferedReader
+import com.github.apognu.otter.Otter
+import com.github.apognu.otter.models.api.FunkwhaleAlbum
+import com.github.apognu.otter.models.dao.toDao
 
-class AlbumsRepository(override val context: Context?, artistId: Int? = null) : Repository<Album, AlbumsCache>() {
-  override val cacheId: String by lazy {
-    if (artistId == null) "albums"
-    else "albums-artist-$artistId"
-  }
-
-  override val upstream: Upstream<Album> by lazy {
+class AlbumsRepository(override val context: Context?, artistId: Int? = null) : Repository<FunkwhaleAlbum>() {
+  override val upstream: Upstream<FunkwhaleAlbum> by lazy {
     val url =
       if (artistId == null) "/api/v1/albums/?playable=true&ordering=title"
       else "/api/v1/albums/?playable=true&artist=$artistId&ordering=release_date"
 
-    HttpUpstream<Album, OtterResponse<Album>>(
+    HttpUpstream(
       HttpUpstream.Behavior.Progressive,
       url,
-      object : TypeToken<AlbumsResponse>() {}.type
+      FunkwhaleAlbum.serializer()
     )
   }
 
-  override fun cache(data: List<Album>) = AlbumsCache(data)
-  override fun uncache(reader: BufferedReader) = gsonDeserializerOf(AlbumsCache::class.java).deserialize(reader)
+  override fun onDataFetched(data: List<FunkwhaleAlbum>): List<FunkwhaleAlbum> {
+    data.forEach {
+      Otter.get().database.albums().insert(it.toDao())
+    }
+
+    return super.onDataFetched(data)
+  }
 }

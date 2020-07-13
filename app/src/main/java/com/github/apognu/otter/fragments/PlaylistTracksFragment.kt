@@ -5,59 +5,65 @@ import android.view.Gravity
 import android.view.View
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.adapters.PlaylistTracksAdapter
+import com.github.apognu.otter.models.api.FunkwhalePlaylistTrack
+import com.github.apognu.otter.models.dao.PlaylistEntity
 import com.github.apognu.otter.repositories.FavoritesRepository
 import com.github.apognu.otter.repositories.PlaylistTracksRepository
 import com.github.apognu.otter.utils.*
+import com.github.apognu.otter.viewmodels.PlayerStateViewModel
+import com.github.apognu.otter.viewmodels.PlaylistViewModel
+import com.github.apognu.otter.models.domain.Track
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.fragment_tracks.*
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class PlaylistTracksFragment : OtterFragment<PlaylistTrack, PlaylistTracksAdapter>() {
+class PlaylistTracksFragment : LiveOtterFragment<FunkwhalePlaylistTrack, Track, PlaylistTracksAdapter>() {
+  override lateinit var liveData: LiveData<List<Track>>
   override val viewRes = R.layout.fragment_tracks
   override val recycler: RecyclerView get() = tracks
 
   lateinit var favoritesRepository: FavoritesRepository
 
-  var albumId = 0
-  var albumArtist = ""
-  var albumTitle = ""
-  var albumCover = ""
+  var playlistId = 0
+  var playlistName = ""
 
   companion object {
-    fun new(playlist: Playlist): PlaylistTracksFragment {
+    fun new(playlist: PlaylistEntity): PlaylistTracksFragment {
       return PlaylistTracksFragment().apply {
         arguments = bundleOf(
-          "albumId" to playlist.id,
-          "albumArtist" to "N/A",
-          "albumTitle" to playlist.name,
-          "albumCover" to ""
+          "playlistId" to playlist.id,
+          "playlistName" to playlist.name
         )
       }
     }
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-
     arguments?.apply {
-      albumId = getInt("albumId")
-      albumArtist = getString("albumArtist") ?: ""
-      albumTitle = getString("albumTitle") ?: ""
-      albumCover = getString("albumCover") ?: ""
+      playlistId = getInt("playlistId")
+      playlistName = getString("playlistName") ?: "N/A"
     }
 
+    liveData = PlaylistViewModel(playlistId).tracks
+
+    super.onCreate(savedInstanceState)
+
     adapter = PlaylistTracksAdapter(context, FavoriteListener())
-    repository = PlaylistTracksRepository(context, albumId)
+    repository = PlaylistTracksRepository(context, playlistId)
     favoritesRepository = FavoritesRepository(context)
 
-    watchEventBus()
+    PlayerStateViewModel.get().track.observe(this) { track ->
+      adapter.currentTrack = track
+      adapter.notifyDataSetChanged()
+    }
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -67,18 +73,11 @@ class PlaylistTracksFragment : OtterFragment<PlaylistTrack, PlaylistTracksAdapte
     covers.visibility = View.VISIBLE
 
     artist.text = "Playlist"
-    title.text = albumTitle
+    title.text = playlistName
   }
 
   override fun onResume() {
     super.onResume()
-
-    lifecycleScope.launch(Main) {
-      RequestBus.send(Request.GetCurrentTrack).wait<Response.CurrentTrack>()?.let { response ->
-        adapter.currentTrack = response.track
-        adapter.notifyDataSetChanged()
-      }
-    }
 
     var coverHeight: Float? = null
 
@@ -95,7 +94,7 @@ class PlaylistTracksFragment : OtterFragment<PlaylistTrack, PlaylistTracksAdapte
     }
 
     play.setOnClickListener {
-      CommandBus.send(Command.ReplaceQueue(adapter.data.map { it.track }.shuffled()))
+      CommandBus.send(Command.ReplaceQueue(adapter.data.shuffled()))
 
       context.toast("All tracks were added to your queue")
     }
@@ -108,12 +107,12 @@ class PlaylistTracksFragment : OtterFragment<PlaylistTrack, PlaylistTracksAdapte
           setOnMenuItemClickListener {
             when (it.itemId) {
               R.id.add_to_queue -> {
-                CommandBus.send(Command.AddToQueue(adapter.data.map { it.track }))
+                CommandBus.send(Command.AddToQueue(adapter.data))
 
                 context.toast("All tracks were added to your queue")
               }
 
-              R.id.download -> CommandBus.send(Command.PinTracks(adapter.data.map { it.track }))
+              R.id.download -> CommandBus.send(Command.PinTracks(adapter.data))
             }
 
             true
@@ -125,8 +124,8 @@ class PlaylistTracksFragment : OtterFragment<PlaylistTrack, PlaylistTracksAdapte
     }
   }
 
-  override fun onDataFetched(data: List<PlaylistTrack>) {
-    data.map { it.track.album }.toSet().map { it?.cover() }.take(4).forEachIndexed { index, url ->
+  override fun onDataFetched(data: List<FunkwhalePlaylistTrack>) {
+    data.map { it.track.album }.toSet().map { it?.cover?.urls?.original }.take(4).forEachIndexed { index, url ->
       val imageView = when (index) {
         0 -> cover_top_left
         1 -> cover_top_right
@@ -153,23 +152,6 @@ class PlaylistTracksFragment : OtterFragment<PlaylistTrack, PlaylistTracksAdapte
             .into(view)
         }
       }
-    }
-  }
-
-  private fun watchEventBus() {
-    lifecycleScope.launch(Main) {
-      CommandBus.get().collect { command ->
-        when (command) {
-          is Command.RefreshTrack -> refreshCurrentTrack(command.track)
-        }
-      }
-    }
-  }
-
-  private fun refreshCurrentTrack(track: Track?) {
-    track?.let {
-      adapter.currentTrack = track
-      adapter.notifyDataSetChanged()
     }
   }
 

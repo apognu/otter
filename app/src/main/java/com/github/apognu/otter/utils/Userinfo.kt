@@ -1,8 +1,8 @@
 package com.github.apognu.otter.utils
 
+import com.github.apognu.otter.models.api.User
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
-import com.github.kittinunf.fuel.gson.gsonDeserializerOf
 import com.github.kittinunf.result.Result
 import com.preference.PowerPreference
 
@@ -12,7 +12,7 @@ object Userinfo {
       val hostname = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("hostname")
       val (_, _, result) = Fuel.get("$hostname/api/v1/users/users/me/")
         .authorize()
-        .awaitObjectResponseResult(gsonDeserializerOf(User::class.java))
+        .awaitObjectResponseResult<User>(AppContext.deserializer())
 
       return when (result) {
         is Result.Success -> {

@@ -7,9 +7,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.OtterAdapter
-import com.github.apognu.otter.utils.Album
 import com.github.apognu.otter.utils.maybeLoad
 import com.github.apognu.otter.utils.maybeNormalizeUrl
+import com.github.apognu.otter.models.domain.Album
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.row_album.view.*
@@ -42,7 +42,7 @@ class AlbumsAdapter(val context: Context?, private val listener: OnAlbumClickLis
       .into(holder.art)
 
     holder.title.text = album.title
-    holder.artist.text = album.artist.name
+    holder.artist.text = album.artist_name
     holder.release_date.visibility = View.GONE
 
     album.release_date?.split('-')?.getOrNull(0)?.let { year ->

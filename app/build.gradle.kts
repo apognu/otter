@@ -6,10 +6,14 @@ plugins {
   id("com.android.application")
   id("kotlin-android")
   id("kotlin-android-extensions")
+  id("kotlin-kapt")
+  id("realm-android")
 
   id("org.jlleitschuh.gradle.ktlint") version "8.1.0"
   id("com.gladed.androidgitversion") version "0.4.10"
   id("com.github.triplet.play") version "2.4.2"
+
+  kotlin("plugin.serialization") version "1.3.70"
 }
 
 val props = Properties().apply {
@@ -63,9 +67,9 @@ android {
   buildTypes {
     getByName("debug") {
       isDebuggable = true
-      applicationIdSuffix = ".dev"
+      applicationIdSuffix = ".dev.livedata"
       manifestPlaceholders = mapOf(
-        "app_name" to "Otter (develop)"
+        "app_name" to "Otter (livedata)"
       )
 
       resValue("string", "debug.hostname", props.getProperty("debug.hostname", ""))
@@ -118,10 +122,15 @@ dependencies {
   implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.72")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.7")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0")
 
   implementation("androidx.appcompat:appcompat:1.2.0")
   implementation("androidx.core:core-ktx:1.5.0-alpha02")
   implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.0-alpha07")
+  implementation("androidx.fragment:fragment-ktx:1.2.5")
+  implementation("androidx.room:room-runtime:2.2.5")
+  implementation("androidx.room:room-ktx:2.2.5")
+  implementation("androidx.paging:paging-runtime:3.0.0-alpha06")
   implementation("androidx.coordinatorlayout:coordinatorlayout:1.1.0")
   implementation("androidx.preference:preference:1.1.1")
   implementation("androidx.recyclerview:recyclerview:1.1.0")
@@ -134,11 +143,21 @@ dependencies {
   implementation("com.google.android.exoplayer:extension-mediasession:2.11.5")
 
   implementation("com.aliassadi:power-preference-lib:1.4.1")
-  implementation("com.github.kittinunf.fuel:fuel:2.1.0")
+  implementation("com.github.kittinunf.fuel:fuel:2.2.3")
   implementation("com.github.kittinunf.fuel:fuel-coroutines:2.1.0")
   implementation("com.github.kittinunf.fuel:fuel-android:2.1.0")
   implementation("com.github.kittinunf.fuel:fuel-gson:2.1.0")
+  implementation("com.github.kittinunf.fuel:fuel-kotlinx-serialization:2.2.3")
   implementation("com.google.code.gson:gson:2.8.6")
   implementation("com.squareup.picasso:picasso:2.71828")
   implementation("jp.wasabeef:picasso-transformations:2.2.1")
+
+  debugImplementation("com.amitshekhar.android:debug-db:1.0.6")
+
+  kapt("androidx.room:room-compiler:2.2.5")
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
+  kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlinx.serialization.ImplicitReflectionSerializer"
+  kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlinx.serialization.UnstableDefault"
 }

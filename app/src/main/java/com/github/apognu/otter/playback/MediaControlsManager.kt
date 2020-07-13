@@ -14,8 +14,8 @@ import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
 import com.github.apognu.otter.activities.MainActivity
 import com.github.apognu.otter.utils.AppContext
-import com.github.apognu.otter.utils.Track
 import com.github.apognu.otter.utils.maybeNormalizeUrl
+import com.github.apognu.otter.models.domain.Track
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Default
@@ -68,7 +68,7 @@ class MediaControlsManager(val context: Service, private val scope: CoroutineSco
             this
           }
           .setContentTitle(track.title)
-          .setContentText(track.artist.name)
+          .setContentText(track.artist?.name)
           .setContentIntent(openPendingIntent)
           .setChannelId(AppContext.NOTIFICATION_CHANNEL_MEDIA_CONTROL)
           .addAction(

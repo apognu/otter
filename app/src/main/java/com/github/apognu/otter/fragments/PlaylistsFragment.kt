@@ -9,12 +9,15 @@ import androidx.transition.Slide
 import com.github.apognu.otter.R
 import com.github.apognu.otter.activities.MainActivity
 import com.github.apognu.otter.adapters.PlaylistsAdapter
+import com.github.apognu.otter.models.api.FunkwhalePlaylist
+import com.github.apognu.otter.models.dao.PlaylistEntity
 import com.github.apognu.otter.repositories.PlaylistsRepository
 import com.github.apognu.otter.utils.AppContext
-import com.github.apognu.otter.utils.Playlist
+import com.github.apognu.otter.viewmodels.PlaylistsViewModel
 import kotlinx.android.synthetic.main.fragment_playlists.*
 
-class PlaylistsFragment : OtterFragment<Playlist, PlaylistsAdapter>() {
+class PlaylistsFragment : LiveOtterFragment<FunkwhalePlaylist, PlaylistEntity, PlaylistsAdapter>() {
+  override val liveData = PlaylistsViewModel().playlists
   override val viewRes = R.layout.fragment_playlists
   override val recycler: RecyclerView get() = playlists
   override val alwaysRefresh = false
@@ -27,7 +30,7 @@ class PlaylistsFragment : OtterFragment<Playlist, PlaylistsAdapter>() {
   }
 
   inner class OnPlaylistClickListener : PlaylistsAdapter.OnPlaylistClickListener {
-    override fun onClick(holder: View?, playlist: Playlist) {
+    override fun onClick(holder: View?, playlist: PlaylistEntity) {
       (context as? MainActivity)?.let { activity ->
         exitTransition = Fade().apply {
           duration = AppContext.TRANSITION_DURATION

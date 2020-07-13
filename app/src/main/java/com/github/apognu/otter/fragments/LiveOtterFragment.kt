@@ -5,14 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.github.apognu.otter.repositories.HttpUpstream
 import com.github.apognu.otter.repositories.Repository
-import com.github.apognu.otter.utils.*
-import com.google.gson.Gson
+import com.github.apognu.otter.utils.Event
+import com.github.apognu.otter.utils.EventBus
+import com.github.apognu.otter.utils.untilNetwork
 import kotlinx.android.synthetic.main.fragment_artists.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -31,17 +34,18 @@ abstract class OtterAdapter<D, VH : RecyclerView.ViewHolder> : RecyclerView.Adap
   abstract override fun getItemId(position: Int): Long
 }
 
-abstract class OtterFragment<D : Any, A : OtterAdapter<D, *>> : Fragment() {
+abstract class LiveOtterFragment<D : Any, DAO : Any, A : OtterAdapter<DAO, *>> : Fragment() {
   companion object {
     const val OFFSCREEN_PAGES = 20
   }
 
+  abstract val liveData: LiveData<List<DAO>>
   abstract val viewRes: Int
   abstract val recycler: RecyclerView
   open val layoutManager: RecyclerView.LayoutManager get() = LinearLayoutManager(context)
   open val alwaysRefresh = true
 
-  lateinit var repository: Repository<D, *>
+  lateinit var repository: Repository<D>
   lateinit var adapter: A
 
   private var moreLoading = false
@@ -58,7 +62,7 @@ abstract class OtterFragment<D : Any, A : OtterAdapter<D, *>> : Fragment() {
     (recycler.itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
     recycler.adapter = adapter
 
-    (repository.upstream as? HttpUpstream<*, *>)?.let { upstream ->
+    (repository.upstream as? HttpUpstream<*>)?.let { upstream ->
       if (upstream.behavior == HttpUpstream.Behavior.Progressive) {
         recycler.setOnScrollChangeListener { _, _, _, _, _ ->
           val offset = recycler.computeVerticalScrollOffset()
@@ -66,7 +70,7 @@ abstract class OtterFragment<D : Any, A : OtterAdapter<D, *>> : Fragment() {
           if (!moreLoading && offset > 0 && needsMoreOffscreenPages()) {
             moreLoading = true
 
-            fetch(Repository.Origin.Network.origin, adapter.data.size)
+            fetch(adapter.data.size)
           }
         }
       }
@@ -78,17 +82,22 @@ abstract class OtterFragment<D : Any, A : OtterAdapter<D, *>> : Fragment() {
           if (event is Event.ListingsChanged) {
             withContext(Main) {
               swiper?.isRefreshing = true
-              fetch(Repository.Origin.Network.origin)
+              fetch()
             }
           }
         }
       }
     }
 
-    fetch(Repository.Origin.Cache.origin)
+    fetch()
+  }
 
-    if (alwaysRefresh && adapter.data.isEmpty()) {
-      fetch(Repository.Origin.Network.origin)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+
+    liveData.observe(this) {
+      adapter.data = it.toMutableList()
+      adapter.notifyDataSetChanged()
     }
   }
 
@@ -96,90 +105,37 @@ abstract class OtterFragment<D : Any, A : OtterAdapter<D, *>> : Fragment() {
     super.onResume()
 
     swiper?.setOnRefreshListener {
-      fetch(Repository.Origin.Network.origin)
+      fetch()
     }
   }
 
   open fun onDataFetched(data: List<D>) {}
 
-  private fun fetch(upstreams: Int = Repository.Origin.Network.origin, size: Int = 0) {
-    var first = size == 0
-
-    if (!moreLoading && upstreams == Repository.Origin.Network.origin) {
-      lifecycleScope.launch(Main) {
-        swiper?.isRefreshing = true
-      }
-    }
-
+  private fun fetch(size: Int = 0) {
     moreLoading = true
 
-    repository.fetch(upstreams, size).untilNetwork(lifecycleScope, IO) { data, isCache, _, hasMore ->
-      if (isCache && data.isEmpty()) {
-        moreLoading = false
-
-        return@untilNetwork fetch(Repository.Origin.Network.origin)
-      }
-
+    repository.fetch(size).untilNetwork(lifecycleScope, IO) { data, _, hasMore ->
       lifecycleScope.launch(Main) {
-        if (isCache) {
-          moreLoading = false
-
-          adapter.data = data.toMutableList()
-          adapter.notifyDataSetChanged()
-
-          return@launch
-        }
-
-        if (first) {
-          adapter.data.clear()
-        }
-
         onDataFetched(data)
 
-        adapter.data.addAll(data)
-
-        withContext(IO) {
-          try {
-            repository.cacheId?.let { cacheId ->
-              Cache.set(
-                context,
-                cacheId,
-                Gson().toJson(repository.cache(adapter.data)).toByteArray()
-              )
-            }
-          } catch (e: ConcurrentModificationException) {
-          }
-        }
-
         if (hasMore) {
-          (repository.upstream as? HttpUpstream<*, *>)?.let { upstream ->
-            if (!isCache && upstream.behavior == HttpUpstream.Behavior.Progressive) {
-              if (first || needsMoreOffscreenPages()) {
-                fetch(Repository.Origin.Network.origin, adapter.data.size)
+          (repository.upstream as? HttpUpstream<*>)?.let { upstream ->
+            if (upstream.behavior == HttpUpstream.Behavior.Progressive) {
+              if (size == 0 || needsMoreOffscreenPages()) {
+                fetch(size + data.size)
               } else {
                 moreLoading = false
               }
-            } else {
-              moreLoading = false
             }
           }
         }
 
-        (repository.upstream as? HttpUpstream<*, *>)?.let { upstream ->
+        (repository.upstream as? HttpUpstream<*>)?.let { upstream ->
           when (upstream.behavior) {
             HttpUpstream.Behavior.Progressive -> if (!hasMore || !moreLoading) swiper?.isRefreshing = false
             HttpUpstream.Behavior.AtOnce -> if (!hasMore) swiper?.isRefreshing = false
             HttpUpstream.Behavior.Single -> if (!hasMore) swiper?.isRefreshing = false
           }
-        }
-
-        when (first) {
-          true -> {
-            adapter.notifyDataSetChanged()
-            first = false
-          }
-
-          false -> adapter.notifyItemRangeInserted(adapter.data.size, data.size)
         }
       }
     }

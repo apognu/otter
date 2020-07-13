@@ -4,8 +4,10 @@ import android.content.Context
 import android.net.Uri
 import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
+import com.github.apognu.otter.models.domain.Track
+import com.github.apognu.otter.repositories.QueueRepository
 import com.github.apognu.otter.utils.*
-import com.github.kittinunf.fuel.gson.gsonDeserializerOf
+import com.github.apognu.otter.viewmodels.PlayerStateViewModel
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
@@ -13,9 +15,13 @@ import com.google.android.exoplayer2.upstream.FileDataSource
 import com.google.android.exoplayer2.upstream.cache.CacheDataSource
 import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory
 import com.google.android.exoplayer2.util.Util
-import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class QueueManager(val context: Context) {
+  private val queueRepository = QueueRepository(GlobalScope)
+
   var metadata: MutableList<Track> = mutableListOf()
   val datasources = ConcatenatingMediaSource()
   var current = -1
@@ -44,34 +50,24 @@ class QueueManager(val context: Context) {
   }
 
   init {
-    Cache.get(context, "queue")?.let { json ->
-      gsonDeserializerOf(QueueCache::class.java).deserialize(json)?.let { cache ->
-        metadata = cache.data.toMutableList()
-
-        val factory = factory(context)
-
-        datasources.addMediaSources(metadata.map { track ->
-          val url = mustNormalizeUrl(track.bestUpload()?.listen_url ?: "")
-
-          ProgressiveMediaSource.Factory(factory).setTag(track.title).createMediaSource(Uri.parse(url))
-        })
+    GlobalScope.launch(IO) {
+      queueRepository.allBlocking().also {
+        replace(it.map { Track.fromDecoratedEntity(it) })
       }
     }
 
     Cache.get(context, "current")?.let { string ->
       current = string.readLine().toInt()
+
+      PlayerStateViewModel.get()._track.postValue(current())
     }
   }
 
-  private fun persist() {
-    Cache.set(
-      context,
-      "queue",
-      Gson().toJson(QueueCache(metadata)).toByteArray()
-    )
-  }
+  private fun persist() = queueRepository.replace(metadata)
 
   fun replace(tracks: List<Track>) {
+    metadata = tracks.toMutableList()
+
     val factory = factory(context)
 
     val sources = tracks.map { track ->
@@ -80,13 +76,10 @@ class QueueManager(val context: Context) {
       ProgressiveMediaSource.Factory(factory).setTag(track.title).createMediaSource(Uri.parse(url))
     }
 
-    metadata = tracks.toMutableList()
     datasources.clear()
     datasources.addMediaSources(sources)
 
     persist()
-
-    EventBus.send(Event.QueueChanged)
   }
 
   fun append(tracks: List<Track>) {
@@ -103,8 +96,6 @@ class QueueManager(val context: Context) {
     datasources.addMediaSources(sources)
 
     persist()
-
-    EventBus.send(Event.QueueChanged)
   }
 
   fun insertNext(track: Track) {
@@ -121,8 +112,6 @@ class QueueManager(val context: Context) {
     }
 
     persist()
-
-    EventBus.send(Event.QueueChanged)
   }
 
   fun remove(track: Track) {
@@ -148,8 +137,6 @@ class QueueManager(val context: Context) {
     }
 
     persist()
-
-    EventBus.send(Event.QueueChanged)
   }
 
   fun move(oldPosition: Int, newPosition: Int) {
@@ -159,10 +146,7 @@ class QueueManager(val context: Context) {
     persist()
   }
 
-  fun get() = metadata.mapIndexed { index, track ->
-    track.current = index == current
-    track
-  }
+  fun get() = metadata
 
   fun get(index: Int): Track = metadata[index]
 
@@ -205,7 +189,5 @@ class QueueManager(val context: Context) {
     }
 
     persist()
-
-    EventBus.send(Event.QueueChanged)
   }
 }

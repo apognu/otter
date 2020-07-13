@@ -7,22 +7,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
+import com.github.apognu.otter.models.api.DownloadInfo
+import com.github.apognu.otter.models.api.FunkwhaleTrack
 import com.github.apognu.otter.playback.PinService
-import com.github.apognu.otter.utils.*
 import com.google.android.exoplayer2.offline.Download
 import com.google.android.exoplayer2.offline.DownloadService
 import kotlinx.android.synthetic.main.row_download.view.*
 
-class DownloadsAdapter(private val context: Context, private val listener: OnDownloadChangedListener) : RecyclerView.Adapter<DownloadsAdapter.ViewHolder>() {
-  interface OnDownloadChangedListener {
-    fun onItemRemoved(index: Int)
-  }
-
+class DownloadsAdapter(private val context: Context) : RecyclerView.Adapter<DownloadsAdapter.ViewHolder>() {
   var downloads: MutableList<DownloadInfo> = mutableListOf()
 
-  override fun getItemCount() = downloads.size
-
   override fun getItemId(position: Int) = downloads[position].id.toLong()
+
+  override fun getItemCount() = downloads.size
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
     val view = LayoutInflater.from(context).inflate(R.layout.row_download, parent, false)
@@ -79,8 +76,8 @@ class DownloadsAdapter(private val context: Context, private val listener: OnDow
           Download.STATE_QUEUED, Download.STATE_DOWNLOADING -> DownloadService.sendSetStopReason(context, PinService::class.java, download.contentId, 1, false)
 
           Download.STATE_FAILED -> {
-            Track.fromDownload(download).also {
-              PinService.download(context, it)
+            FunkwhaleTrack.fromDownload(download).also {
+              // PinService.download(context, it)
             }
           }
 
@@ -89,7 +86,6 @@ class DownloadsAdapter(private val context: Context, private val listener: OnDow
       }
 
       holder.delete.setOnClickListener {
-        listener.onItemRemoved(position)
         DownloadService.sendRemoveDownload(context, PinService::class.java, download.contentId, false)
       }
     }

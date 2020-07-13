@@ -11,9 +11,9 @@ import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import com.github.apognu.otter.R
-import com.github.apognu.otter.utils.Track
 import com.github.apognu.otter.utils.mustNormalizeUrl
 import com.github.apognu.otter.utils.toDurationString
+import com.github.apognu.otter.models.domain.Track
 import kotlinx.android.synthetic.main.fragment_track_info_details.*
 
 class TrackInfoDetailsFragment : DialogFragment() {
@@ -21,7 +21,7 @@ class TrackInfoDetailsFragment : DialogFragment() {
     fun new(track: Track): TrackInfoDetailsFragment {
       return TrackInfoDetailsFragment().apply {
         arguments = bundleOf(
-          "artistName" to track.artist.name,
+          "artistName" to track.artist?.name,
           "albumTitle" to track.album?.title,
           "trackTitle" to track.title,
           "trackCopyright" to track.copyright,

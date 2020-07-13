@@ -1,34 +1,44 @@
 package com.github.apognu.otter.playback
 
 import android.content.Context
+import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
+import com.github.apognu.otter.models.api.FunkwhaleTrack
+import com.github.apognu.otter.models.dao.RadioEntity
+import com.github.apognu.otter.models.domain.Track
 import com.github.apognu.otter.repositories.FavoritedRepository
-import com.github.apognu.otter.repositories.Repository
 import com.github.apognu.otter.utils.*
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
 import com.github.kittinunf.fuel.coroutines.awaitObjectResult
-import com.github.kittinunf.fuel.gson.gsonDeserializerOf
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
 
-data class RadioSessionBody(val radio_type: String, var custom_radio: Int? = null, var related_object_id: String? = null)
+@Serializable
+data class RadioSessionBody(val radio_type: String?, var custom_radio: Int? = null, var related_object_id: String? = null)
+
+@Serializable
 data class RadioSession(val id: Int)
+
+@Serializable
 data class RadioTrackBody(val session: Int)
+
+@Serializable
 data class RadioTrack(val position: Int, val track: RadioTrackID)
+
+@Serializable
 data class RadioTrackID(val id: Int)
 
 class RadioPlayer(val context: Context, val scope: CoroutineScope) {
   val lock = Semaphore(1)
 
-  private var currentRadio: Radio? = null
+  private var currentRadio: RadioEntity? = null
   private var session: Int? = null
   private var cookie: String? = null
 
@@ -40,7 +50,7 @@ class RadioPlayer(val context: Context, val scope: CoroutineScope) {
         Cache.get(context, "radio_session")?.readLine()?.toInt()?.let { radio_session ->
           val cachedCookie = Cache.get(context, "radio_cookie")?.readLine()
 
-          currentRadio = Radio(radio_id, radio_type, "", "")
+          currentRadio = RadioEntity(radio_id, radio_type, "", "")
           session = radio_session
           cookie = cachedCookie
         }
@@ -48,7 +58,7 @@ class RadioPlayer(val context: Context, val scope: CoroutineScope) {
     }
   }
 
-  fun play(radio: Radio) {
+  fun play(radio: RadioEntity) {
     currentRadio = radio
     session = null
 
@@ -70,6 +80,8 @@ class RadioPlayer(val context: Context, val scope: CoroutineScope) {
   fun isActive() = currentRadio != null && session != null
 
   private suspend fun createSession() {
+    "createSession".log()
+
     currentRadio?.let { radio ->
       try {
         val request = RadioSessionBody(radio.radio_type, related_object_id = radio.related_object_id).apply {
@@ -83,18 +95,20 @@ class RadioPlayer(val context: Context, val scope: CoroutineScope) {
           .authorize()
           .header("Content-Type", "application/json")
           .body(body)
-          .awaitObjectResponseResult(gsonDeserializerOf(RadioSession::class.java))
+          .awaitObjectResponseResult<RadioSession>(AppContext.deserializer())
 
         session = result.get().id
         cookie = response.header("set-cookie").joinToString(";")
 
-        Cache.set(context, "radio_type", radio.radio_type.toByteArray())
+        radio.radio_type?.let { type -> Cache.set(context, "radio_type", type.toByteArray()) }
         Cache.set(context, "radio_id", radio.id.toString().toByteArray())
         Cache.set(context, "radio_session", session.toString().toByteArray())
         Cache.set(context, "radio_cookie", cookie.toString().toByteArray())
 
         prepareNextTrack(true)
       } catch (e: Exception) {
+        e.log()
+
         withContext(Main) {
           context.toast(context.getString(R.string.radio_playback_error))
         }
@@ -103,6 +117,8 @@ class RadioPlayer(val context: Context, val scope: CoroutineScope) {
   }
 
   suspend fun prepareNextTrack(first: Boolean = false) {
+    "prepareTrack".log()
+
     session?.let { session ->
       try {
         val body = Gson().toJson(RadioTrackBody(session))
@@ -115,25 +131,23 @@ class RadioPlayer(val context: Context, val scope: CoroutineScope) {
             }
           }
           .body(body)
-          .awaitObjectResult(gsonDeserializerOf(RadioTrack::class.java))
+          .awaitObjectResult<RadioTrack>(AppContext.deserializer())
 
-        val trackResponse = Fuel.get(mustNormalizeUrl("/api/v1/tracks/${result.get().track.id}/"))
+        val track = Fuel.get(mustNormalizeUrl("/api/v1/tracks/${result.get().track.id}/"))
           .authorize()
-          .awaitObjectResult(gsonDeserializerOf(Track::class.java))
+          .awaitObjectResult<FunkwhaleTrack>(AppContext.deserializer())
+          .get()
 
-        val favorites = favoritedRepository.fetch(Repository.Origin.Cache.origin)
-          .map { it.data }
-          .toList()
-          .flatten()
+        Otter.get().database.tracks().run {
+          insertWithAssocs(track)
 
-        val track = trackResponse.get().apply {
-          favorite = favorites.contains(id)
-        }
-
-        if (first) {
-          CommandBus.send(Command.ReplaceQueue(listOf(track), true))
-        } else {
-          CommandBus.send(Command.AddToQueue(listOf(track)))
+          Track.fromDecoratedEntity(find(track.id)).let { track ->
+            if (first) {
+              CommandBus.send(Command.ReplaceQueue(listOf(track), true))
+            } else {
+              CommandBus.send(Command.AddToQueue(listOf(track)))
+            }
+          }
         }
       } catch (e: Exception) {
         withContext(Main) {

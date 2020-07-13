@@ -1,18 +1,33 @@
 package com.github.apognu.otter.repositories
 
 import android.content.Context
-import com.github.apognu.otter.utils.Artist
-import com.github.apognu.otter.utils.ArtistsCache
-import com.github.apognu.otter.utils.ArtistsResponse
-import com.github.apognu.otter.utils.OtterResponse
-import com.github.kittinunf.fuel.gson.gsonDeserializerOf
-import com.google.gson.reflect.TypeToken
-import java.io.BufferedReader
+import com.github.apognu.otter.Otter
+import com.github.apognu.otter.models.api.FunkwhaleArtist
+import com.github.apognu.otter.models.dao.toDao
+import com.github.apognu.otter.models.dao.toRealmDao
+import io.realm.Realm
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
 
-class ArtistsRepository(override val context: Context?) : Repository<Artist, ArtistsCache>() {
-  override val cacheId = "artists"
-  override val upstream = HttpUpstream<Artist, OtterResponse<Artist>>(HttpUpstream.Behavior.Progressive, "/api/v1/artists/?playable=true&ordering=name", object : TypeToken<ArtistsResponse>() {}.type)
+class ArtistsRepository(override val context: Context?) : Repository<FunkwhaleArtist>() {
+  override val upstream =
+    HttpUpstream(HttpUpstream.Behavior.Progressive, "/api/v1/artists/?playable=true&ordering=name", FunkwhaleArtist.serializer())
 
-  override fun cache(data: List<Artist>) = ArtistsCache(data)
-  override fun uncache(reader: BufferedReader) = gsonDeserializerOf(ArtistsCache::class.java).deserialize(reader)
+  override fun onDataFetched(data: List<FunkwhaleArtist>): List<FunkwhaleArtist> {
+    scope.launch(IO) {
+      data.forEach { artist ->
+        Otter.get().database.artists().insert(artist.toDao())
+
+        Realm.getDefaultInstance().executeTransaction { realm ->
+          realm.insertOrUpdate(artist.toRealmDao())
+        }
+
+        artist.albums?.forEach { album ->
+          Otter.get().database.albums().insert(album.toDao(artist.id))
+        }
+      }
+    }
+
+    return super.onDataFetched(data)
+  }
 }

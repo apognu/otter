@@ -1,32 +1,33 @@
 package com.github.apognu.otter.repositories
 
 import android.content.Context
-import androidx.lifecycle.lifecycleScope
 import com.github.apognu.otter.Otter
-import com.github.apognu.otter.utils.*
+import com.github.apognu.otter.models.api.Favorited
+import com.github.apognu.otter.models.api.FunkwhaleTrack
+import com.github.apognu.otter.models.dao.FavoriteEntity
+import com.github.apognu.otter.utils.Settings
+import com.github.apognu.otter.utils.mustNormalizeUrl
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitByteArrayResponseResult
-import com.github.kittinunf.fuel.gson.gsonDeserializerOf
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import java.io.BufferedReader
 
-class FavoritesRepository(override val context: Context?) : Repository<Track, TracksCache>() {
-  override val cacheId = "favorites.v2"
-  override val upstream = HttpUpstream<Track, OtterResponse<Track>>(HttpUpstream.Behavior.AtOnce, "/api/v1/tracks/?favorites=true&playable=true&ordering=title", object : TypeToken<TracksResponse>() {}.type)
+class FavoritesRepository(override val context: Context?) : Repository<FunkwhaleTrack>() {
+  override val upstream =
+    HttpUpstream(HttpUpstream.Behavior.AtOnce, "/api/v1/tracks/?favorites=true&playable=true&ordering=title", FunkwhaleTrack.serializer())
 
-  override fun cache(data: List<Track>) = TracksCache(data)
-  override fun uncache(reader: BufferedReader) = gsonDeserializerOf(TracksCache::class.java).deserialize(reader)
+  val favoritedRepository = FavoritedRepository(context)
 
-  private val favoritedRepository = FavoritedRepository(context)
+  override fun onDataFetched(data: List<FunkwhaleTrack>): List<FunkwhaleTrack> = runBlocking {
+    data.forEach {
+      Otter.get().database.tracks().insertWithAssocs(it)
+      Otter.get().database.favorites().insert(FavoriteEntity(it.id))
+    }
 
-  override fun onDataFetched(data: List<Track>): List<Track> = runBlocking {
-    val downloaded = TracksRepository.getDownloadedIds() ?: listOf()
+    /* val downloaded = TracksRepository.getDownloadedIds() ?: listOf()
 
     data.map { track ->
       track.favorite = true
@@ -39,10 +40,14 @@ class FavoritesRepository(override val context: Context?) : Repository<Track, Tr
       }
 
       track
-    }
+    } */
+
+    data
   }
 
-  fun addFavorite(id: Int) {
+  fun addFavorite(id: Int) = scope.launch(IO) {
+    Otter.get().database.favorites().add(id)
+
     val body = mapOf("track" to id)
 
     val request = Fuel.post(mustNormalizeUrl("/api/v1/favorites/tracks/")).apply {
@@ -57,11 +62,13 @@ class FavoritesRepository(override val context: Context?) : Repository<Track, Tr
         .body(Gson().toJson(body))
         .awaitByteArrayResponseResult()
 
-      favoritedRepository.update(context, scope)
+      favoritedRepository.update()
     }
   }
 
-  fun deleteFavorite(id: Int) {
+  fun deleteFavorite(id: Int) = scope.launch(IO) {
+    Otter.get().database.favorites().remove(id)
+
     val body = mapOf("track" to id)
 
     val request = Fuel.post(mustNormalizeUrl("/api/v1/favorites/tracks/remove/")).apply {
@@ -76,21 +83,26 @@ class FavoritesRepository(override val context: Context?) : Repository<Track, Tr
         .body(Gson().toJson(body))
         .awaitByteArrayResponseResult()
 
-      favoritedRepository.update(context, scope)
+      favoritedRepository.update()
     }
   }
 }
 
-class FavoritedRepository(override val context: Context?) : Repository<Int, FavoritedCache>() {
-  override val cacheId = "favorited"
-  override val upstream = HttpUpstream<Int, OtterResponse<Int>>(HttpUpstream.Behavior.Single, "/api/v1/favorites/tracks/all/?playable=true", object : TypeToken<FavoritedResponse>() {}.type)
+class FavoritedRepository(override val context: Context?) : Repository<Favorited>() {
+  override val upstream =
+    HttpUpstream(HttpUpstream.Behavior.Single, "/api/v1/favorites/tracks/all/?playable=true", Favorited.serializer())
 
-  override fun cache(data: List<Int>) = FavoritedCache(data)
-  override fun uncache(reader: BufferedReader) = gsonDeserializerOf(FavoritedCache::class.java).deserialize(reader)
-
-  fun update(context: Context?, scope: CoroutineScope) {
-    fetch(Origin.Network.origin).untilNetwork(scope, IO) { favorites, _, _, _ ->
-      Cache.set(context, cacheId, Gson().toJson(cache(favorites)).toByteArray())
+  override fun onDataFetched(data: List<Favorited>): List<Favorited> {
+    scope.launch(IO) {
+      data.forEach {
+        Otter.get().database.favorites().insert(FavoriteEntity(it.track))
+      }
     }
+
+    return super.onDataFetched(data)
+  }
+
+  fun update() = scope.launch(IO) {
+    fetch().collect()
   }
 }

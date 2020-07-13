@@ -11,6 +11,12 @@ import android.os.Build
 import com.github.apognu.otter.R
 import com.github.kittinunf.fuel.core.FuelManager
 import com.github.kittinunf.fuel.core.Method
+import com.github.kittinunf.fuel.core.ResponseDeserializable
+import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
+import kotlinx.serialization.DeserializationStrategy
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
+import kotlinx.serialization.serializer
 
 object AppContext {
   const val PREFS_CREDENTIALS = "credentials"
@@ -22,6 +28,12 @@ object AppContext {
 
   const val PAGE_SIZE = 50
   const val TRANSITION_DURATION = 300L
+
+  inline fun <reified T : Any> deserializer(serializer: DeserializationStrategy<T>): ResponseDeserializable<T> =
+    kotlinxDeserializerOf(loader = serializer, json = Json(JsonConfiguration(ignoreUnknownKeys = true)))
+
+  inline fun <reified T : Any> deserializer() =
+    kotlinxDeserializerOf(T::class.serializer(), Json(JsonConfiguration(ignoreUnknownKeys = true)))
 
   fun init(context: Activity) {
     setupNotificationChannels(context)

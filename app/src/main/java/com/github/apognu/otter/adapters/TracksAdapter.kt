@@ -2,7 +2,9 @@ package com.github.apognu.otter.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.*
+import android.graphics.Color
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.ColorDrawable
 import android.view.*
 import androidx.appcompat.widget.PopupMenu
@@ -11,6 +13,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.OtterAdapter
+import com.github.apognu.otter.models.domain.Track
 import com.github.apognu.otter.utils.*
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
@@ -23,8 +26,6 @@ class TracksAdapter(private val context: Context?, private val favoriteListener:
   }
 
   private lateinit var touchHelper: ItemTouchHelper
-
-  var currentTrack: Track? = null
 
   override fun getItemId(position: Int): Long = data[position].id.toLong()
 
@@ -59,32 +60,22 @@ class TracksAdapter(private val context: Context?, private val favoriteListener:
       .into(holder.cover)
 
     holder.title.text = track.title
-    holder.artist.text = track.artist.name
+    holder.artist.text = track.artist?.name
 
     context?.let {
       holder.itemView.background = ContextCompat.getDrawable(context, R.drawable.ripple)
-    }
 
-    if (track == currentTrack || track.current) {
-      context?.let {
+      if (track.current) {
         holder.itemView.background = ContextCompat.getDrawable(context, R.drawable.current)
       }
-    }
 
-    context?.let {
       when (track.favorite) {
         true -> holder.favorite.setColorFilter(context.getColor(R.color.colorFavorite))
         false -> holder.favorite.setColorFilter(context.getColor(R.color.colorSelected))
       }
 
       holder.favorite.setOnClickListener {
-        favoriteListener?.let {
-          favoriteListener.onToggleFavorite(track.id, !track.favorite)
-
-          data[position].favorite = !track.favorite
-
-          notifyItemChanged(position)
-        }
+        favoriteListener?.onToggleFavorite(track.id, !track.favorite)
       }
 
       when (track.cached || track.downloaded) {
