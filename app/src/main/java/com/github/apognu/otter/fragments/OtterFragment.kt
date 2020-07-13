@@ -32,7 +32,9 @@ abstract class OtterAdapter<D, VH : RecyclerView.ViewHolder> : RecyclerView.Adap
 }
 
 abstract class OtterFragment<D : Any, A : OtterAdapter<D, *>> : Fragment() {
-  val OFFSCREEN_PAGES = 20
+  companion object {
+    const val OFFSCREEN_PAGES = 20
+  }
 
   abstract val viewRes: Int
   abstract val recycler: RecyclerView
@@ -70,6 +72,19 @@ abstract class OtterFragment<D : Any, A : OtterAdapter<D, *>> : Fragment() {
       }
     }
 
+    if (listener == null) {
+      listener = lifecycleScope.launch(IO) {
+        EventBus.get().collect { event ->
+          if (event is Event.ListingsChanged) {
+            withContext(Main) {
+              swiper?.isRefreshing = true
+              fetch(Repository.Origin.Network.origin)
+            }
+          }
+        }
+      }
+    }
+
     fetch(Repository.Origin.Cache.origin)
 
     if (alwaysRefresh && adapter.data.isEmpty()) {
@@ -82,19 +97,6 @@ abstract class OtterFragment<D : Any, A : OtterAdapter<D, *>> : Fragment() {
 
     swiper?.setOnRefreshListener {
       fetch(Repository.Origin.Network.origin)
-    }
-
-    if (listener == null) {
-      listener = lifecycleScope.launch(IO) {
-        EventBus.get().collect { event ->
-          if (event is Event.ListingsChanged) {
-            withContext(Main) {
-              swiper?.isRefreshing = true
-              fetch(Repository.Origin.Network.origin)
-            }
-          }
-        }
-      }
     }
   }
 
@@ -128,7 +130,7 @@ abstract class OtterFragment<D : Any, A : OtterAdapter<D, *>> : Fragment() {
           return@launch
         }
 
-        if (first && data.isNotEmpty()) {
+        if (first) {
           adapter.data.clear()
         }
 
@@ -137,17 +139,15 @@ abstract class OtterFragment<D : Any, A : OtterAdapter<D, *>> : Fragment() {
         adapter.data.addAll(data)
 
         withContext(IO) {
-          if (adapter.data.isNotEmpty()) {
-            try {
-              repository.cacheId?.let { cacheId ->
-                Cache.set(
-                  context,
-                  cacheId,
-                  Gson().toJson(repository.cache(adapter.data)).toByteArray()
-                )
-              }
-            } catch (e: ConcurrentModificationException) {
+          try {
+            repository.cacheId?.let { cacheId ->
+              Cache.set(
+                context,
+                cacheId,
+                Gson().toJson(repository.cache(adapter.data)).toByteArray()
+              )
             }
+          } catch (e: ConcurrentModificationException) {
           }
         }
 
