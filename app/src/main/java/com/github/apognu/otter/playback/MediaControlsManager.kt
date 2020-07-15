@@ -10,6 +10,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.media.app.NotificationCompat.MediaStyle
 import androidx.media.session.MediaButtonReceiver
+import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
 import com.github.apognu.otter.activities.MainActivity
 import com.github.apognu.otter.utils.AppContext
@@ -97,6 +98,8 @@ class MediaControlsManager(val context: Service, private val scope: CoroutineSco
             NotificationManagerCompat.from(context).notify(AppContext.NOTIFICATION_MEDIA_CONTROL, it)
           }
         }
+
+        Otter.get().mediaSession.connector.invalidateMediaSessionMetadata()
       }
     }
   }
