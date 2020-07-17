@@ -29,11 +29,13 @@ object AppContext {
   const val PAGE_SIZE = 50
   const val TRANSITION_DURATION = 300L
 
+  val json = Json(JsonConfiguration(ignoreUnknownKeys = true))
+
   inline fun <reified T : Any> deserializer(serializer: DeserializationStrategy<T>): ResponseDeserializable<T> =
-    kotlinxDeserializerOf(loader = serializer, json = Json(JsonConfiguration(ignoreUnknownKeys = true)))
+    kotlinxDeserializerOf(loader = serializer, json = json)
 
   inline fun <reified T : Any> deserializer() =
-    kotlinxDeserializerOf(T::class.serializer(), Json(JsonConfiguration(ignoreUnknownKeys = true)))
+    kotlinxDeserializerOf(T::class.serializer(), json)
 
   fun init(context: Activity) {
     setupNotificationChannels(context)

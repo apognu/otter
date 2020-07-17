@@ -18,11 +18,10 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
-import com.github.apognu.otter.Otter
 import androidx.lifecycle.observe
+import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.*
-import com.github.apognu.otter.models.dao.RealmArtist
 import com.github.apognu.otter.models.domain.Track
 import com.github.apognu.otter.playback.MediaControlsManager
 import com.github.apognu.otter.playback.PinService
@@ -31,16 +30,12 @@ import com.github.apognu.otter.repositories.FavoritedRepository
 import com.github.apognu.otter.repositories.FavoritesRepository
 import com.github.apognu.otter.utils.*
 import com.github.apognu.otter.viewmodels.PlayerStateViewModel
-import com.github.apognu.otter.viewmodels.QueueViewModel
-import com.github.apognu.otter.views.DisableableFrameLayout
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitStringResponse
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.offline.DownloadService
-import com.google.gson.Gson
 import com.preference.PowerPreference
 import com.squareup.picasso.Picasso
-import io.realm.Realm
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.partial_now_playing.*
@@ -50,16 +45,19 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.stringify
+import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
+  private val playerViewModel by inject<PlayerStateViewModel>()
+  private val favoritesRepository by inject<FavoritesRepository>()
+  private val favoritedRepository by inject<FavoritedRepository>()
+  private val browseFragment by inject<BrowseFragment>()
+  private var menu: Menu? = null
+
   enum class ResultCode(val code: Int) {
     LOGOUT(1001)
   }
-
-  private val queueViewModel = QueueViewModel.get()
-  private val favoritesRepository = FavoritesRepository(this)
-  private val favoritedRepository = FavoritedRepository(this)
-  private var menu: Menu? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -70,17 +68,17 @@ class MainActivity : AppCompatActivity() {
     setSupportActionBar(appbar)
 
     when (intent.action) {
-      MediaControlsManager.NOTIFICATION_ACTION_OPEN_QUEUE.toString() -> launchDialog(QueueFragment())
+      MediaControlsManager.NOTIFICATION_ACTION_OPEN_QUEUE.toString() -> launchDialog(inject<QueueFragment>().value)
     }
 
     supportFragmentManager
       .beginTransaction()
-      .replace(R.id.container, BrowseFragment())
+      .replace(R.id.container, browseFragment)
       .commit()
 
     watchEventBus()
 
-    PlayerStateViewModel.get().isPlaying.observe(this) { isPlaying ->
+    playerViewModel.isPlaying.observe(this) { isPlaying ->
       when (isPlaying) {
         true -> {
           now_playing_toggle.icon = getDrawable(R.drawable.pause)
@@ -94,18 +92,18 @@ class MainActivity : AppCompatActivity() {
       }
     }
 
-    PlayerStateViewModel.get().isBuffering.observe(this) { isBuffering ->
+    playerViewModel.isBuffering.observe(this) { isBuffering ->
       when (isBuffering) {
         true -> now_playing_buffering.visibility = View.VISIBLE
         false -> now_playing_buffering.visibility = View.GONE
       }
     }
 
-    PlayerStateViewModel.get().track.observe(this) { track ->
+    playerViewModel.track.observe(this) { track ->
       refreshCurrentTrack(track)
     }
 
-    PlayerStateViewModel.get().position.observe(this) { (current, duration, percent) ->
+    playerViewModel.position.observe(this) { (current, duration, percent) ->
       now_playing_progress.progress = percent
       now_playing_details_progress.progress = percent
 
@@ -187,7 +185,7 @@ class MainActivity : AppCompatActivity() {
     })
 
     landscape_queue?.let {
-      supportFragmentManager.beginTransaction().replace(R.id.landscape_queue, LandscapeQueueFragment()).commit()
+      supportFragmentManager.beginTransaction().replace(R.id.landscape_queue, inject<LandscapeQueueFragment>().value).commit()
     }
   }
 
@@ -231,7 +229,7 @@ class MainActivity : AppCompatActivity() {
           return true
         }
 
-        launchFragment(BrowseFragment())
+        launchFragment(browseFragment)
       }
 
       R.id.nav_queue -> launchDialog(QueueFragment())
@@ -573,7 +571,7 @@ class MainActivity : AppCompatActivity() {
             .post(mustNormalizeUrl("/api/v1/history/listenings/"))
             .authorize()
             .header("Content-Type", "application/json")
-            .body(Gson().toJson(mapOf("track" to track.id)))
+            .body(AppContext.json.stringify(mapOf("track" to track.id)))
             .awaitStringResponse()
         } catch (_: Exception) {
         }

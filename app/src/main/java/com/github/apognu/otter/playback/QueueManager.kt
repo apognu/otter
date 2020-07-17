@@ -18,9 +18,13 @@ import com.google.android.exoplayer2.util.Util
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.koin.core.KoinComponent
+import org.koin.core.inject
+import org.koin.core.parameter.parametersOf
 
-class QueueManager(val context: Context) {
-  private val queueRepository = QueueRepository(GlobalScope)
+class QueueManager(val context: Context) : KoinComponent {
+  private val playerViewModel by inject<PlayerStateViewModel>()
+  private val queueRepository by inject<QueueRepository> { parametersOf(GlobalScope) }
 
   var metadata: MutableList<Track> = mutableListOf()
   val datasources = ConcatenatingMediaSource()
@@ -59,7 +63,7 @@ class QueueManager(val context: Context) {
     Cache.get(context, "current")?.let { string ->
       current = string.readLine().toInt()
 
-      PlayerStateViewModel.get()._track.postValue(current())
+      playerViewModel._track.postValue(current())
     }
   }
 

@@ -13,26 +13,32 @@ import com.github.apognu.otter.repositories.TracksRepository
 import com.github.apognu.otter.utils.Command
 import com.github.apognu.otter.utils.CommandBus
 import com.github.apognu.otter.utils.EventBus
+import com.github.apognu.otter.viewmodels.FavoritesViewModel
 import com.github.apognu.otter.viewmodels.PlayerStateViewModel
-import com.github.apognu.otter.viewmodels.TracksViewModel
 import kotlinx.android.synthetic.main.fragment_favorites.*
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class FavoritesFragment : LiveOtterFragment<FunkwhaleTrack, Track, FavoritesAdapter>() {
-  override val liveData = TracksViewModel(0).favorites
+  override val repository by inject<FavoritesRepository>()
+  override val adapter by inject<FavoritesAdapter> { parametersOf(context, FavoriteListener()) }
+  override val viewModel by viewModel<FavoritesViewModel>()
+  override val liveData by lazy { viewModel.favorites }
+
   override val viewRes = R.layout.fragment_favorites
   override val recycler: RecyclerView get() = favorites
   override val alwaysRefresh = false
 
+  private val playerViewModel by inject<PlayerStateViewModel>()
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    adapter = FavoritesAdapter(context, FavoriteListener())
-    repository = FavoritesRepository(context)
-
-    PlayerStateViewModel.get().track.observe(this) { refreshCurrentTrack(it) }
+    playerViewModel.track.observe(this) { refreshCurrentTrack(it) }
 
     watchEventBus()
   }

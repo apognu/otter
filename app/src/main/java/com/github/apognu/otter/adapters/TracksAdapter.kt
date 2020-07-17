@@ -57,6 +57,7 @@ class TracksAdapter(private val context: Context?, private val favoriteListener:
       .maybeLoad(maybeNormalizeUrl(track.album?.cover()))
       .fit()
       .transform(RoundedCornersTransformation(8, 0))
+      .placeholder(R.drawable.cover)
       .into(holder.cover)
 
     holder.title.text = track.title

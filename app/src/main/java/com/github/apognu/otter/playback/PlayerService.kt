@@ -17,7 +17,6 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.media.session.MediaButtonReceiver
 import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
-import com.github.apognu.otter.models.dao.RadioEntity
 import com.github.apognu.otter.models.domain.Track
 import com.github.apognu.otter.utils.*
 import com.github.apognu.otter.viewmodels.PlayerStateViewModel
@@ -32,8 +31,11 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.collect
+import org.koin.android.ext.android.inject
 
 class PlayerService : Service() {
+  private val playerViewModel by inject<PlayerStateViewModel>()
+
   companion object {
     const val INITIAL_COMMAND_KEY = "start_command"
   }
@@ -136,7 +138,7 @@ class PlayerService : Service() {
 
         val (current, duration, percent) = getProgress(true)
 
-        PlayerStateViewModel.get().position.postValue(Triple(current, duration, percent))
+        playerViewModel.position.postValue(Triple(current, duration, percent))
       }
     }
 
@@ -149,8 +151,8 @@ class PlayerService : Service() {
         when (command) {
           is Command.RefreshService -> {
             if (queue.metadata.isNotEmpty()) {
-              PlayerStateViewModel.get()._track.postValue(queue.current())
-              PlayerStateViewModel.get().isPlaying.postValue(player.playWhenReady)
+              playerViewModel._track.postValue(queue.current())
+              playerViewModel.isPlaying.postValue(player.playWhenReady)
             }
           }
 
@@ -211,7 +213,7 @@ class PlayerService : Service() {
         delay(1000)
 
         if (player.playWhenReady) {
-          PlayerStateViewModel.get().position.postValue(getProgress())
+          playerViewModel.position.postValue(getProgress())
         }
       }
     }
@@ -271,7 +273,7 @@ class PlayerService : Service() {
     if (hasAudioFocus(state)) {
       player.playWhenReady = state
 
-      PlayerStateViewModel.get().isPlaying.postValue(state)
+      playerViewModel.isPlaying.postValue(state)
     }
   }
 
@@ -291,7 +293,7 @@ class PlayerService : Service() {
     player.next()
 
     Cache.set(this@PlayerService, "progress", "0".toByteArray())
-    PlayerStateViewModel.get().position.postValue(Triple(0, 0, 0))
+    playerViewModel.position.postValue(Triple(0, 0, 0))
   }
 
   private fun getProgress(force: Boolean = false): Triple<Int, Int, Int> {
@@ -371,17 +373,17 @@ class PlayerService : Service() {
     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
       super.onPlayerStateChanged(playWhenReady, playbackState)
 
-      PlayerStateViewModel.get().isPlaying.postValue(playWhenReady)
+      playerViewModel.isPlaying.postValue(playWhenReady)
 
       if (queue.current == -1) {
-        PlayerStateViewModel.get()._track.postValue(queue.current())
+        playerViewModel._track.postValue(queue.current())
       }
 
       when (playWhenReady) {
         true -> {
           when (playbackState) {
             Player.STATE_READY -> mediaControlsManager.updateNotification(queue.current(), true)
-            Player.STATE_BUFFERING -> PlayerStateViewModel.get().isBuffering.postValue(true)
+            Player.STATE_BUFFERING -> playerViewModel.isBuffering.postValue(true)
             Player.STATE_ENDED -> {
               setPlaybackState(false)
 
@@ -396,11 +398,11 @@ class PlayerService : Service() {
             }
           }
 
-          if (playbackState != Player.STATE_BUFFERING) PlayerStateViewModel.get().isBuffering.postValue(false)
+          if (playbackState != Player.STATE_BUFFERING) playerViewModel.isBuffering.postValue(false)
         }
 
         false -> {
-          PlayerStateViewModel.get().isBuffering.postValue(false)
+          playerViewModel.isBuffering.postValue(false)
 
           Build.VERSION_CODES.N.onApi(
             { stopForeground(STOP_FOREGROUND_DETACH) },
@@ -434,7 +436,7 @@ class PlayerService : Service() {
 
       Cache.set(this@PlayerService, "current", queue.current.toString().toByteArray())
 
-      PlayerStateViewModel.get()._track.postValue(queue.current())
+      playerViewModel._track.postValue(queue.current())
     }
 
     override fun onPositionDiscontinuity(reason: Int) {

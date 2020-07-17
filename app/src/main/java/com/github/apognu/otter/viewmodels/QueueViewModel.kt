@@ -7,19 +7,7 @@ import com.github.apognu.otter.repositories.QueueRepository
 import com.github.apognu.otter.utils.maybeNormalizeUrl
 import kotlinx.coroutines.delay
 
-class QueueViewModel private constructor() : ViewModel() {
-  companion object {
-    private lateinit var instance: QueueViewModel
-
-    fun get(): QueueViewModel {
-      instance = if (::instance.isInitialized) instance else QueueViewModel()
-
-      return instance
-    }
-  }
-
-  private val queueRepository = QueueRepository(viewModelScope)
-
+class QueueViewModel(private val repository: QueueRepository, playerViewModel: PlayerStateViewModel) : ViewModel() {
   private val _cached = liveData {
     while (true) {
       emit(Otter.get().exoCache.keys)
@@ -27,10 +15,10 @@ class QueueViewModel private constructor() : ViewModel() {
     }
   }
 
-  private val _current = PlayerStateViewModel.get().track
+  private val _current = playerViewModel.track
 
   private val _queue: LiveData<List<Track>> by lazy {
-    Transformations.map(queueRepository.all()) { tracks ->
+    Transformations.map(repository.all()) { tracks ->
       tracks.map { Track.fromDecoratedEntity(it) }
     }
   }

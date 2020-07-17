@@ -41,10 +41,7 @@ class ArtistsAdapter(val context: Context?, private val listener: OnArtistClickL
       .into(holder.art)
 
     holder.name.text = artist.name
-
-    context?.let {
-      holder.albums.text = context.resources.getQuantityString(R.plurals.album_count, artist.album_count, artist.album_count)
-    }
+    holder.albums.text = context?.resources?.getQuantityString(R.plurals.album_count, artist.album_count, artist.album_count) ?: ""
   }
 
   inner class ViewHolder(view: View, private val listener: OnArtistClickListener) : RecyclerView.ViewHolder(view), View.OnClickListener {

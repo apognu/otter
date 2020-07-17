@@ -8,7 +8,6 @@ import com.github.apognu.otter.models.api.DownloadInfo
 import com.github.apognu.otter.repositories.Repository
 import com.github.kittinunf.fuel.core.Request
 import com.google.android.exoplayer2.offline.Download
-import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.RequestCreator
 import kotlinx.coroutines.CoroutineScope
@@ -77,4 +76,4 @@ fun Request.authorize(): Request {
   }
 }
 
-fun Download.getMetadata(): DownloadInfo? = Gson().fromJson(String(this.request.data), DownloadInfo::class.java)
+fun Download.getMetadata(): DownloadInfo? = AppContext.json.parse(DownloadInfo.serializer(), String(this.request.data))

@@ -3,17 +3,17 @@ package com.github.apognu.otter.adapters
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
-import android.graphics.Typeface
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.view.*
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.OtterAdapter
-import com.github.apognu.otter.utils.*
 import com.github.apognu.otter.models.domain.Track
+import com.github.apognu.otter.utils.*
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.row_track.view.*
@@ -25,8 +25,6 @@ class PlaylistTracksAdapter(private val context: Context?, private val favoriteL
   }
 
   private lateinit var touchHelper: ItemTouchHelper
-
-  var currentTrack: Track? = null
 
   override fun getItemCount() = data.size
 
@@ -68,15 +66,11 @@ class PlaylistTracksAdapter(private val context: Context?, private val favoriteL
 
     context?.let {
       holder.itemView.background = context.getDrawable(R.drawable.ripple)
-    }
 
-    if (track == currentTrack) {
-      context?.let {
+      if (track.current) {
         holder.itemView.background = context.getDrawable(R.drawable.current)
       }
-    }
 
-    context?.let {
       when (track.favorite) {
         true -> holder.favorite.setColorFilter(context.getColor(R.color.colorFavorite))
         false -> holder.favorite.setColorFilter(context.getColor(R.color.colorSelected))
@@ -84,6 +78,23 @@ class PlaylistTracksAdapter(private val context: Context?, private val favoriteL
 
       holder.favorite.setOnClickListener {
         favoriteListener?.onToggleFavorite(track.id, !track.favorite)
+      }
+
+      when (track.cached || track.downloaded) {
+        true -> holder.title.setCompoundDrawablesWithIntrinsicBounds(R.drawable.downloaded, 0, 0, 0)
+        false -> holder.title.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+      }
+
+      if (track.cached && !track.downloaded) {
+        holder.title.compoundDrawables.forEach {
+          it?.colorFilter = PorterDuffColorFilter(context.getColor(R.color.cached), PorterDuff.Mode.SRC_IN)
+        }
+      }
+
+      if (track.downloaded) {
+        holder.title.compoundDrawables.forEach {
+          it?.colorFilter = PorterDuffColorFilter(context.getColor(R.color.downloaded), PorterDuff.Mode.SRC_IN)
+        }
       }
     }
 
@@ -96,7 +107,7 @@ class PlaylistTracksAdapter(private val context: Context?, private val favoriteL
             when (it.itemId) {
               R.id.track_add_to_queue -> CommandBus.send(Command.AddToQueue(listOf(track)))
               R.id.track_play_next -> CommandBus.send(Command.PlayNext(track))
-              R.id.queue_remove -> CommandBus.send(Command.RemoveFromQueue(track))
+              R.id.track_pin -> CommandBus.send(Command.PinTrack(track))
             }
 
             true

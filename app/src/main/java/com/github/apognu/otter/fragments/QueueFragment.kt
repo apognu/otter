@@ -21,17 +21,17 @@ import kotlinx.android.synthetic.main.fragment_queue.*
 import kotlinx.android.synthetic.main.fragment_queue.view.*
 import kotlinx.android.synthetic.main.partial_queue.*
 import kotlinx.android.synthetic.main.partial_queue.view.*
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class QueueFragment : BottomSheetDialogFragment() {
-  private var adapter: TracksAdapter? = null
+  private val viewModel by viewModel<QueueViewModel>()
+  private val favoritesRepository by inject<FavoritesRepository>()
 
-  private val viewModel = QueueViewModel.get()
-  lateinit var favoritesRepository: FavoritesRepository
+  private var adapter: TracksAdapter? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-
-    favoritesRepository = FavoritesRepository(context)
 
     setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme_FloatingBottomSheet)
   }

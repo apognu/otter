@@ -5,35 +5,38 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
 import com.github.apognu.otter.adapters.SearchAdapter
 import com.github.apognu.otter.fragments.AlbumsFragment
 import com.github.apognu.otter.fragments.ArtistsFragment
+import com.github.apognu.otter.models.dao.OtterDatabase
 import com.github.apognu.otter.models.dao.toDao
-import com.github.apognu.otter.repositories.*
-import com.github.apognu.otter.utils.*
 import com.github.apognu.otter.models.domain.Album
 import com.github.apognu.otter.models.domain.Artist
 import com.github.apognu.otter.models.domain.Track
+import com.github.apognu.otter.repositories.AlbumsSearchRepository
+import com.github.apognu.otter.repositories.ArtistsSearchRepository
+import com.github.apognu.otter.repositories.FavoritesRepository
+import com.github.apognu.otter.repositories.TracksSearchRepository
+import com.github.apognu.otter.utils.Event
+import com.github.apognu.otter.utils.EventBus
+import com.github.apognu.otter.utils.untilNetwork
 import com.google.android.exoplayer2.offline.Download
 import kotlinx.android.synthetic.main.activity_search.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import java.net.URLEncoder
 import java.util.*
 
-class SearchActivity : AppCompatActivity() {
+class SearchActivity(private val database: OtterDatabase, private val favoritesRepository: FavoritesRepository) : AppCompatActivity() {
   private lateinit var adapter: SearchAdapter
 
   lateinit var artistsRepository: ArtistsSearchRepository
   lateinit var albumsRepository: AlbumsSearchRepository
   lateinit var tracksRepository: TracksSearchRepository
-
-  lateinit var favoritesRepository: FavoritesRepository
 
   var done = 0
 
@@ -64,7 +67,6 @@ class SearchActivity : AppCompatActivity() {
     artistsRepository = ArtistsSearchRepository(this@SearchActivity, "")
     albumsRepository = AlbumsSearchRepository(this@SearchActivity, "")
     tracksRepository = TracksSearchRepository(this@SearchActivity, "")
-    favoritesRepository = FavoritesRepository(this@SearchActivity)
 
     search.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
       override fun onQueryTextSubmit(rawQuery: String?): Boolean {
@@ -92,7 +94,7 @@ class SearchActivity : AppCompatActivity() {
             done++
 
             artists.forEach {
-              Otter.get().database.artists().run {
+              database.artists().run {
                 insert(it.toDao())
 
                 adapter.artists.add(Artist.fromDecoratedEntity(getDecoratedBlocking(it.id)))
@@ -108,7 +110,7 @@ class SearchActivity : AppCompatActivity() {
             done++
 
             albums.forEach {
-              Otter.get().database.albums().run {
+              database.albums().run {
                 insert(it.toDao())
 
                 adapter.albums.add(Album.fromDecoratedEntity(getDecoratedBlocking(it.id)))
@@ -124,8 +126,8 @@ class SearchActivity : AppCompatActivity() {
             done++
 
             tracks.forEach {
-              Otter.get().database.tracks().run {
-                insertWithAssocs(it)
+              database.tracks().run {
+                insertWithAssocs(database.artists(), database.albums(), database.uploads(), it)
 
                 adapter.tracks.add(Track.fromDecoratedEntity(getDecoratedBlocking(it.id)))
               }

@@ -1,15 +1,22 @@
 package com.github.apognu.otter
 
 import android.app.Application
+import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.room.Room
+import com.github.apognu.otter.activities.MainActivity
+import com.github.apognu.otter.activities.SearchActivity
+import com.github.apognu.otter.adapters.*
+import com.github.apognu.otter.fragments.*
 import com.github.apognu.otter.models.dao.OtterDatabase
 import com.github.apognu.otter.playback.MediaSession
-import com.github.apognu.otter.playback.QueueManager
+import com.github.apognu.otter.playback.QueueManager.Companion.factory
+import com.github.apognu.otter.repositories.*
 import com.github.apognu.otter.utils.AppContext
 import com.github.apognu.otter.utils.Cache
 import com.github.apognu.otter.utils.Command
 import com.github.apognu.otter.utils.Event
+import com.github.apognu.otter.viewmodels.*
 import com.google.android.exoplayer2.database.ExoDatabaseProvider
 import com.google.android.exoplayer2.offline.DefaultDownloadIndex
 import com.google.android.exoplayer2.offline.DefaultDownloaderFactory
@@ -20,7 +27,15 @@ import com.google.android.exoplayer2.upstream.cache.NoOpCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.preference.PowerPreference
 import io.realm.Realm
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.BroadcastChannel
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.androidx.fragment.dsl.fragment
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.context.startKoin
+import org.koin.core.parameter.parametersOf
+import org.koin.dsl.module
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -35,12 +50,6 @@ class Otter : Application() {
 
   val eventBus: BroadcastChannel<Event> = BroadcastChannel(10)
   val commandBus: BroadcastChannel<Command> = BroadcastChannel(10)
-
-  val database: OtterDatabase by lazy {
-    Room
-      .databaseBuilder(this, OtterDatabase::class.java, "otter")
-      .build()
-  }
 
   private val exoDatabase: ExoDatabaseProvider by lazy { ExoDatabaseProvider(this) }
 
@@ -65,7 +74,7 @@ class Otter : Application() {
   }
 
   val exoDownloadManager: DownloadManager by lazy {
-    DownloaderConstructorHelper(exoDownloadCache, QueueManager.factory(this)).run {
+    DownloaderConstructorHelper(exoDownloadCache, factory(this)).run {
       DownloadManager(this@Otter, DefaultDownloadIndex(exoDatabase), DefaultDownloaderFactory(this))
     }
   }
@@ -82,6 +91,62 @@ class Otter : Application() {
     Thread.setDefaultUncaughtExceptionHandler(CrashReportHandler())
 
     instance = this
+
+    startKoin {
+      androidLogger()
+      androidContext(this@Otter)
+
+      modules(module {
+        single {
+          synchronized(this) {
+            Room
+              .databaseBuilder(get(), OtterDatabase::class.java, "otter")
+              .build()
+          }
+        }
+
+        factory { MainActivity() }
+        factory { SearchActivity(get(), get()) }
+
+        fragment { BrowseFragment() }
+        fragment { LandscapeQueueFragment() }
+
+        single { PlayerStateViewModel(get()) }
+
+        single { ArtistsRepository(get(), get()) }
+        factory { (id: Int) -> ArtistTracksRepository(get(), get(), id) }
+        viewModel { ArtistsViewModel(get()) }
+        factory { (context: Context?, listener: ArtistsFragment.OnArtistClickListener) -> ArtistsAdapter(context, listener) }
+
+        factory { (id: Int?) -> AlbumsRepository(get(), get(), id) }
+        viewModel { (id: Int?) -> AlbumsViewModel(get { parametersOf(id) }, get { parametersOf(id) }, id) }
+        factory { (context: Context?, adapter: AlbumsAdapter.OnAlbumClickListener) -> AlbumsAdapter(context, adapter) }
+        factory { (context: Context?, adapter: AlbumsGridAdapter.OnAlbumClickListener) -> AlbumsGridAdapter(context, adapter) }
+
+        factory { (id: Int?) -> TracksRepository(get(), get(), id) }
+        viewModel { (id: Int) -> TracksViewModel(get { parametersOf(id) }, get(), id) }
+        factory { (context: Context?, favoriteListener: TracksAdapter.OnFavoriteListener?) -> TracksAdapter(context, favoriteListener) }
+
+        single { PlaylistsRepository(get(), get()) }
+        factory { (id: Int) -> PlaylistTracksRepository(get(), get(), id) }
+        viewModel { PlaylistsViewModel(get()) }
+        viewModel { (id: Int) -> PlaylistViewModel(get { parametersOf(id) }, get { parametersOf(null) }, get(), id) }
+        factory { (context: Context?, listener: PlaylistsAdapter.OnPlaylistClickListener) -> PlaylistsAdapter(context, listener) }
+        factory { (context: Context?, listener: PlaylistTracksAdapter.OnFavoriteListener) -> PlaylistTracksAdapter(context, listener) }
+
+        single { FavoritesRepository(get(), get()) }
+        single { FavoritedRepository(get(), get()) }
+        factory { (context: Context?, listener: FavoritesAdapter.OnFavoriteListener) -> FavoritesAdapter(context, listener) }
+        viewModel { FavoritesViewModel(get(), get { parametersOf(null) }) }
+
+        single { RadiosRepository(get(), get()) }
+        factory { (context: Context?, scope: CoroutineScope, listener: RadiosAdapter.OnRadioClickListener) -> RadiosAdapter(context, scope, listener) }
+        viewModel { RadiosViewModel(get()) }
+
+        single { (scope: CoroutineScope) -> QueueRepository(get(), scope) }
+        viewModel { QueueViewModel(get(), get()) }
+      })
+    }
 
     when (PowerPreference.getDefaultFile().getString("night_mode")) {
       "on" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)

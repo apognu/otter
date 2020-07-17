@@ -14,18 +14,14 @@ import com.github.apognu.otter.repositories.FavoritesRepository
 import com.github.apognu.otter.viewmodels.QueueViewModel
 import kotlinx.android.synthetic.main.partial_queue.*
 import kotlinx.android.synthetic.main.partial_queue.view.*
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LandscapeQueueFragment : Fragment() {
+  private val viewModel by viewModel<QueueViewModel>()
+  private val favoritesRepository by inject<FavoritesRepository>()
+
   private var adapter: TracksAdapter? = null
-
-  private val viewModel = QueueViewModel.get()
-  lateinit var favoritesRepository: FavoritesRepository
-
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-
-    favoritesRepository = FavoritesRepository(context)
-  }
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
     viewModel.queue.observe(viewLifecycleOwner) {

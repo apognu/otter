@@ -6,9 +6,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.adapters.TracksAdapter
@@ -19,7 +17,7 @@ import com.github.apognu.otter.repositories.FavoritedRepository
 import com.github.apognu.otter.repositories.FavoritesRepository
 import com.github.apognu.otter.repositories.TracksRepository
 import com.github.apognu.otter.utils.*
-import com.github.apognu.otter.viewmodels.*
+import com.github.apognu.otter.viewmodels.TracksViewModel
 import com.google.android.exoplayer2.offline.Download
 import com.preference.PowerPreference
 import com.squareup.picasso.Picasso
@@ -30,19 +28,22 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class TracksFragment : LiveOtterFragment<FunkwhaleTrack, Track, TracksAdapter>() {
-  override lateinit var liveData: LiveData<List<Track>>
+  override val repository by inject<TracksRepository> { parametersOf(albumId) }
+  override val adapter by inject<TracksAdapter> { parametersOf(context, FavoriteListener()) }
+  override val viewModel by viewModel<TracksViewModel> { parametersOf(albumId) }
+  override val liveData by lazy { viewModel.tracks }
+
   override val viewRes = R.layout.fragment_tracks
   override val recycler: RecyclerView get() = tracks
 
-  lateinit var favoritesRepository: FavoritesRepository
-  lateinit var favoritedRepository: FavoritedRepository
+  private val favoritesRepository by inject<FavoritesRepository>()
 
   private var albumId = 0
-  private var albumArtist = ""
-  private var albumTitle = ""
-  private var albumCover = ""
 
   companion object {
     fun new(album: Album): TracksFragment {
@@ -53,34 +54,11 @@ class TracksFragment : LiveOtterFragment<FunkwhaleTrack, Track, TracksAdapter>()
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+
     arguments?.apply {
       albumId = getInt("albumId")
     }
-
-    liveData = TracksViewModel(albumId).tracks
-
-    AlbumViewModel(albumId).album.observe(this) {
-      title.text = it.title
-
-      Picasso.get()
-        .maybeLoad(maybeNormalizeUrl(it.cover))
-        .noFade()
-        .fit()
-        .centerCrop()
-        .transform(RoundedCornersTransformation(16, 0))
-        .into(cover)
-
-      ArtistViewModel(it.artist_id).artist.observe(this) {
-        artist.text = it.name
-      }
-    }
-
-    super.onCreate(savedInstanceState)
-
-    adapter = TracksAdapter(context, FavoriteListener())
-    repository = TracksRepository(context, albumId)
-    favoritesRepository = FavoritesRepository(context)
-    favoritedRepository = FavoritedRepository(context)
 
     watchEventBus()
   }
@@ -153,6 +131,21 @@ class TracksFragment : LiveOtterFragment<FunkwhaleTrack, Track, TracksAdapter>()
           show()
         }
       }
+    }
+  }
+
+  override fun onDataUpdated(data: List<Track>?) {
+    data?.let {
+      title.text = data.getOrNull(0)?.album?.title
+      artist.text = data.getOrNull(0)?.artist?.name
+
+      Picasso.get()
+        .maybeLoad(data.getOrNull(0)?.album?.cover)
+        .noFade()
+        .fit()
+        .centerCrop()
+        .transform(RoundedCornersTransformation(16, 0))
+        .into(cover)
     }
   }
 

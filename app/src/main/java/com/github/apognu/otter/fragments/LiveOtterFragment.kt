@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,19 +35,21 @@ abstract class OtterAdapter<D, VH : RecyclerView.ViewHolder> : RecyclerView.Adap
   abstract override fun getItemId(position: Int): Long
 }
 
-abstract class LiveOtterFragment<D : Any, DAO : Any, A : OtterAdapter<DAO, *>> : Fragment() {
+abstract class LiveOtterFragment<DAO : Any, D : Any, A : OtterAdapter<D, *>> : Fragment() {
   companion object {
     const val OFFSCREEN_PAGES = 20
   }
 
-  abstract val liveData: LiveData<List<DAO>>
+  abstract val repository: Repository<DAO>
+  abstract val adapter: A
+  open val viewModel: ViewModel? = null
+
+  abstract val liveData: LiveData<List<D>>
   abstract val viewRes: Int
   abstract val recycler: RecyclerView
+
   open val layoutManager: RecyclerView.LayoutManager get() = LinearLayoutManager(context)
   open val alwaysRefresh = true
-
-  lateinit var repository: Repository<D>
-  lateinit var adapter: A
 
   private var moreLoading = false
   private var listener: Job? = null
@@ -57,6 +60,13 @@ abstract class LiveOtterFragment<D : Any, DAO : Any, A : OtterAdapter<DAO, *>> :
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
+
+    liveData.observe(viewLifecycleOwner) {
+      onDataUpdated(it)
+
+      adapter.data = it.toMutableList()
+      adapter.notifyDataSetChanged()
+    }
 
     recycler.layoutManager = layoutManager
     (recycler.itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
@@ -88,17 +98,6 @@ abstract class LiveOtterFragment<D : Any, DAO : Any, A : OtterAdapter<DAO, *>> :
         }
       }
     }
-
-    fetch()
-  }
-
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-
-    liveData.observe(this) {
-      adapter.data = it.toMutableList()
-      adapter.notifyDataSetChanged()
-    }
   }
 
   override fun onResume() {
@@ -109,7 +108,8 @@ abstract class LiveOtterFragment<D : Any, DAO : Any, A : OtterAdapter<DAO, *>> :
     }
   }
 
-  open fun onDataFetched(data: List<D>) {}
+  open fun onDataFetched(data: List<DAO>) {}
+  open fun onDataUpdated(data: List<D>?) {}
 
   private fun fetch(size: Int = 0) {
     moreLoading = true

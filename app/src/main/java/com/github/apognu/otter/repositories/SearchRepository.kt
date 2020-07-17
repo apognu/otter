@@ -4,8 +4,6 @@ import android.content.Context
 import com.github.apognu.otter.models.api.FunkwhaleAlbum
 import com.github.apognu.otter.models.api.FunkwhaleArtist
 import com.github.apognu.otter.models.api.FunkwhaleTrack
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 
 class TracksSearchRepository(override val context: Context?, var query: String) : Repository<FunkwhaleTrack>() {
@@ -13,11 +11,6 @@ class TracksSearchRepository(override val context: Context?, var query: String) 
     get() = HttpUpstream(HttpUpstream.Behavior.AtOnce, "/api/v1/tracks/?playable=true&q=$query", FunkwhaleTrack.serializer())
 
   override fun onDataFetched(data: List<FunkwhaleTrack>): List<FunkwhaleTrack> = runBlocking {
-    val favorites = FavoritedRepository(context).fetch()
-      .map { it.data }
-      .toList()
-      .flatten()
-
     /* val downloaded = TracksRepository.getDownloadedIds() ?: listOf()
 
     data.map { track ->

@@ -4,17 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.github.apognu.otter.Otter
 import com.github.apognu.otter.models.dao.RadioEntity
+import com.github.apognu.otter.repositories.RadiosRepository
 
-class RadiosViewModel : ViewModel() {
-  companion object {
-    private lateinit var instance: RadiosViewModel
-
-    fun get(): RadiosViewModel {
-      instance = if (::instance.isInitialized) instance else RadiosViewModel()
-
-      return instance
-    }
-  }
-
-  val radios: LiveData<List<RadioEntity>> by lazy { Otter.get().database.radios().all() }
+class RadiosViewModel(private val repository: RadiosRepository) : ViewModel() {
+  val radios: LiveData<List<RadioEntity>> by lazy { repository.all() }
 }

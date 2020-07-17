@@ -21,7 +21,7 @@ class OtterResponseSerializer<T : Any>(private val dataSerializer: KSerializer<T
 }
 
 @Serializable
-data class Credentials(val token: String, val non_field_errors: List<String>? = null)
+data class Credentials(val token: String? = null, val non_field_errors: List<String>? = null)
 
 @Serializable
 data class User(val full_username: String)

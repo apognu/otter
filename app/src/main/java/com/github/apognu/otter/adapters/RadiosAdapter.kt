@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
-import com.github.apognu.otter.models.dao.RadioEntity
 import com.github.apognu.otter.fragments.OtterAdapter
+import com.github.apognu.otter.models.dao.RadioEntity
 import com.github.apognu.otter.utils.AppContext
 import com.github.apognu.otter.utils.Event
 import com.github.apognu.otter.utils.EventBus

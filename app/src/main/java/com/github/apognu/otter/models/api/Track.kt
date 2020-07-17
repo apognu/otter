@@ -2,6 +2,7 @@ package com.github.apognu.otter.models.api
 
 import com.github.apognu.otter.models.domain.SearchResult
 import com.google.android.exoplayer2.offline.Download
+import kotlinx.serialization.ContextualSerialization
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -55,10 +56,12 @@ data class FunkwhaleTrack(
 @Serializable
 data class Favorited(val track: Int)
 
+@Serializable
 data class DownloadInfo(
   val id: Int,
   val contentId: String,
   val title: String,
   val artist: String,
+  @ContextualSerialization
   var download: Download?
 )

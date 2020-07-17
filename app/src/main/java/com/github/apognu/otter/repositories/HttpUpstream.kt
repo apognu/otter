@@ -52,9 +52,6 @@ class HttpUpstream<D : Any>(val behavior: Behavior, private val url: String, pri
         }
       },
       { error ->
-        "GET $url".log()
-        error.log()
-
         when (error.exception) {
           is RefreshError -> EventBus.send(Event.LogOut)
           else -> send(Repository.Response(listOf(), page, false))

@@ -7,29 +7,27 @@ import android.net.Uri
 import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
 import com.github.apognu.otter.models.api.DownloadInfo
-import com.github.apognu.otter.utils.*
-import com.github.apognu.otter.viewmodels.DownloadsViewModel
 import com.github.apognu.otter.models.domain.Track
+import com.github.apognu.otter.utils.AppContext
+import com.github.apognu.otter.utils.Event
+import com.github.apognu.otter.utils.EventBus
+import com.github.apognu.otter.utils.mustNormalizeUrl
+import com.github.apognu.otter.viewmodels.DownloadsViewModel
 import com.google.android.exoplayer2.offline.Download
 import com.google.android.exoplayer2.offline.DownloadManager
 import com.google.android.exoplayer2.offline.DownloadRequest
 import com.google.android.exoplayer2.offline.DownloadService
 import com.google.android.exoplayer2.scheduler.Scheduler
 import com.google.android.exoplayer2.ui.DownloadNotificationHelper
-import com.google.gson.Gson
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.Job
+import kotlinx.serialization.stringify
 import java.util.*
 
 class PinService : DownloadService(AppContext.NOTIFICATION_DOWNLOADS) {
-  private val scope: CoroutineScope = CoroutineScope(Job() + Main)
-
   companion object {
     fun download(context: Context, track: Track) {
       track.bestUpload()?.let { upload ->
         val url = mustNormalizeUrl(upload.listen_url)
-        val data = Gson().toJson(
+        val data = AppContext.json.stringify(
           DownloadInfo(
             track.id,
             url,

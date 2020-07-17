@@ -5,6 +5,7 @@ import androidx.room.*
 import androidx.room.ForeignKey.CASCADE
 import com.github.apognu.otter.Otter
 import com.github.apognu.otter.models.api.FunkwhaleTrack
+import org.koin.java.KoinJavaComponent.inject
 
 @Entity(tableName = "tracks")
 data class TrackEntity(
@@ -59,17 +60,17 @@ data class TrackEntity(
     fun insert(track: TrackEntity)
 
     @Transaction
-    fun insertWithAssocs(track: FunkwhaleTrack) {
-      Otter.get().database.artists().insert(track.artist.toDao())
+    fun insertWithAssocs(artistsDao: ArtistEntity.Dao, albumsDao: AlbumEntity.Dao, uploadsDao: UploadEntity.Dao, track: FunkwhaleTrack) {
+      artistsDao.insert(track.artist.toDao())
 
       track.album?.let {
-        Otter.get().database.albums().insert(it.toDao())
+        albumsDao.insert(it.toDao())
       }
 
       insert(track.toDao())
 
       track.uploads.forEach {
-        Otter.get().database.uploads().insert(it.toDao(track.id))
+        uploadsDao.insert(it.toDao(track.id))
       }
     }
   }
@@ -103,6 +104,7 @@ fun FunkwhaleTrack.toDao() = run {
   ON ar.id = al.artist_id
   LEFT JOIN favorites
   ON favorites.track_id = tracks.id
+  ORDER BY tracks.position
 """)
 data class DecoratedTrackEntity(
   val id: Int,

@@ -14,11 +14,9 @@ import com.github.apognu.otter.fragments.LoginDialog
 import com.github.apognu.otter.models.api.Credentials
 import com.github.apognu.otter.utils.AppContext
 import com.github.apognu.otter.utils.Userinfo
-import com.github.apognu.otter.utils.log
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
 import com.github.kittinunf.result.Result
-import com.google.gson.Gson
 import com.preference.PowerPreference
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.coroutines.Dispatchers.Main
@@ -131,12 +129,12 @@ class LoginActivity : AppCompatActivity() {
           is Result.Failure -> {
             dialog.dismiss()
 
-            val error = Gson().fromJson(String(response.data), Credentials::class.java)
+            val error = AppContext.json.parse(Credentials.serializer(), String(response.data))
 
             hostname_field.error = null
             username_field.error = null
 
-            if (error != null && error.non_field_errors?.isNotEmpty() == true) {
+            if (error.non_field_errors?.isNotEmpty() == true) {
               username_field.error = error.non_field_errors[0]
             } else {
               hostname_field.error = result.error.localizedMessage

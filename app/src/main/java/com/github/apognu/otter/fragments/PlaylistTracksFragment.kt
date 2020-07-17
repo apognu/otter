@@ -5,38 +5,41 @@ import android.view.Gravity
 import android.view.View
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.adapters.PlaylistTracksAdapter
 import com.github.apognu.otter.models.api.FunkwhalePlaylistTrack
 import com.github.apognu.otter.models.dao.PlaylistEntity
+import com.github.apognu.otter.models.domain.Track
 import com.github.apognu.otter.repositories.FavoritesRepository
 import com.github.apognu.otter.repositories.PlaylistTracksRepository
 import com.github.apognu.otter.utils.*
-import com.github.apognu.otter.viewmodels.PlayerStateViewModel
 import com.github.apognu.otter.viewmodels.PlaylistViewModel
-import com.github.apognu.otter.models.domain.Track
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.fragment_tracks.*
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class PlaylistTracksFragment : LiveOtterFragment<FunkwhalePlaylistTrack, Track, PlaylistTracksAdapter>() {
-  override lateinit var liveData: LiveData<List<Track>>
+  private val favoritesRepository by inject<FavoritesRepository>()
+  override val repository by inject<PlaylistTracksRepository> { parametersOf(playlistId) }
+  override val adapter by inject<PlaylistTracksAdapter> { parametersOf(context, FavoriteListener()) }
+  override val viewModel by viewModel<PlaylistViewModel> { parametersOf(playlistId) }
+  override val liveData by lazy { viewModel.tracks }
+
   override val viewRes = R.layout.fragment_tracks
   override val recycler: RecyclerView get() = tracks
-
-  lateinit var favoritesRepository: FavoritesRepository
 
   var playlistId = 0
   var playlistName = ""
 
   companion object {
-    fun new(playlist: PlaylistEntity): PlaylistTracksFragment {
+    fun new(playlist: PlaylistEntity, favoritesRepository: FavoritesRepository): PlaylistTracksFragment {
       return PlaylistTracksFragment().apply {
         arguments = bundleOf(
           "playlistId" to playlist.id,
@@ -47,22 +50,11 @@ class PlaylistTracksFragment : LiveOtterFragment<FunkwhalePlaylistTrack, Track, 
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+
     arguments?.apply {
       playlistId = getInt("playlistId")
       playlistName = getString("playlistName") ?: "N/A"
-    }
-
-    liveData = PlaylistViewModel(playlistId).tracks
-
-    super.onCreate(savedInstanceState)
-
-    adapter = PlaylistTracksAdapter(context, FavoriteListener())
-    repository = PlaylistTracksRepository(context, playlistId)
-    favoritesRepository = FavoritesRepository(context)
-
-    PlayerStateViewModel.get().track.observe(this) { track ->
-      adapter.currentTrack = track
-      adapter.notifyDataSetChanged()
     }
   }
 

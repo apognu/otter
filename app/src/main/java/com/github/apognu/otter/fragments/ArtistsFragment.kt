@@ -18,15 +18,22 @@ import com.github.apognu.otter.R
 import com.github.apognu.otter.activities.MainActivity
 import com.github.apognu.otter.adapters.ArtistsAdapter
 import com.github.apognu.otter.models.api.FunkwhaleArtist
+import com.github.apognu.otter.models.domain.Artist
 import com.github.apognu.otter.repositories.ArtistsRepository
 import com.github.apognu.otter.utils.AppContext
 import com.github.apognu.otter.utils.onViewPager
-import com.github.apognu.otter.models.domain.Artist
 import com.github.apognu.otter.viewmodels.ArtistsViewModel
 import kotlinx.android.synthetic.main.fragment_artists.*
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class ArtistsFragment : LiveOtterFragment<FunkwhaleArtist, Artist, ArtistsAdapter>() {
-  override val liveData = ArtistsViewModel.get().artists
+  override val repository by inject<ArtistsRepository>()
+  override val adapter by inject<ArtistsAdapter> { parametersOf(context, OnArtistClickListener()) }
+  override val viewModel by viewModel<ArtistsViewModel>()
+
+  override val liveData by lazy { viewModel.artists }
   override val viewRes = R.layout.fragment_artists
   override val recycler: RecyclerView get() = artists
 
@@ -64,13 +71,6 @@ class ArtistsFragment : LiveOtterFragment<FunkwhaleArtist, Artist, ArtistsAdapte
         }
       }
     }
-  }
-
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-
-    adapter = ArtistsAdapter(context, OnArtistClickListener())
-    repository = ArtistsRepository(context)
   }
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

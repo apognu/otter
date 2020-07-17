@@ -1,16 +1,16 @@
 package com.github.apognu.otter.repositories
 
-import com.github.apognu.otter.Otter
+import com.github.apognu.otter.models.dao.OtterDatabase
 import com.github.apognu.otter.models.domain.Track
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-class QueueRepository(val scope: CoroutineScope) {
-  fun all() = Otter.get().database.queue().allDecorated()
+class QueueRepository(private val database: OtterDatabase, private val scope: CoroutineScope) {
+  fun all() = database.queue().allDecorated()
 
-  fun allBlocking() = Otter.get().database.queue().allDecoratedBlocking()
+  fun allBlocking() = database.queue().allDecoratedBlocking()
 
   fun replace(tracks: List<Track>) = scope.launch {
-    Otter.get().database.queue().replace(tracks)
+    database.queue().replace(tracks)
   }
 }

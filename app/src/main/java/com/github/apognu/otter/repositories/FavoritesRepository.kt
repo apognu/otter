@@ -1,30 +1,32 @@
 package com.github.apognu.otter.repositories
 
 import android.content.Context
-import com.github.apognu.otter.Otter
+import androidx.lifecycle.LiveData
 import com.github.apognu.otter.models.api.Favorited
 import com.github.apognu.otter.models.api.FunkwhaleTrack
 import com.github.apognu.otter.models.dao.FavoriteEntity
+import com.github.apognu.otter.models.dao.OtterDatabase
+import com.github.apognu.otter.utils.AppContext
 import com.github.apognu.otter.utils.Settings
 import com.github.apognu.otter.utils.mustNormalizeUrl
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitByteArrayResponseResult
-import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.stringify
 
-class FavoritesRepository(override val context: Context?) : Repository<FunkwhaleTrack>() {
+class FavoritesRepository(override val context: Context, private val database: OtterDatabase) : Repository<FunkwhaleTrack>() {
   override val upstream =
     HttpUpstream(HttpUpstream.Behavior.AtOnce, "/api/v1/tracks/?favorites=true&playable=true&ordering=title", FunkwhaleTrack.serializer())
 
-  val favoritedRepository = FavoritedRepository(context)
+  val favoritedRepository = FavoritedRepository(context, database)
 
   override fun onDataFetched(data: List<FunkwhaleTrack>): List<FunkwhaleTrack> = runBlocking {
     data.forEach {
-      Otter.get().database.tracks().insertWithAssocs(it)
-      Otter.get().database.favorites().insert(FavoriteEntity(it.id))
+      database.tracks().insertWithAssocs(database.artists(), database.albums(), database.uploads(), it)
+      database.favorites().insert(FavoriteEntity(it.id))
     }
 
     /* val downloaded = TracksRepository.getDownloadedIds() ?: listOf()
@@ -45,8 +47,18 @@ class FavoritesRepository(override val context: Context?) : Repository<Funkwhale
     data
   }
 
+  fun all(): LiveData<List<FavoriteEntity>> {
+    scope.launch(IO) {
+      fetch().collect()
+    }
+
+    return database.favorites().all()
+  }
+
+  fun find(ids: List<Int>) = database.albums().findAllDecorated(ids)
+
   fun addFavorite(id: Int) = scope.launch(IO) {
-    Otter.get().database.favorites().add(id)
+    database.favorites().add(id)
 
     val body = mapOf("track" to id)
 
@@ -59,7 +71,7 @@ class FavoritesRepository(override val context: Context?) : Repository<Funkwhale
     scope.launch(IO) {
       request
         .header("Content-Type", "application/json")
-        .body(Gson().toJson(body))
+        .body(AppContext.json.stringify(body))
         .awaitByteArrayResponseResult()
 
       favoritedRepository.update()
@@ -67,7 +79,7 @@ class FavoritesRepository(override val context: Context?) : Repository<Funkwhale
   }
 
   fun deleteFavorite(id: Int) = scope.launch(IO) {
-    Otter.get().database.favorites().remove(id)
+    database.favorites().remove(id)
 
     val body = mapOf("track" to id)
 
@@ -80,7 +92,7 @@ class FavoritesRepository(override val context: Context?) : Repository<Funkwhale
     scope.launch(IO) {
       request
         .header("Content-Type", "application/json")
-        .body(Gson().toJson(body))
+        .body(AppContext.json.stringify(body))
         .awaitByteArrayResponseResult()
 
       favoritedRepository.update()
@@ -88,14 +100,14 @@ class FavoritesRepository(override val context: Context?) : Repository<Funkwhale
   }
 }
 
-class FavoritedRepository(override val context: Context?) : Repository<Favorited>() {
+class FavoritedRepository(override val context: Context, private val database: OtterDatabase) : Repository<Favorited>() {
   override val upstream =
     HttpUpstream(HttpUpstream.Behavior.Single, "/api/v1/favorites/tracks/all/?playable=true", Favorited.serializer())
 
   override fun onDataFetched(data: List<Favorited>): List<Favorited> {
     scope.launch(IO) {
       data.forEach {
-        Otter.get().database.favorites().insert(FavoriteEntity(it.track))
+        database.favorites().insert(FavoriteEntity(it.track))
       }
     }
 

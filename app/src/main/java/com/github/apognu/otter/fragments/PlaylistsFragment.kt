@@ -1,6 +1,5 @@
 package com.github.apognu.otter.fragments
 
-import android.os.Bundle
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.recyclerview.widget.RecyclerView
@@ -11,23 +10,26 @@ import com.github.apognu.otter.activities.MainActivity
 import com.github.apognu.otter.adapters.PlaylistsAdapter
 import com.github.apognu.otter.models.api.FunkwhalePlaylist
 import com.github.apognu.otter.models.dao.PlaylistEntity
+import com.github.apognu.otter.repositories.FavoritesRepository
 import com.github.apognu.otter.repositories.PlaylistsRepository
 import com.github.apognu.otter.utils.AppContext
 import com.github.apognu.otter.viewmodels.PlaylistsViewModel
 import kotlinx.android.synthetic.main.fragment_playlists.*
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class PlaylistsFragment : LiveOtterFragment<FunkwhalePlaylist, PlaylistEntity, PlaylistsAdapter>() {
-  override val liveData = PlaylistsViewModel().playlists
+  override val repository by inject<PlaylistsRepository>()
+  override val adapter by inject<PlaylistsAdapter> { parametersOf(context, OnPlaylistClickListener()) }
+  override val viewModel by viewModel<PlaylistsViewModel>()
+  override val liveData by lazy { viewModel.playlists }
+
   override val viewRes = R.layout.fragment_playlists
   override val recycler: RecyclerView get() = playlists
   override val alwaysRefresh = false
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-
-    adapter = PlaylistsAdapter(context, OnPlaylistClickListener())
-    repository = PlaylistsRepository(context)
-  }
+  private val favoritesRepository by inject<FavoritesRepository>()
 
   inner class OnPlaylistClickListener : PlaylistsAdapter.OnPlaylistClickListener {
     override fun onClick(holder: View?, playlist: PlaylistEntity) {
@@ -41,7 +43,7 @@ class PlaylistsFragment : LiveOtterFragment<FunkwhalePlaylist, PlaylistEntity, P
           }
         }
 
-        val fragment = PlaylistTracksFragment.new(playlist).apply {
+        val fragment = PlaylistTracksFragment.new(playlist, favoritesRepository).apply {
           enterTransition = Slide().apply {
             duration = AppContext.TRANSITION_DURATION
             interpolator = AccelerateDecelerateInterpolator()

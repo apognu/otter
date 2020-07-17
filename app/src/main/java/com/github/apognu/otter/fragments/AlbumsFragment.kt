@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
@@ -18,27 +17,34 @@ import com.github.apognu.otter.R
 import com.github.apognu.otter.activities.MainActivity
 import com.github.apognu.otter.adapters.AlbumsAdapter
 import com.github.apognu.otter.models.api.FunkwhaleAlbum
+import com.github.apognu.otter.models.domain.Album
+import com.github.apognu.otter.models.domain.Artist
 import com.github.apognu.otter.repositories.AlbumsRepository
 import com.github.apognu.otter.repositories.ArtistTracksRepository
 import com.github.apognu.otter.utils.*
-import com.github.apognu.otter.models.domain.Album
 import com.github.apognu.otter.viewmodels.AlbumsViewModel
-import com.github.apognu.otter.models.domain.Artist
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.fragment_albums.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class AlbumsFragment : LiveOtterFragment<FunkwhaleAlbum, Album, AlbumsAdapter>() {
-  override lateinit var liveData: LiveData<List<Album>>
+  override val repository by inject<AlbumsRepository> { parametersOf(null) }
+  override val adapter by inject<AlbumsAdapter> { parametersOf(context, OnAlbumClickListener()) }
+  override val viewModel by viewModel<AlbumsViewModel> { parametersOf(artistId) }
+  override val liveData by lazy { viewModel.albums }
+
   override val viewRes = R.layout.fragment_albums
   override val recycler: RecyclerView get() = albums
   override val alwaysRefresh = false
 
-  private lateinit var artistTracksRepository: ArtistTracksRepository
+  private val artistTracksRepository by inject<ArtistTracksRepository> { parametersOf(artistId) }
 
-  var artistId = 0
+  private var artistId = 0
   var artistName = ""
   var artistArt = ""
 
@@ -93,19 +99,13 @@ class AlbumsFragment : LiveOtterFragment<FunkwhaleAlbum, Album, AlbumsAdapter>()
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+
     arguments?.apply {
       artistId = getInt("artistId")
       artistName = getString("artistName") ?: ""
       artistArt = getString("artistArt") ?: ""
     }
-
-    liveData = AlbumsViewModel(artistId).albums
-
-    super.onCreate(savedInstanceState)
-
-    adapter = AlbumsAdapter(context, OnAlbumClickListener())
-    repository = AlbumsRepository(context, artistId)
-    artistTracksRepository = ArtistTracksRepository(context, artistId)
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -142,7 +142,7 @@ class AlbumsFragment : LiveOtterFragment<FunkwhaleAlbum, Album, AlbumsAdapter>()
           play.isClickable = true
 
           lifecycleScope.launch(IO) {
-            AlbumsViewModel(artistId).tracks().also {
+            viewModel.tracks().also {
               CommandBus.send(Command.ReplaceQueue(it.shuffled()))
             }
           }
