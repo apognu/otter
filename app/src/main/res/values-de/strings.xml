@@ -96,7 +96,7 @@
     <string name="title_downloads">Downloads</string>
     <string name="login_error_userinfo">Wir konnten keine Informationen zu deinem Nutzer finden</string>
     <string name="login_cleartext">Erlaube unverschlüsselte Verbindungen (HTTP)</string>
-    <string name="radio_your_content_description">Auswahl aus Ihren eigenen Bibliotheken</string>
+    <string name="radio_your_content_description">Auswahl aus deiner eigenen Bibliothek</string>
     <string name="radio_your_content_title">Dein Inhalt</string>
     <string name="radio_user_radios">Nutzerradios</string>
     <string name="radio_instance_radios">Instanzradios</string>
