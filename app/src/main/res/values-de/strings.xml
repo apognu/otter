@@ -25,11 +25,11 @@
     <string name="settings_media_cache_size">Zwischenspeichergröße</string>
     <string name="settings_media_cache_size_summary">%d GB werden für Songs verwendet, welche Offline abspielbar sind</string>
     <string name="settings_other">Andere</string>
-    <string name="settings_night_mode">Nachtmodus</string>
+    <string name="settings_night_mode">Dunkler Modus</string>
     <string name="settings_night_mode_on">Immer eingeschaltet (Dunkelmodus)</string>
-    <string name="settings_night_mode_on_summary">Nachtmodus wird bevorzugt</string>
+    <string name="settings_night_mode_on_summary">Dunkler Modus ist immer eingeschaltet</string>
     <string name="settings_night_mode_off">Immer ausgeschaltet (Heller Modus)</string>
-    <string name="settings_night_mode_off_summary">Heller Modus wird bevorzugt</string>
+    <string name="settings_night_mode_off_summary">Heller Modus immer eingeschaltet sein</string>
     <string name="settings_night_mode_system">Folge den Systemeinstellungen</string>
     <string name="settings_night_mode_system_summary">Der Nachtmodus wird den Systemeinstellungen folgen</string>
     <string name="settings_experiments">Experimentielle Funktionen aktivieren</string>
@@ -93,4 +93,7 @@
         <item quantity="one">%1$d Song • %2$s</item>
         <item quantity="other">%1$d Songs • %2$s</item>
     </plurals>
+    <string name="title_downloads">Downloads</string>
+    <string name="login_error_userinfo">Wir konnten keine Informationen zu deinem Nutzer finden</string>
+    <string name="login_cleartext">Erlaube unverschlüsselte Verbindungen (HTTP)</string>
 </resources>
