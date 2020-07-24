@@ -106,5 +106,6 @@
     <string name="settings_crash_report_copied">Der letzte Absturzbericht wurde in deine Zwischenablage kopiert</string>
     <string name="settings_crash_report_description">Nur Otters Protokolle der letzten 5 Minuten vor dem Crash werden werden gespeichert</string>
     <string name="settings_crash_report_title">Kopiere Absturzberichte</string>
-    <string name="radio_favorites_description">Spielen Sie Ihre Lieblingsmusik in einer nicht enden wollenden Glücklichsein-Schleife</string>
+    <string name="radio_favorites_description">Spielen Sie Ihre Lieblingsmusik in einer nicht endenen Glücksschleife</string>
+    <string name="only_my_music">Nur meine Musik</string>
 </resources>
