@@ -88,7 +88,7 @@
     <string name="radio_less_listened_title">Weniger angehört</string>
     <string name="radio_less_listened_description">Höre Songs, welche du nicht oft hörst. Perfekt, um ein Gleichgewicht herzustellen.</string>
     <string name="logout_title">Abmelden</string>
-    <string name="logout_content">Bist du dir sicher, dass du dich aus deiner Funkwhale Instanz abmelden möchtest?</string>
+    <string name="logout_content">Bist du dir sicher, dass du dich aus dieser Funkwhale Instanz abmelden möchtest\?</string>
     <plurals name="playlist_description">
         <item quantity="one">%1$d Song • %2$s</item>
         <item quantity="other">%1$d Songs • %2$s</item>
@@ -108,4 +108,8 @@
     <string name="settings_crash_report_title">Kopiere Absturzberichte</string>
     <string name="radio_favorites_description">Spielen Sie Ihre Lieblingsmusik in einer nicht endenen Glücksschleife</string>
     <string name="only_my_music">Nur meine Musik</string>
+    <plurals name="downloads_description">
+        <item quantity="one">Lade %1$d Song herunter</item>
+        <item quantity="other">Lade %1$d Songs herunter</item>
+    </plurals>
 </resources>
