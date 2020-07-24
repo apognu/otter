@@ -20,7 +20,7 @@
     <string name="settings_media_quality">Medienqualität</string>
     <string name="settings_media_quality_quality">Beste Qualität</string>
     <string name="settings_media_quality_size">Kleine Dateigröße</string>
-    <string name="settings_media_quality_summary_quality">Songs mit größerer Dateigröße werden verwendet</string>
+    <string name="settings_media_quality_summary_quality">Versionen mit größerer Dateigröße werden verwendet</string>
     <string name="settings_media_quality_summary_size">Songs mit kleinerer Dateigröße werden verwendet</string>
     <string name="settings_media_cache_size">Zwischenspeichergröße</string>
     <string name="settings_media_cache_size_summary">%d GB werden für Songs verwendet, welche Offline abspielbar sind</string>
