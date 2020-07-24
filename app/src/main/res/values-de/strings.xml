@@ -29,7 +29,7 @@
     <string name="settings_night_mode_on">Immer eingeschaltet (Dunkelmodus)</string>
     <string name="settings_night_mode_on_summary">Dunkler Modus ist immer eingeschaltet</string>
     <string name="settings_night_mode_off">Immer ausgeschaltet (Heller Modus)</string>
-    <string name="settings_night_mode_off_summary">Heller Modus immer eingeschaltet sein</string>
+    <string name="settings_night_mode_off_summary">Heller Modus ist immer eingeschaltet sein</string>
     <string name="settings_night_mode_system">Folge den Systemeinstellungen</string>
     <string name="settings_night_mode_system_summary">Der Nachtmodus wird den Systemeinstellungen folgen</string>
     <string name="settings_experiments">Experimentielle Funktionen aktivieren</string>
