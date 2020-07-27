@@ -2,12 +2,12 @@
 <resources>
     <plurals name="downloads_description">
         <item quantity="one">下载 %1$d 曲目</item>
-        <item quantity="other"></item>
+        <item quantity="other"/>
     </plurals>
     <string name="only_my_music">只有我的音乐</string>
     <plurals name="playlist_description">
         <item quantity="one">%1$d 曲目 • %2$s</item>
-        <item quantity="other"></item>
+        <item quantity="other"/>
     </plurals>
     <string name="logout_content">是否确实要退出此 Funkwhale 实例？</string>
     <string name="logout_title">登出</string>
@@ -15,7 +15,7 @@
     <string name="radio_less_listened_title">少听</string>
     <string name="radio_random_description">完全随机挑选，也许你会发现新的东西？</string>
     <string name="radio_random_title">随机</string>
-    <string name="radio_playback_error">尝试播放此收音机时出错</string>
+    <string name="radio_playback_error">尝试播放此电台时出错</string>
     <string name="track_info_details_track_instance">Funkwhale 实例</string>
     <string name="track_info_details_track_bitrate">比特率</string>
     <string name="track_info_details_track_position">专辑位置</string>
@@ -34,7 +34,7 @@
     <string name="alt_app_logo">应用程序徽标</string>
     <plurals name="album_count">
         <item quantity="one">%d专辑</item>
-        <item quantity="other"></item>
+        <item quantity="other"/>
     </plurals>
     <string name="error_playback">无法播放此曲目</string>
     <string name="control_next">下一曲</string>
@@ -102,4 +102,13 @@
     <string name="login_anonymous">匿名身份验证</string>
     <string name="login_hostname">主机名称</string>
     <string name="login_welcome">请输入您的Funkwhale实例的详细信息以访问其内容</string>
+    <string name="radio_favorites_description">在永无止境的幸福循环中播放你最喜欢的曲子。</string>
+    <string name="radio_your_content_description">从您自己的图书馆中挑选</string>
+    <string name="radio_your_content_title">您的内容</string>
+    <string name="radio_user_radios">用户电台</string>
+    <string name="radio_instance_radios">实例电台</string>
+    <string name="track_info_details_track_license">许可证</string>
+    <string name="track_info_details_track_copyright">版权所有</string>
+    <string name="login_error_userinfo">我们无法检索有关您的用户的信息</string>
+    <string name="login_cleartext">允许明文流量（HTTP）</string>
 </resources>
