@@ -65,19 +65,14 @@ class PlaylistTracksAdapter(private val context: Context?, private val favoriteL
     holder.title.text = track.track.title
     holder.artist.text = track.track.artist.name
 
-    Build.VERSION_CODES.P.onApi(
-      {
-        holder.title.setTypeface(holder.title.typeface, Typeface.DEFAULT.weight)
-        holder.artist.setTypeface(holder.artist.typeface, Typeface.DEFAULT.weight)
-      },
-      {
-        holder.title.setTypeface(holder.title.typeface, Typeface.NORMAL)
-        holder.artist.setTypeface(holder.artist.typeface, Typeface.NORMAL)
-      })
+    context?.let {
+      holder.itemView.background = context.getDrawable(R.drawable.ripple)
+    }
 
-    if (track.track == currentTrack) {
-      holder.title.setTypeface(holder.title.typeface, Typeface.BOLD)
-      holder.artist.setTypeface(holder.artist.typeface, Typeface.BOLD)
+    if (track.track == currentTrack || track.track.current) {
+      context?.let {
+        holder.itemView.background = context.getDrawable(R.drawable.current)
+      }
     }
 
     context?.let {
