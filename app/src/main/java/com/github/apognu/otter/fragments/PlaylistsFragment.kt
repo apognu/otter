@@ -19,7 +19,7 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class PlaylistsFragment : LiveOtterFragment<FunkwhalePlaylist, PlaylistEntity, PlaylistsAdapter>() {
+class PlaylistsFragment : OtterFragment<FunkwhalePlaylist, PlaylistEntity, PlaylistsAdapter>() {
   override val repository by inject<PlaylistsRepository>()
   override val adapter by inject<PlaylistsAdapter> { parametersOf(context, OnPlaylistClickListener()) }
   override val viewModel by viewModel<PlaylistsViewModel>()

@@ -28,12 +28,12 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class ArtistsFragment : LiveOtterFragment<FunkwhaleArtist, Artist, ArtistsAdapter>() {
+class ArtistsFragment : PagedOtterFragment<FunkwhaleArtist, Artist, ArtistsAdapter>() {
   override val repository by inject<ArtistsRepository>()
   override val adapter by inject<ArtistsAdapter> { parametersOf(context, OnArtistClickListener()) }
   override val viewModel by viewModel<ArtistsViewModel>()
 
-  override val liveData by lazy { viewModel.artists }
+  override val liveData by lazy { viewModel.artistsPaged }
   override val viewRes = R.layout.fragment_artists
   override val recycler: RecyclerView get() = artists
 
@@ -75,21 +75,6 @@ class ArtistsFragment : LiveOtterFragment<FunkwhaleArtist, Artist, ArtistsAdapte
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
     return inflater.inflate(R.layout.fragment_artists, container, false)
-  }
-
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
-
-    artists.layoutManager = LinearLayoutManager(context)
-    (artists.itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
-    artists.adapter = adapter
-
-    liveData.observe(viewLifecycleOwner) { result ->
-      adapter.data.size.let { position ->
-        adapter.data = result.toMutableList()
-        adapter.notifyItemInserted(position)
-      }
-    }
   }
 
   inner class OnArtistClickListener : ArtistsAdapter.OnArtistClickListener {

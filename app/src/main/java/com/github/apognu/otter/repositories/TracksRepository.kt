@@ -46,6 +46,10 @@ class TracksRepository(override val context: Context, private val database: Otte
     data.sortedWith(compareBy({ it.disc_number }, { it.position }))
   }
 
+  fun insert(track: FunkwhaleTrack) {
+    database.tracks().insertWithAssocs(database.artists(), database.albums(), database.uploads(), track)
+  }
+
   fun find(ids: List<Int>) = database.tracks().findAllDecorated(ids)
 
   suspend fun ofArtistBlocking(id: Int) = database.tracks().ofArtistBlocking(id)

@@ -32,7 +32,7 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class AlbumsFragment : LiveOtterFragment<FunkwhaleAlbum, Album, AlbumsAdapter>() {
+class AlbumsFragment : OtterFragment<FunkwhaleAlbum, Album, AlbumsAdapter>() {
   override val repository by inject<AlbumsRepository> { parametersOf(null) }
   override val adapter by inject<AlbumsAdapter> { parametersOf(context, OnAlbumClickListener()) }
   override val viewModel by viewModel<AlbumsViewModel> { parametersOf(artistId) }

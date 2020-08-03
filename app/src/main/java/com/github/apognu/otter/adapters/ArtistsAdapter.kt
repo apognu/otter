@@ -4,24 +4,30 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
-import com.github.apognu.otter.fragments.OtterAdapter
+import com.github.apognu.otter.models.domain.Artist
 import com.github.apognu.otter.utils.maybeLoad
 import com.github.apognu.otter.utils.maybeNormalizeUrl
-import com.github.apognu.otter.models.domain.Artist
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.row_artist.view.*
 
-class ArtistsAdapter(val context: Context?, private val listener: OnArtistClickListener) : OtterAdapter<Artist, ArtistsAdapter.ViewHolder>() {
+val DIFF = object : DiffUtil.ItemCallback<Artist>() {
+  override fun areContentsTheSame(oldItem: Artist, newItem: Artist) = oldItem == newItem
+  override fun areItemsTheSame(oldItem: Artist, newItem: Artist) = oldItem.id == newItem.id
+}
+
+class ArtistsAdapter(val context: Context?, private val listener: OnArtistClickListener) : PagingDataAdapter<Artist, ArtistsAdapter.ViewHolder>(DIFF) {
   interface OnArtistClickListener {
     fun onClick(holder: View?, artist: Artist)
   }
 
-  override fun getItemCount() = data.size
+  // override fun getItemCount() = data.size
 
-  override fun getItemId(position: Int) = data[position].id.toLong()
+  // override fun getItemId(position: Int) = data[position].id.toLong()
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
     val view = LayoutInflater.from(context).inflate(R.layout.row_artist, parent, false)
@@ -32,7 +38,7 @@ class ArtistsAdapter(val context: Context?, private val listener: OnArtistClickL
   }
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-    val artist = data[position]
+    val artist = getItem(position)!!
 
     Picasso.get()
       .maybeLoad(maybeNormalizeUrl(artist.album_cover))
@@ -50,7 +56,7 @@ class ArtistsAdapter(val context: Context?, private val listener: OnArtistClickL
     val albums = view.albums
 
     override fun onClick(view: View?) {
-      data[layoutPosition].let { artist ->
+      getItem(layoutPosition)?.let { artist ->
         listener.onClick(view, artist)
       }
     }

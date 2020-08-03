@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 class ArtistsRepository(override val context: Context, private val database: OtterDatabase) : Repository<FunkwhaleArtist>() {
   override val upstream =
-    HttpUpstream(HttpUpstream.Behavior.Progressive, "/api/v1/artists/?playable=true&ordering=name", FunkwhaleArtist.serializer())
+    HttpUpstream(HttpUpstream.Behavior.Progressive, "/api/v1/artists/?playable=true&ordering=id", FunkwhaleArtist.serializer())
 
   override fun onDataFetched(data: List<FunkwhaleArtist>): List<FunkwhaleArtist> {
     scope.launch(IO) {
@@ -34,6 +34,10 @@ class ArtistsRepository(override val context: Context, private val database: Ott
     return super.onDataFetched(data)
   }
 
+  fun insert(artist: FunkwhaleArtist) = database.artists().insert(artist.toDao())
+
+  fun allPaged() = database.artists().allPaged()
+
   fun all(): LiveData<List<DecoratedArtistEntity>> {
     scope.launch(IO) {
       fetch().collect()
@@ -41,5 +45,7 @@ class ArtistsRepository(override val context: Context, private val database: Ott
 
     return database.artists().allDecorated()
   }
+
   fun get(id: Int) = database.artists().getDecorated(id)
+  fun find(ids: List<Int>) = database.artists().findDecorated(ids)
 }

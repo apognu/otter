@@ -39,24 +39,6 @@ object AppContext {
 
   fun init(context: Activity) {
     setupNotificationChannels(context)
-
-    // CastContext.getSharedInstance(context)
-
-    FuelManager.instance.addResponseInterceptor { next ->
-      { request, response ->
-        if (request.method == Method.GET && response.statusCode == 200) {
-          var cacheId = request.url.path.toString()
-
-          request.url.query?.let {
-            cacheId = "$cacheId?$it"
-          }
-
-          Cache.set(context, cacheId, response.body().toByteArray())
-        }
-
-        next(request, response)
-      }
-    }
   }
 
   @SuppressLint("NewApi")

@@ -8,7 +8,10 @@ import com.github.apognu.otter.adapters.RadiosAdapter
 import com.github.apognu.otter.models.api.FunkwhaleRadio
 import com.github.apognu.otter.models.dao.RadioEntity
 import com.github.apognu.otter.repositories.RadiosRepository
-import com.github.apognu.otter.utils.*
+import com.github.apognu.otter.utils.Command
+import com.github.apognu.otter.utils.CommandBus
+import com.github.apognu.otter.utils.Event
+import com.github.apognu.otter.utils.EventBus
 import com.github.apognu.otter.viewmodels.RadiosViewModel
 import kotlinx.android.synthetic.main.fragment_radios.*
 import kotlinx.coroutines.Dispatchers.Main
@@ -17,7 +20,7 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 
-class RadiosFragment : LiveOtterFragment<FunkwhaleRadio, RadioEntity, RadiosAdapter>() {
+class RadiosFragment : OtterFragment<FunkwhaleRadio, RadioEntity, RadiosAdapter>() {
   override val repository by inject<RadiosRepository>()
   override val adapter by inject<RadiosAdapter> { parametersOf(context, lifecycleScope, RadioClickListener()) }
   override val viewModel by inject<RadiosViewModel>()

@@ -13,7 +13,6 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
-import com.github.apognu.otter.models.api.FunkwhaleTrack
 import com.github.apognu.otter.utils.*
 import com.github.apognu.otter.models.domain.Album
 import com.github.apognu.otter.models.domain.Artist
@@ -41,11 +40,9 @@ class SearchAdapter(private val context: Context?, private val listener: OnSearc
 
   val SECTION_COUNT = 3
 
-  var artists: MutableList<Artist> = mutableListOf()
-  var albums: MutableList<Album> = mutableListOf()
-  var tracks: MutableList<Track> = mutableListOf()
-
-  var currentTrack: FunkwhaleTrack? = null
+  var artists: MutableSet<Artist> = mutableSetOf()
+  var albums: MutableSet<Album> = mutableSetOf()
+  var tracks: MutableSet<Track> = mutableSetOf()
 
   override fun getItemCount() = SECTION_COUNT + artists.size + albums.size + tracks.size
 
@@ -57,9 +54,9 @@ class SearchAdapter(private val context: Context?, private val listener: OnSearc
         return -3
       }
 
-      ResultType.Artist.ordinal -> artists[position].id.toLong()
-      ResultType.Artist.ordinal -> albums[position - artists.size - 2].id.toLong()
-      ResultType.Track.ordinal -> tracks[position - artists.size - albums.size - SECTION_COUNT].id.toLong()
+      ResultType.Artist.ordinal -> artists.elementAt(position).id.toLong()
+      ResultType.Artist.ordinal -> albums.elementAt(position - artists.size - 2).id.toLong()
+      ResultType.Track.ordinal -> tracks.elementAt(position - artists.size - albums.size - SECTION_COUNT).id.toLong()
       else -> 0
     }
   }
@@ -134,19 +131,19 @@ class SearchAdapter(private val context: Context?, private val listener: OnSearc
         holder.actions.visibility = View.GONE
         holder.favorite.visibility = View.GONE
 
-        artists[position - 1]
+        artists.elementAt(position - 1)
       }
 
       ResultType.Album.ordinal -> {
         holder.actions.visibility = View.GONE
         holder.favorite.visibility = View.GONE
 
-        albums[position - artists.size - 2]
+        albums.elementAt(position - artists.size - 2)
       }
 
-      ResultType.Track.ordinal -> tracks[position - artists.size - albums.size - SECTION_COUNT]
+      ResultType.Track.ordinal -> tracks.elementAt(position - artists.size - albums.size - SECTION_COUNT)
 
-      else -> tracks[position]
+      else -> tracks.elementAt(position)
     }
 
     Picasso.get()
@@ -173,10 +170,11 @@ class SearchAdapter(private val context: Context?, private val listener: OnSearc
     if (resultType == ResultType.Track.ordinal) {
       (item as? Track)?.let { track ->
         context?.let { context ->
-          /* if (track == currentTrack || track.current) {
-            holder.title.setTypeface(holder.title.typeface, Typeface.BOLD)
-            holder.artist.setTypeface(holder.artist.typeface, Typeface.BOLD)
-          } */
+          holder.itemView.background = context.getDrawable(R.drawable.ripple)
+
+          if (track.current) {
+            holder.itemView.background = context.getDrawable(R.drawable.current)
+          }
 
           when (track.favorite) {
             true -> holder.favorite.setColorFilter(context.getColor(R.color.colorFavorite))
@@ -250,19 +248,19 @@ class SearchAdapter(private val context: Context?, private val listener: OnSearc
         ResultType.Artist.ordinal -> {
           val position = layoutPosition - 1
 
-          listener?.onArtistClick(view, artists[position])
+          listener?.onArtistClick(view, artists.elementAt(position))
         }
 
         ResultType.Album.ordinal -> {
           val position = layoutPosition - artists.size - 2
 
-          listener?.onAlbumClick(view, albums[position])
+          listener?.onAlbumClick(view, albums.elementAt(position))
         }
 
         ResultType.Track.ordinal -> {
           val position = layoutPosition - artists.size - albums.size - SECTION_COUNT
 
-          tracks.subList(position, tracks.size).plus(tracks.subList(0, position)).apply {
+          tracks.toList().subList(position, tracks.size).plus(tracks.toList().subList(0, position)).apply {
             CommandBus.send(Command.ReplaceQueue(this))
 
             context.toast("All tracks were added to your queue")

@@ -19,7 +19,7 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class AlbumsGridFragment : LiveOtterFragment<FunkwhaleAlbum, Album, AlbumsGridAdapter>() {
+class AlbumsGridFragment : OtterFragment<FunkwhaleAlbum, Album, AlbumsGridAdapter>() {
   override val repository by inject<AlbumsRepository> { parametersOf(null) }
   override val adapter by inject<AlbumsGridAdapter> { parametersOf(context, OnAlbumClickListener()) }
   override val viewModel by viewModel<AlbumsViewModel> { parametersOf(null) }
@@ -29,6 +29,8 @@ class AlbumsGridFragment : LiveOtterFragment<FunkwhaleAlbum, Album, AlbumsGridAd
   override val recycler: RecyclerView get() = albums
   override val layoutManager get() = GridLayoutManager(context, 3)
   override val alwaysRefresh = false
+
+  override val OFFSCREEN_PAGES = 5
 
   inner class OnAlbumClickListener : AlbumsGridAdapter.OnAlbumClickListener {
     override fun onClick(view: View?, album: Album) {

@@ -9,6 +9,7 @@ import com.github.apognu.otter.models.api.FunkwhaleArtist
 data class AlbumEntity(
   @PrimaryKey
   val id: Int,
+  @ColumnInfo(collate = ColumnInfo.UNICODE, index = true)
   val title: String,
   @ForeignKey(entity = ArtistEntity::class, parentColumns = ["id"], childColumns = ["artist_id"], onDelete = ForeignKey.CASCADE)
   val artist_id: Int,
@@ -18,13 +19,13 @@ data class AlbumEntity(
 
   @androidx.room.Dao
   interface Dao {
-    @Query("SELECT * FROM DecoratedAlbumEntity")
+    @Query("SELECT * FROM DecoratedAlbumEntity ORDER BY title")
     fun allDecorated(): LiveData<List<DecoratedAlbumEntity>>
 
-    @Query("SELECT * FROM DecoratedAlbumEntity ORDER BY release_date")
+    @Query("SELECT * FROM DecoratedAlbumEntity ORDER BY title")
     fun allSync(): List<DecoratedAlbumEntity>
 
-    @Query("SELECT * FROM DecoratedAlbumEntity WHERE id IN ( :ids ) ORDER BY release_date")
+    @Query("SELECT * FROM DecoratedAlbumEntity WHERE id IN ( :ids ) ORDER BY title")
     fun findAllDecorated(ids: List<Int>): LiveData<List<DecoratedAlbumEntity>>
 
     @Query("SELECT * FROM DecoratedAlbumEntity WHERE id == :id")
@@ -33,7 +34,7 @@ data class AlbumEntity(
     @Query("SELECT * FROM DecoratedAlbumEntity WHERE id == :id")
     fun getDecoratedBlocking(id: Int): DecoratedAlbumEntity
 
-    @Query("SELECT * FROM DecoratedAlbumEntity WHERE artist_id = :artistId")
+    @Query("SELECT * FROM DecoratedAlbumEntity WHERE artist_id = :artistId ORDER BY release_date")
     fun forArtistDecorated(artistId: Int): LiveData<List<DecoratedAlbumEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

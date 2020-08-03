@@ -1,41 +1,117 @@
 package com.github.apognu.otter.repositories
 
 import android.content.Context
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
+import androidx.lifecycle.map
 import com.github.apognu.otter.models.api.FunkwhaleAlbum
 import com.github.apognu.otter.models.api.FunkwhaleArtist
 import com.github.apognu.otter.models.api.FunkwhaleTrack
-import kotlinx.coroutines.runBlocking
+import com.github.apognu.otter.models.domain.Album
+import com.github.apognu.otter.models.domain.Artist
+import com.github.apognu.otter.models.domain.Track
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
-class TracksSearchRepository(override val context: Context?, var query: String) : Repository<FunkwhaleTrack>() {
-  override val upstream: Upstream<FunkwhaleTrack>
-    get() = HttpUpstream(HttpUpstream.Behavior.AtOnce, "/api/v1/tracks/?playable=true&q=$query", FunkwhaleTrack.serializer())
+class ArtistsSearchRepository(override val context: Context?, private val repository: ArtistsRepository, var query: String = "") : Repository<FunkwhaleArtist>() {
+  override val upstream: Upstream<FunkwhaleArtist>
+    get() = HttpUpstream(HttpUpstream.Behavior.AtOnce, "/api/v1/artists/?playable=true&q=$query", FunkwhaleArtist.serializer())
 
-  override fun onDataFetched(data: List<FunkwhaleTrack>): List<FunkwhaleTrack> = runBlocking {
-    /* val downloaded = TracksRepository.getDownloadedIds() ?: listOf()
+  private val ids: MutableList<Int> = mutableListOf()
 
-    data.map { track ->
-      track.favorite = favorites.contains(track.id)
-      track.downloaded = downloaded.contains(track.id)
+  private val _ids: MutableLiveData<List<Int>> = MutableLiveData()
 
-      track.bestUpload()?.let { upload ->
-        val url = mustNormalizeUrl(upload.listen_url)
+  val results: LiveData<List<Artist>> = Transformations.switchMap(_ids) {
+    repository.find(it).map { artists -> artists.map { artist -> Artist.fromDecoratedEntity(artist) } }
+  }
 
-        track.cached = Otter.get().exoCache.isCached(url, 0, upload.duration * 1000L)
-      }
+  override fun onDataFetched(data: List<FunkwhaleArtist>): List<FunkwhaleArtist> {
+    data.forEach {
+      repository.insert(it)
+    }
 
-      track
-    } */
+    ids.addAll(data.map { it.id })
+    _ids.postValue(ids)
 
-    data
+    return super.onDataFetched(data)
+  }
+
+  fun search(term: String) {
+    ids.clear()
+    _ids.postValue(listOf())
+    query = term
+
+    scope.launch(IO) {
+      fetch().collect()
+    }
   }
 }
 
-class ArtistsSearchRepository(override val context: Context?, var query: String) : Repository<FunkwhaleArtist>() {
-  override val upstream: Upstream<FunkwhaleArtist>
-    get() = HttpUpstream(HttpUpstream.Behavior.AtOnce, "/api/v1/artists/?playable=true&q=$query", FunkwhaleArtist.serializer())
-}
-
-class AlbumsSearchRepository(override val context: Context?, var query: String) : Repository<FunkwhaleAlbum>() {
+class AlbumsSearchRepository(override val context: Context?, private val repository: AlbumsRepository, var query: String = "") : Repository<FunkwhaleAlbum>() {
   override val upstream: Upstream<FunkwhaleAlbum>
     get() = HttpUpstream(HttpUpstream.Behavior.AtOnce, "/api/v1/albums/?playable=true&q=$query", FunkwhaleAlbum.serializer())
+
+  private val ids: MutableList<Int> = mutableListOf()
+  private val _ids: MutableLiveData<List<Int>> = MutableLiveData()
+
+  val results: LiveData<List<Album>> = Transformations.switchMap(_ids) {
+    repository.find(it).map { albums -> albums.map { album -> Album.fromDecoratedEntity(album) } }
+  }
+
+  override fun onDataFetched(data: List<FunkwhaleAlbum>): List<FunkwhaleAlbum> {
+    data.forEach {
+      repository.insert(it)
+    }
+
+    ids.addAll(data.map { it.id })
+    _ids.postValue(ids)
+
+    return super.onDataFetched(data)
+  }
+
+  fun search(term: String) {
+    ids.clear()
+    _ids.postValue(listOf())
+
+    query = term
+
+    scope.launch(IO) {
+      fetch().collect()
+    }
+  }
+}
+
+class TracksSearchRepository(override val context: Context?, private val repository: TracksRepository, var query: String = "") : Repository<FunkwhaleTrack>() {
+  override val upstream: Upstream<FunkwhaleTrack>
+    get() = HttpUpstream(HttpUpstream.Behavior.AtOnce, "/api/v1/tracks/?playable=true&q=$query", FunkwhaleTrack.serializer())
+
+  private val ids: MutableList<Int> = mutableListOf()
+  private val _ids: MutableLiveData<List<Int>> = MutableLiveData()
+
+  val results: LiveData<List<Track>> = Transformations.switchMap(_ids) {
+    repository.find(it).map { tracks -> tracks.map { track -> Track.fromDecoratedEntity(track) } }
+  }
+
+  override fun onDataFetched(data: List<FunkwhaleTrack>): List<FunkwhaleTrack> {
+    data.forEach {
+      repository.insert(it)
+    }
+
+    ids.addAll(data.map { it.id })
+    _ids.postValue(ids)
+
+    return super.onDataFetched(data)
+  }
+
+  fun search(term: String) {
+    ids.clear()
+    _ids.postValue(listOf())
+    query = term
+
+    scope.launch(IO) {
+      fetch().collect()
+    }
+  }
 }

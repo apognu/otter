@@ -3,19 +3,19 @@ package com.github.apognu.otter.models.dao
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import androidx.room.ForeignKey.CASCADE
-import com.github.apognu.otter.Otter
 import com.github.apognu.otter.models.api.FunkwhaleTrack
-import org.koin.java.KoinJavaComponent.inject
 
 @Entity(tableName = "tracks")
 data class TrackEntity(
   @PrimaryKey
   val id: Int,
+  @ColumnInfo(collate = ColumnInfo.UNICODE, index = true)
   val title: String,
   @ForeignKey(entity = ArtistEntity::class, parentColumns = ["id"], childColumns = ["artist_id"], onDelete = CASCADE)
   val artist_id: Int,
   @ForeignKey(entity = AlbumEntity::class, parentColumns = ["id"], childColumns = ["album_id"], onDelete = CASCADE)
   val album_id: Int?,
+  @ColumnInfo(index = true)
   val position: Int?,
   val copyright: String?,
   val license: String?

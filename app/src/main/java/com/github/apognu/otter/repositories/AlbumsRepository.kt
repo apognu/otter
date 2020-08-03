@@ -25,13 +25,15 @@ class AlbumsRepository(override val context: Context, private val database: Otte
 
   override fun onDataFetched(data: List<FunkwhaleAlbum>): List<FunkwhaleAlbum> {
     data.forEach {
-      database.albums().insert(it.toDao())
+      insert(it)
     }
 
     return super.onDataFetched(data)
   }
 
+  fun insert(album: FunkwhaleAlbum) = database.albums().insert(album.toDao())
   fun all() = database.albums().allDecorated()
+  fun find(ids: List<Int>) = database.albums().findAllDecorated(ids)
 
   fun ofArtist(id: Int): LiveData<List<DecoratedAlbumEntity>> {
     scope.launch(Dispatchers.IO) {

@@ -10,10 +10,7 @@ import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
 import com.github.kittinunf.fuel.coroutines.awaitObjectResult
 import com.github.kittinunf.result.Result
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.*
 import kotlinx.serialization.KSerializer
 import kotlin.math.ceil
 
@@ -22,8 +19,8 @@ class HttpUpstream<D : Any>(val behavior: Behavior, private val url: String, pri
     Single, AtOnce, Progressive
   }
 
-  override fun fetch(size: Int): Flow<Repository.Response<D>> = channelFlow {
-    if (behavior == Behavior.Single && size != 0) return@channelFlow
+  override fun fetch(size: Int): Flow<Repository.Response<D>> = flow {
+    if (behavior == Behavior.Single && size != 0) return@flow
 
     val page = ceil(size / AppContext.PAGE_SIZE.toDouble()).toInt() + 1
 
@@ -41,20 +38,22 @@ class HttpUpstream<D : Any>(val behavior: Behavior, private val url: String, pri
         val data = response.results
 
         when (behavior) {
-          Behavior.Single -> send(Repository.Response(data, page, false))
-          Behavior.Progressive -> send(Repository.Response(data, page, response.next != null))
+          Behavior.Single -> emit(Repository.Response(data, page, false))
+          Behavior.Progressive -> emit(Repository.Response(data, page, response.next != null))
 
           else -> {
-            send(Repository.Response(data, page, response.next != null))
+            emit(Repository.Response(data, page, response.next != null))
 
-            if (response.next != null) fetch(size + data.size).collect { send(it) }
+            if (response.next != null) fetch(size + data.size).collect { emit(it) }
           }
         }
       },
       { error ->
+        error.log()
+
         when (error.exception) {
           is RefreshError -> EventBus.send(Event.LogOut)
-          else -> send(Repository.Response(listOf(), page, false))
+          else -> emit(Repository.Response(listOf(), page, false))
         }
       }
     )

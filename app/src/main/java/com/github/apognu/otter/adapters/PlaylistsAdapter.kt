@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.models.dao.PlaylistEntity
 import com.github.apognu.otter.fragments.OtterAdapter
+import com.github.apognu.otter.utils.maybeNormalizeUrl
 import com.github.apognu.otter.utils.toDurationString
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
@@ -54,7 +55,7 @@ class PlaylistsAdapter(val context: Context?, private val listener: OnPlaylistCl
       }
 
       Picasso.get()
-        .load(url)
+        .load(maybeNormalizeUrl(url))
         .transform(RoundedCornersTransformation(32, 0, corner))
         .into(imageView)
     }

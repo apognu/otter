@@ -22,3 +22,4 @@ data class Covers(val urls: CoverUrls?)
 
 @Serializable
 data class CoverUrls(val original: String?)
+

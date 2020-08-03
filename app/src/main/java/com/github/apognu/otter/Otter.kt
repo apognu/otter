@@ -2,12 +2,14 @@ package com.github.apognu.otter
 
 import android.app.Application
 import android.content.Context
+import android.widget.SearchView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.room.Room
 import com.github.apognu.otter.activities.MainActivity
 import com.github.apognu.otter.activities.SearchActivity
 import com.github.apognu.otter.adapters.*
 import com.github.apognu.otter.fragments.*
+import com.github.apognu.otter.models.Mediator
 import com.github.apognu.otter.models.dao.OtterDatabase
 import com.github.apognu.otter.playback.MediaSession
 import com.github.apognu.otter.playback.QueueManager.Companion.factory
@@ -105,9 +107,6 @@ class Otter : Application() {
           }
         }
 
-        factory { MainActivity() }
-        factory { SearchActivity(get(), get()) }
-
         fragment { BrowseFragment() }
         fragment { LandscapeQueueFragment() }
 
@@ -115,7 +114,7 @@ class Otter : Application() {
 
         single { ArtistsRepository(get(), get()) }
         factory { (id: Int) -> ArtistTracksRepository(get(), get(), id) }
-        viewModel { ArtistsViewModel(get()) }
+        viewModel { ArtistsViewModel(get(), get()) }
         factory { (context: Context?, listener: ArtistsFragment.OnArtistClickListener) -> ArtistsAdapter(context, listener) }
 
         factory { (id: Int?) -> AlbumsRepository(get(), get(), id) }
@@ -145,6 +144,13 @@ class Otter : Application() {
 
         single { (scope: CoroutineScope) -> QueueRepository(get(), scope) }
         viewModel { QueueViewModel(get(), get()) }
+
+        viewModel { SearchViewModel(get(), get(), get()) }
+        single { ArtistsSearchRepository(get(), get()) }
+        single { AlbumsSearchRepository(get(), get { parametersOf(null) }) }
+        single { TracksSearchRepository(get(), get { parametersOf(null) }) }
+
+        single { Mediator(get(), get(), get()) }
       })
     }
 

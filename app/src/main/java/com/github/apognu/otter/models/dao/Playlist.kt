@@ -8,6 +8,7 @@ import com.github.apognu.otter.models.api.FunkwhalePlaylist
 data class PlaylistEntity(
   @PrimaryKey
   val id: Int,
+  @ColumnInfo(collate = ColumnInfo.UNICODE, index = true)
   val name: String,
   val album_covers: List<String>,
   val tracks_count: Int,

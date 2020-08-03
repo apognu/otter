@@ -9,6 +9,7 @@ data class RadioEntity(
   @PrimaryKey
   val id: Int,
   var radio_type: String?,
+  @ColumnInfo(collate = ColumnInfo.UNICODE, index = true)
   val name: String,
   val description: String,
   var related_object_id: String? = null
