@@ -65,10 +65,10 @@
     <string name="control_toggle">Afspelen / Pauze</string>
     <string name="manage_add_to_favorites">Aan favorieten toevoegen</string>
     <string name="playback_queue_play_next">Volgende afspelen</string>
-    <string name="playback_queue_add_item">Toevoegen aan wachtrij</string>
+    <string name="playback_queue_add_item">Toevoegen aan afspeellijst</string>
     <string name="playback_queue_remove_item">Verwijder</string>
-    <string name="playback_queue_empty">De wachtrij is leeg</string>
-    <string name="playback_queue">Wachtrij</string>
+    <string name="playback_queue_empty">De afspeellijst is leeg</string>
+    <string name="playback_queue">Afspeellijst</string>
     <string name="playback_shuffle">Shuffle</string>
     <string name="favorites">Favorieten</string>
     <string name="radios">Radio\'s</string>
@@ -84,4 +84,5 @@
     <string name="settings_experiments_restart_content">Beëindig en herstart de app om nieuwe instelling toe te passen</string>
     <string name="settings_experiments_restart_title">Opnieuw opstarten vereist</string>
     <string name="settings_experiments_description">Gebruik op eigen risico; kan de app bevriezen of crashen</string>
+    <string name="login_cleartext">Niet-versleutelde verbindingen toestaan (HTTP)</string>
 </resources>
