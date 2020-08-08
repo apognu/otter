@@ -87,8 +87,6 @@ class Otter : Application() {
     }
 
     cacheDir.resolve("picasso-cache").deleteRecursively()
-
-    exoDownloadManager.removeAllDownloads()
   }
 
   inner class CrashReportHandler : Thread.UncaughtExceptionHandler {
