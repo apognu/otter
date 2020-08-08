@@ -41,7 +41,7 @@ class MediaControlsManager(val context: Service, private val scope: CoroutineSco
         val openIntent = Intent(context, MainActivity::class.java).apply { action = NOTIFICATION_ACTION_OPEN_QUEUE.toString() }
         val openPendingIntent = PendingIntent.getActivity(context, 0, openIntent, 0)
 
-        val coverUrl = maybeNormalizeUrl(track.album?.cover?.original)
+        val coverUrl = maybeNormalizeUrl(track.album?.cover())
 
         notification = NotificationCompat.Builder(
           context,

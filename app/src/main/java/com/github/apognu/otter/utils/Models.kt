@@ -56,7 +56,8 @@ data class RadiosResponse(override val count: Int, override val next: String?, v
   override fun getData() = results
 }
 
-data class Covers(val original: String)
+data class Covers(val urls: CoverUrls)
+data class CoverUrls(val original: String)
 
 typealias AlbumList = List<Album>
 
@@ -70,12 +71,12 @@ data class Album(
   val id: Int,
   val artist: Artist,
   val title: String,
-  val cover: Covers,
+  val cover: Covers?,
   val release_date: String?
 ) : SearchResult {
   data class Artist(val name: String)
 
-  override fun cover() = cover.original
+  override fun cover() = cover?.urls?.original
   override fun title() = title
   override fun subtitle() = artist.name
 }
@@ -87,10 +88,10 @@ data class Artist(
 ) : SearchResult {
   data class Album(
     val title: String,
-    val cover: Covers
+    val cover: Covers?
   )
 
-  override fun cover() = albums?.getOrNull(0)?.cover?.original
+  override fun cover(): String? = albums?.getOrNull(0)?.cover?.urls?.original
   override fun title() = name
   override fun subtitle() = "Artist"
 }
@@ -115,7 +116,7 @@ data class Track(
       id = download.id,
       title = download.title,
       artist = Artist(0, download.artist, listOf()),
-      album = Album(0, Album.Artist(""), "", Covers(""), ""),
+      album = Album(0, Album.Artist(""), "", Covers(CoverUrls("")), ""),
       uploads = listOf(Upload(download.contentId, 0, 0))
     )
   }
@@ -143,7 +144,7 @@ data class Track(
     }
   }
 
-  override fun cover() = album?.cover?.original
+  override fun cover() = album?.cover?.urls?.original
   override fun title() = title
   override fun subtitle() = artist.name
 }

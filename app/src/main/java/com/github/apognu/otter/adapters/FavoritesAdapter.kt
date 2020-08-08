@@ -44,7 +44,7 @@ class FavoritesAdapter(private val context: Context?, private val favoriteListen
     val favorite = data[position]
 
     Picasso.get()
-      .maybeLoad(maybeNormalizeUrl(favorite.album?.cover?.original))
+      .maybeLoad(maybeNormalizeUrl(favorite.album?.cover()))
       .fit()
       .placeholder(R.drawable.cover)
       .transform(RoundedCornersTransformation(16, 0))

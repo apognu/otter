@@ -126,7 +126,7 @@ class PlaylistTracksFragment : OtterFragment<PlaylistTrack, PlaylistTracksAdapte
   }
 
   override fun onDataFetched(data: List<PlaylistTrack>) {
-    data.map { it.track.album }.toSet().map { it?.cover?.original }.take(4).forEachIndexed { index, url ->
+    data.map { it.track.album }.toSet().map { it?.cover() }.take(4).forEachIndexed { index, url ->
       val imageView = when (index) {
         0 -> cover_top_left
         1 -> cover_top_right

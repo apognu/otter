@@ -52,7 +52,7 @@ class TracksAdapter(private val context: Context?, private val favoriteListener:
     val track = data[position]
 
     Picasso.get()
-      .maybeLoad(maybeNormalizeUrl(track.album?.cover?.original))
+      .maybeLoad(maybeNormalizeUrl(track.album?.cover()))
       .fit()
       .transform(RoundedCornersTransformation(8, 0))
       .into(holder.cover)

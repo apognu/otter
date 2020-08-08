@@ -55,7 +55,7 @@ class ArtistsAdapter(val context: Context?, private val listener: OnArtistClickL
     artist.albums?.let { albums ->
       if (albums.isNotEmpty()) {
         Picasso.get()
-          .maybeLoad(maybeNormalizeUrl(albums[0].cover.original))
+          .maybeLoad(maybeNormalizeUrl(albums[0].cover?.urls?.original))
           .fit()
           .transform(RoundedCornersTransformation(8, 0))
           .into(holder.art)

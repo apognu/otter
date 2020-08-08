@@ -42,7 +42,7 @@ class TracksFragment : OtterFragment<Track, TracksAdapter>() {
           "albumId" to album.id,
           "albumArtist" to album.artist.name,
           "albumTitle" to album.title,
-          "albumCover" to album.cover.original
+          "albumCover" to album.cover()
         )
       }
     }

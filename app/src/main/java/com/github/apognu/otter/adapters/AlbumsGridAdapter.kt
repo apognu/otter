@@ -35,7 +35,7 @@ class AlbumsGridAdapter(val context: Context?, private val listener: OnAlbumClic
     val album = data[position]
 
     Picasso.get()
-      .maybeLoad(maybeNormalizeUrl(album.cover.original))
+      .maybeLoad(maybeNormalizeUrl(album.cover()))
       .fit()
       .placeholder(R.drawable.cover)
       .transform(RoundedCornersTransformation(16, 0))
