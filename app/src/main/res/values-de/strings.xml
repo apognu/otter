@@ -9,7 +9,7 @@
     <string name="login_submit">Anmelden</string>
     <string name="login_logging_in">Einloggen</string>
     <string name="login_error_hostname">Dies konnte nicht als eine URL verstanden werden</string>
-    <string name="login_error_hostname_https">Der Zugriff auf die Funkwhale Server sollte über https erfolgen</string>
+    <string name="login_error_hostname_https">Der Zugriff auf den Funkwhale Server sollte über https erfolgen</string>
     <string name="toolbar_search">Suche</string>
     <string name="title_settings">Einstellungen</string>
     <string name="title_oss_licences">Open Source Lizenz</string>
@@ -29,7 +29,7 @@
     <string name="settings_night_mode_on">Immer eingeschaltet (Dunkelmodus)</string>
     <string name="settings_night_mode_on_summary">Dunkler Modus ist immer eingeschaltet</string>
     <string name="settings_night_mode_off">Immer ausgeschaltet (Heller Modus)</string>
-    <string name="settings_night_mode_off_summary">Heller Modus ist immer eingeschaltet sein</string>
+    <string name="settings_night_mode_off_summary">Heller Modus ist immer eingeschaltet</string>
     <string name="settings_night_mode_system">Folge den Systemeinstellungen</string>
     <string name="settings_night_mode_system_summary">Der Nachtmodus wird den Systemeinstellungen folgen</string>
     <string name="settings_experiments">Experimentielle Funktionen aktivieren</string>
@@ -49,14 +49,14 @@
     <string name="playlists">Playlisten</string>
     <string name="radios">Sender</string>
     <string name="favorites">Favoriten</string>
-    <string name="playback_media_controls">Mediansteuerung</string>
+    <string name="playback_media_controls">Mediensteuerung</string>
     <string name="playback_media_controls_description">Medienwiedergabe steuern</string>
     <string name="playback_shuffle">Zufallswiedergabe</string>
     <string name="playback_queue">Warteschlange</string>
     <string name="playback_queue_empty">Deine Warteschlange ist leer</string>
     <string name="playback_queue_remove_item">Entfernen</string>
     <string name="playback_queue_add_item">Zur Warteschlange hinzufügen</string>
-    <string name="playback_queue_play_next">Als nächstes spielen</string>
+    <string name="playback_queue_play_next">Als nächstes abspielen</string>
     <string name="manage_add_to_favorites">Als Favorit hinzufügen</string>
     <string name="control_toggle">Abspielen / Pause</string>
     <string name="control_previous">Vorheriger Song</string>
@@ -84,9 +84,9 @@
     <string name="track_info_details_track_instance">Funkwhale Instanz</string>
     <string name="radio_playback_error">Ein Fehler ist beim Abspielen des Radios aufgetreten</string>
     <string name="radio_random_title">Zufällig</string>
-    <string name="radio_random_description">Zufällig ausgewählte Songs, vielleicht entdeckt du neue Musik?</string>
+    <string name="radio_random_description">Zufällig ausgewählte Songs, vielleicht entdeckst du neue Musik\?</string>
     <string name="radio_less_listened_title">Weniger angehört</string>
-    <string name="radio_less_listened_description">Höre Songs, welche du nicht oft hörst. Perfekt, um ein Gleichgewicht herzustellen.</string>
+    <string name="radio_less_listened_description">Höre Songs, welche du nicht oft anhörst. Perfekt, um ein Gleichgewicht wieder herzustellen.</string>
     <string name="logout_title">Abmelden</string>
     <string name="logout_content">Bist du dir sicher, dass du dich von dieser Funkwhale Instanz abmelden möchtest\?</string>
     <plurals name="playlist_description">
@@ -98,8 +98,8 @@
     <string name="login_cleartext">Erlaube unverschlüsselte Verbindungen (HTTP)</string>
     <string name="radio_your_content_description">Auswahl aus deiner eigenen Bibliothek</string>
     <string name="radio_your_content_title">Dein Inhalt</string>
-    <string name="radio_user_radios">Nutzerradios</string>
-    <string name="radio_instance_radios">Instanzradios</string>
+    <string name="radio_user_radios">Nutzersender</string>
+    <string name="radio_instance_radios">Instance Sender</string>
     <string name="track_info_details_track_license">Lizenz</string>
     <string name="track_info_details_track_copyright">Urheberrecht</string>
     <string name="playback_queue_download">Herunterladen</string>
@@ -109,7 +109,7 @@
     <string name="radio_favorites_description">Spielen Sie Ihre Lieblingsmusik in einer nicht endenen Glücksschleife.</string>
     <string name="only_my_music">Nur meine Musik</string>
     <plurals name="downloads_description">
-        <item quantity="one">Lade %1$d Song herunter</item>
-        <item quantity="other">Lade %1$d Songs herunter</item>
+        <item quantity="one">Lade %1$d Lied herunter</item>
+        <item quantity="other">Lade %1$d Lieder herunter</item>
     </plurals>
 </resources>
