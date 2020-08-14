@@ -94,7 +94,7 @@
     <string name="radio_instance_radios">Radios de l\'instance</string>
     <string name="radio_user_radios">Radios des utilisateurs</string>
     <string name="radio_your_content_title">Votre contenu</string>
-    <string name="radio_your_content_description">Une sélection de votre propre bibliothèque.</string>
+    <string name="radio_your_content_description">Une sélection de vos propres bibliothèques</string>
     <string name="radio_favorites_description">Jouez vos morceaux favoris dans une boucle allègre infinie.</string>
     <string name="radio_random_title">Aléatoire</string>
     <string name="radio_random_description">Choix de pistes totalement aléatoires, vous découvrirez peut-être quelque chose ?</string>
