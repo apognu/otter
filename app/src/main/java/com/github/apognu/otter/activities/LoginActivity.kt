@@ -4,7 +4,6 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
-import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.doOnLayout
@@ -12,12 +11,13 @@ import androidx.lifecycle.lifecycleScope
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.LoginDialog
 import com.github.apognu.otter.utils.AppContext
+import com.github.apognu.otter.utils.OAuth
 import com.github.apognu.otter.utils.Userinfo
+import com.github.apognu.otter.utils.log
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
 import com.github.kittinunf.fuel.gson.gsonDeserializerOf
 import com.github.kittinunf.result.Result
-import com.google.gson.Gson
 import com.preference.PowerPreference
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.coroutines.Dispatchers.Main
@@ -37,20 +37,8 @@ class LoginActivity : AppCompatActivity() {
   override fun onResume() {
     super.onResume()
 
-    anonymous?.setOnCheckedChangeListener { _, isChecked ->
-      val state = when (isChecked) {
-        true -> View.GONE
-        false -> View.VISIBLE
-      }
-
-      username_field.visibility = state
-      password_field.visibility = state
-    }
-
     login?.setOnClickListener {
       var hostname = hostname.text.toString().trim()
-      val username = username.text.toString()
-      val password = password.text.toString()
 
       try {
         if (hostname.isEmpty()) throw Exception(getString(R.string.login_error_hostname))
@@ -71,7 +59,7 @@ class LoginActivity : AppCompatActivity() {
         hostname_field.error = ""
 
         when (anonymous.isChecked) {
-          false -> authedLogin(hostname, username, password)
+          false -> authedLogin(hostname)
           true -> anonymousLogin(hostname)
         }
       } catch (e: Exception) {
@@ -90,64 +78,39 @@ class LoginActivity : AppCompatActivity() {
     limitContainerWidth()
   }
 
-  private fun authedLogin(hostname: String, username: String, password: String) {
-    val body = mapOf(
-      "username" to username,
-      "password" to password
-    ).toList()
+  private fun authedLogin(hostname: String) {
+    PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).setString("hostname", hostname)
 
-    val dialog = LoginDialog().apply {
-      show(supportFragmentManager, "LoginDialog")
+    OAuth.init(hostname)
+
+    OAuth.register(this) {
+      OAuth.authorize(this)
     }
+  }
 
-    lifecycleScope.launch(Main) {
-      try {
-        val (_, response, result) = Fuel.post("$hostname/api/v1/token/", body)
-          .awaitObjectResponseResult(gsonDeserializerOf(FwCredentials::class.java))
+  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    super.onActivityResult(requestCode, resultCode, data)
 
-        when (result) {
-          is Result.Success -> {
-            PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).apply {
-              setString("hostname", hostname)
-              setBoolean("anonymous", false)
-              setString("username", username)
-              setString("password", password)
-              setString("access_token", result.get().token)
-            }
+    data?.let {
+      when (requestCode) {
+        0 -> {
+          OAuth.exchange(this, data,
+            {
+              PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).setBoolean("anonymous", false)
 
-            Userinfo.get()?.let {
-              dialog.dismiss()
-              startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+              lifecycleScope.launch(Main) {
+                Userinfo.get(this@LoginActivity)?.let {
+                  startActivity(Intent(this@LoginActivity, MainActivity::class.java))
 
-              return@launch finish()
-            }
+                  return@launch finish()
+                }
 
-            throw Exception(getString(R.string.login_error_userinfo))
-          }
-
-          is Result.Failure -> {
-            dialog.dismiss()
-
-            val error = Gson().fromJson(String(response.data), FwCredentials::class.java)
-
-            hostname_field.error = null
-            username_field.error = null
-
-            if (error != null && error.non_field_errors?.isNotEmpty() == true) {
-              username_field.error = error.non_field_errors[0]
-            } else {
-              hostname_field.error = result.error.localizedMessage
-            }
-          }
+                throw Exception(getString(R.string.login_error_userinfo))
+              }
+            },
+            { "error".log() }
+          )
         }
-      } catch (e: Exception) {
-        dialog.dismiss()
-
-        val message =
-          if (e.message?.isEmpty() == true) getString(R.string.login_error_hostname)
-          else e.message
-
-        hostname_field.error = message
       }
     }
   }

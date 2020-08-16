@@ -1,5 +1,6 @@
 package com.github.apognu.otter.utils
 
+import android.content.Context
 import android.os.Build
 import androidx.fragment.app.Fragment
 import com.github.apognu.otter.R
@@ -68,10 +69,12 @@ fun Picasso.maybeLoad(url: String?): RequestCreator {
   else load(url)
 }
 
-fun Request.authorize(): Request {
+fun Request.authorize(context: Context): Request {
   return this.apply {
     if (!Settings.isAnonymous()) {
-      header("Authorization", "Bearer ${Settings.getAccessToken()}")
+      OAuth.state().performActionWithFreshTokens(OAuth.service(context)) { token, _, _ ->
+        header("Authorization", "Bearer $token")
+      }
     }
   }
 }

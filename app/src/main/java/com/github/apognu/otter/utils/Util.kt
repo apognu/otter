@@ -4,6 +4,7 @@ import android.content.Context
 import android.widget.Toast
 import com.google.android.exoplayer2.util.Log
 import com.preference.PowerPreference
+import net.openid.appauth.AuthState
 import java.net.URI
 
 fun Context?.toast(message: String, length: Int = Toast.LENGTH_SHORT) {
@@ -71,8 +72,8 @@ fun toDurationString(duration: Long, showSeconds: Boolean = false): String {
 }
 
 object Settings {
-  fun hasAccessToken() = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).contains("access_token")
-  fun getAccessToken(): String = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("access_token", "")
+  fun hasAccessToken() = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).contains("state") && OAuth.state().isAuthorized
+  fun getAccessToken() = OAuth.state().accessToken
   fun isAnonymous() = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getBoolean("anonymous", false)
   fun areExperimentsEnabled() = PowerPreference.getDefaultFile().getBoolean("experiments", false)
   fun getScope() = PowerPreference.getDefaultFile().getString("scope", "all")

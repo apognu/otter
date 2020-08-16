@@ -47,6 +47,10 @@ android {
 
     versionCode = androidGitVersion.code()
     versionName = androidGitVersion.name()
+
+    manifestPlaceholders = mapOf(
+      "appAuthRedirectScheme" to "urn"
+    )
   }
 
   signingConfigs {
@@ -133,6 +137,7 @@ dependencies {
   implementation("com.google.android.exoplayer:exoplayer-ui:2.11.5")
   implementation("com.google.android.exoplayer:extension-mediasession:2.11.5")
 
+  implementation("com.github.openid:AppAuth-Android:27b62d5da9")
   implementation("com.aliassadi:power-preference-lib:1.4.1")
   implementation("com.github.kittinunf.fuel:fuel:2.1.0")
   implementation("com.github.kittinunf.fuel:fuel-coroutines:2.1.0")
