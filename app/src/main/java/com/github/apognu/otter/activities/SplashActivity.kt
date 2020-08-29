@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.github.apognu.otter.Otter
 import com.github.apognu.otter.utils.AppContext
 import com.github.apognu.otter.utils.Settings
 
@@ -20,6 +21,8 @@ class SplashActivity : AppCompatActivity() {
         }
 
         false -> Intent(this@SplashActivity, LoginActivity::class.java).apply {
+          Otter.get().deleteAllData()
+
           flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
 
           startActivity(this)
