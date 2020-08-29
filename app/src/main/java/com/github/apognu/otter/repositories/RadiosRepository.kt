@@ -11,7 +11,7 @@ import java.io.BufferedReader
 
 class RadiosRepository(override val context: Context?) : Repository<Radio, RadiosCache>() {
   override val cacheId = "radios"
-  override val upstream = HttpUpstream<Radio, OtterResponse<Radio>>(HttpUpstream.Behavior.Progressive, "/api/v1/radios/radios/?ordering=name", object : TypeToken<RadiosResponse>() {}.type)
+  override val upstream = HttpUpstream<Radio, OtterResponse<Radio>>(context, HttpUpstream.Behavior.Progressive, "/api/v1/radios/radios/?ordering=name", object : TypeToken<RadiosResponse>() {}.type)
 
   override fun cache(data: List<Radio>) = RadiosCache(data)
   override fun uncache(reader: BufferedReader) = gsonDeserializerOf(RadiosCache::class.java).deserialize(reader)

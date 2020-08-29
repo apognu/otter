@@ -21,6 +21,7 @@ class AlbumsRepository(override val context: Context?, artistId: Int? = null) : 
       else "/api/v1/albums/?playable=true&artist=$artistId&ordering=release_date"
 
     HttpUpstream<Album, OtterResponse<Album>>(
+      context,
       HttpUpstream.Behavior.Progressive,
       url,
       object : TypeToken<AlbumsResponse>() {}.type

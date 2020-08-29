@@ -1,5 +1,6 @@
 package com.github.apognu.otter.repositories
 
+import android.content.Context
 import android.net.Uri
 import com.github.apognu.otter.utils.*
 import com.github.kittinunf.fuel.Fuel
@@ -18,47 +19,49 @@ import java.io.Reader
 import java.lang.reflect.Type
 import kotlin.math.ceil
 
-class HttpUpstream<D : Any, R : OtterResponse<D>>(val behavior: Behavior, private val url: String, private val type: Type) : Upstream<D> {
+class HttpUpstream<D : Any, R : OtterResponse<D>>(val context: Context?, val behavior: Behavior, private val url: String, private val type: Type) : Upstream<D> {
   enum class Behavior {
     Single, AtOnce, Progressive
   }
 
   override fun fetch(size: Int): Flow<Repository.Response<D>> = flow {
-    if (behavior == Behavior.Single && size != 0) return@flow
+    context?.let {
+      if (behavior == Behavior.Single && size != 0) return@flow
 
-    val page = ceil(size / AppContext.PAGE_SIZE.toDouble()).toInt() + 1
+      val page = ceil(size / AppContext.PAGE_SIZE.toDouble()).toInt() + 1
 
-    val url =
-      Uri.parse(url)
-        .buildUpon()
-        .appendQueryParameter("page_size", AppContext.PAGE_SIZE.toString())
-        .appendQueryParameter("page", page.toString())
-        .appendQueryParameter("scope", Settings.getScope())
-        .build()
-        .toString()
+      val url =
+        Uri.parse(url)
+          .buildUpon()
+          .appendQueryParameter("page_size", AppContext.PAGE_SIZE.toString())
+          .appendQueryParameter("page", page.toString())
+          .appendQueryParameter("scope", Settings.getScope())
+          .build()
+          .toString()
 
-    get(url).fold(
-      { response ->
-        val data = response.getData()
+      get(context, url).fold(
+        { response ->
+          val data = response.getData()
 
-        when (behavior) {
-          Behavior.Single -> emit(Repository.Response(Repository.Origin.Network, data, page, false))
-          Behavior.Progressive -> emit(Repository.Response(Repository.Origin.Network, data, page, response.next != null))
+          when (behavior) {
+            Behavior.Single -> emit(Repository.Response(Repository.Origin.Network, data, page, false))
+            Behavior.Progressive -> emit(Repository.Response(Repository.Origin.Network, data, page, response.next != null))
 
-          else -> {
-            emit(Repository.Response(Repository.Origin.Network, data, page, response.next != null))
+            else -> {
+              emit(Repository.Response(Repository.Origin.Network, data, page, response.next != null))
 
-            if (response.next != null) fetch(size + data.size).collect { emit(it) }
+              if (response.next != null) fetch(size + data.size).collect { emit(it) }
+            }
+          }
+        },
+        { error ->
+          when (error.exception) {
+            is RefreshError -> EventBus.send(Event.LogOut)
+            else -> emit(Repository.Response(Repository.Origin.Network, listOf(), page, false))
           }
         }
-      },
-      { error ->
-        when (error.exception) {
-          is RefreshError -> EventBus.send(Event.LogOut)
-          else -> emit(Repository.Response(Repository.Origin.Network, listOf(), page, false))
-        }
-      }
-    )
+      )
+    }
   }.flowOn(IO)
 
   class GenericDeserializer<T : OtterResponse<*>>(val type: Type) : ResponseDeserializable<T> {
@@ -67,39 +70,19 @@ class HttpUpstream<D : Any, R : OtterResponse<D>>(val behavior: Behavior, privat
     }
   }
 
-  suspend fun get(url: String): Result<R, FuelError> {
+  suspend fun get(context: Context, url: String): Result<R, FuelError> {
     return try {
       val request = Fuel.get(mustNormalizeUrl(url)).apply {
-        if (!Settings.isAnonymous()) {
-          header("Authorization", "Bearer ${Settings.getAccessToken()}")
-        }
+        authorize(context)
       }
 
       val (_, response, result) = request.awaitObjectResponseResult(GenericDeserializer<R>(type))
 
       if (response.statusCode == 401) {
-        return retryGet(url)
+        return Result.Failure(FuelError.wrap(RefreshError))
       }
 
       result
-    } catch (e: Exception) {
-      Result.error(FuelError.wrap(e))
-    }
-  }
-
-  private suspend fun retryGet(url: String): Result<R, FuelError> {
-    return try {
-      return if (HTTP.refresh()) {
-        val request = Fuel.get(mustNormalizeUrl(url)).apply {
-          if (!Settings.isAnonymous()) {
-            header("Authorization", "Bearer ${Settings.getAccessToken()}")
-          }
-        }
-
-        request.awaitObjectResult(GenericDeserializer(type))
-      } else {
-        Result.Failure(FuelError.wrap(RefreshError))
-      }
     } catch (e: Exception) {
       Result.error(FuelError.wrap(e))
     }

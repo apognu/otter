@@ -34,36 +34,6 @@ object HTTP {
       { false }
     )
   }
-
-  suspend inline fun <reified T : Any> get(url: String): Result<T, FuelError> {
-    val request = Fuel.get(mustNormalizeUrl(url)).apply {
-      if (!Settings.isAnonymous()) {
-        header("Authorization", "Bearer ${Settings.getAccessToken()}")
-      }
-    }
-
-    val (_, response, result) = request.awaitObjectResponseResult(gsonDeserializerOf(T::class.java))
-
-    if (response.statusCode == 401) {
-      return retryGet(url)
-    }
-
-    return result
-  }
-
-  suspend inline fun <reified T : Any> retryGet(url: String): Result<T, FuelError> {
-    return if (refresh()) {
-      val request = Fuel.get(mustNormalizeUrl(url)).apply {
-        if (!Settings.isAnonymous()) {
-          header("Authorization", "Bearer ${Settings.getAccessToken()}")
-        }
-      }
-
-      request.awaitObjectResult(gsonDeserializerOf(T::class.java))
-    } else {
-      Result.Failure(FuelError.wrap(RefreshError))
-    }
-  }
 }
 
 object Cache {

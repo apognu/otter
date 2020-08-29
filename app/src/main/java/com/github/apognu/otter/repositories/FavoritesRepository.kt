@@ -16,7 +16,7 @@ import java.io.BufferedReader
 
 class FavoritesRepository(override val context: Context?) : Repository<Track, TracksCache>() {
   override val cacheId = "favorites.v2"
-  override val upstream = HttpUpstream<Track, OtterResponse<Track>>(HttpUpstream.Behavior.AtOnce, "/api/v1/tracks/?favorites=true&playable=true&ordering=title", object : TypeToken<TracksResponse>() {}.type)
+  override val upstream = HttpUpstream<Track, OtterResponse<Track>>(context, HttpUpstream.Behavior.AtOnce, "/api/v1/tracks/?favorites=true&playable=true&ordering=title", object : TypeToken<TracksResponse>() {}.type)
 
   override fun cache(data: List<Track>) = TracksCache(data)
   override fun uncache(reader: BufferedReader) = gsonDeserializerOf(TracksCache::class.java).deserialize(reader)
@@ -81,7 +81,7 @@ class FavoritesRepository(override val context: Context?) : Repository<Track, Tr
 
 class FavoritedRepository(override val context: Context?) : Repository<Int, FavoritedCache>() {
   override val cacheId = "favorited"
-  override val upstream = HttpUpstream<Int, OtterResponse<Int>>(HttpUpstream.Behavior.Single, "/api/v1/favorites/tracks/all/?playable=true", object : TypeToken<FavoritedResponse>() {}.type)
+  override val upstream = HttpUpstream<Int, OtterResponse<Int>>(context, HttpUpstream.Behavior.Single, "/api/v1/favorites/tracks/all/?playable=true", object : TypeToken<FavoritedResponse>() {}.type)
 
   override fun cache(data: List<Int>) = FavoritedCache(data)
   override fun uncache(reader: BufferedReader) = gsonDeserializerOf(FavoritedCache::class.java).deserialize(reader)

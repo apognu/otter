@@ -126,18 +126,7 @@ object OAuth {
         ResponseTypeValues.CODE,
         REDIRECT_URI
       )
-        .setScopes(
-          /* "read:profile",
-          "read:libraries",
-          "write:libraries",
-          "read:favorites",
-          "write:favorites",
-          "read:playlists",
-          "write:playlists",
-          "read:radios",
-          "write:listenings" */
-        "read", "write"
-        )
+        .setScopes("read", "write")
         .build()
     }
   }
