@@ -1,1 +1,1 @@
-../../../../../../fastlane/metadata/android/fr-FR/changelogs/1000020.txt
+../../../../../../fastlane/metadata/android/fr-FR/changelogs/1000021.txt

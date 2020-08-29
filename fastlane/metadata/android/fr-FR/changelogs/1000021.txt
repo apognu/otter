@@ -1,0 +1,8 @@
+Diverses améliorations des performances et de l'UI, quelques corrections de bugs et ces nouvelles fonctionnalités :
+
+ * Support initial de Funkwhale 1.0
+ * Ajout et amélioration des traductions (merci à tous les contributeurs)
+ * Conservation des téléchargements lors des déconnexions
+ * Support des connexions HTTP et utilisant des CA utilisateurs
+ * Changement de l'ordre d'affichage des éléments
+ * Amélioration de la diffusion des métadonnées de lecture pour supporter plus d'appareils

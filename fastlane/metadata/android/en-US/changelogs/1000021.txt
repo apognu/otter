@@ -1,0 +1,8 @@
+Various UI and performance improvements, some bug fixes and the following new features:
+
+ * Initial support for Funkwhale 1.0
+ * Always more translations (thanks to all contributors)
+ * Keep downloads when disconnected
+ * Support for cleartext connections and user-configured CAs
+ * Changed item ordering to be more friendly
+ * Enhanced metadata broadcast to work across devices
