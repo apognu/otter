@@ -101,6 +101,7 @@ data class Track(
   val title: String,
   val artist: Artist,
   val album: Album?,
+  val disc_number: Int = 0,
   val position: Int = 0,
   val uploads: List<Upload> = listOf(),
   val copyright: String? = null,

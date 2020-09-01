@@ -13,7 +13,7 @@ import java.io.BufferedReader
 
 class TracksRepository(override val context: Context?, albumId: Int) : Repository<Track, TracksCache>() {
   override val cacheId = "tracks-album-$albumId"
-  override val upstream = HttpUpstream<Track, OtterResponse<Track>>(HttpUpstream.Behavior.AtOnce, "/api/v1/tracks/?playable=true&album=$albumId", object : TypeToken<TracksResponse>() {}.type)
+  override val upstream = HttpUpstream<Track, OtterResponse<Track>>(HttpUpstream.Behavior.AtOnce, "/api/v1/tracks/?playable=true&album=$albumId&ordering=disc_number,position", object : TypeToken<TracksResponse>() {}.type)
 
   override fun cache(data: List<Track>) = TracksCache(data)
   override fun uncache(reader: BufferedReader) = gsonDeserializerOf(TracksCache::class.java).deserialize(reader)
@@ -56,6 +56,6 @@ class TracksRepository(override val context: Context?, albumId: Int) : Repositor
       }
 
       track
-    }.sortedBy { it.position }
+    }.sortedWith(compareBy({ it.disc_number }, { it.position }))
   }
 }
