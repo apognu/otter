@@ -63,6 +63,7 @@
     <string name="playback_queue_add_item">Ajouter à la liste de lecture</string>
     <string name="playback_queue_play_next">Prochaine écoute</string>
     <string name="playback_queue_download">Télécharger</string>
+    <string name="playback_queue_clear">Effacer</string>
     <string name="manage_add_to_favorites">Ajouter aux favoris</string>
     <string name="control_toggle">Lecture / pause</string>
     <string name="control_previous">Piste précédente</string>

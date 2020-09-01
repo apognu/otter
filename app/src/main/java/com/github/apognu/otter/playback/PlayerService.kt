@@ -186,6 +186,7 @@ class PlayerService : Service() {
           is Command.Seek -> seek(command.progress)
 
           is Command.ClearQueue -> queue.clear()
+          is Command.ShuffleQueue -> queue.shuffle()
 
           is Command.PlayRadio -> {
             queue.clear()

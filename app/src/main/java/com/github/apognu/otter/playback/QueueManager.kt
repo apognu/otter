@@ -179,4 +179,25 @@ class QueueManager(val context: Context) {
     datasources.clear()
     current = -1
   }
+
+  fun shuffle() {
+    if (metadata.size == 0) return
+
+    if (current == -1) {
+      replace(metadata.shuffled())
+    } else {
+      val track = metadata[current]
+      val shuffled = metadata.filter { it != track }.shuffled()
+
+      shuffled.forEach {
+        metadata.remove(it)
+      }
+
+      append(shuffled)
+
+      current = 0
+    }
+
+    EventBus.send(Event.QueueChanged)
+  }
 }

@@ -27,6 +27,7 @@ sealed class Command {
   class RemoveFromQueue(val track: Track) : Command()
   class MoveFromQueue(val oldPosition: Int, val newPosition: Int) : Command()
   object ClearQueue : Command()
+  object ShuffleQueue : Command()
   class PlayRadio(val radio: Radio) : Command()
 
   class SetRepeatMode(val mode: Int) : Command()
