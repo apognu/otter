@@ -92,7 +92,7 @@ class HomeFragment : Fragment() {
 
       adapter = tagsAdapter
       layoutManager = FlexboxLayoutManager(context).apply {
-        justifyContent = JustifyContent.SPACE_BETWEEN
+        justifyContent = JustifyContent.FLEX_START
       }
     }
 
@@ -144,7 +144,7 @@ class HomeFragment : Fragment() {
   }
 
   private fun refresh(force: Boolean = false) {
-    tagsRepository.fetch(originFor(tagsRepository, force).origin).untilNetwork(lifecycleScope, IO) { data, isCache, _ ->
+    tagsRepository.fetch(originFor(tagsRepository, force).origin).untilNetwork(lifecycleScope, IO) { data, isCache, _, _ ->
       GlobalScope.launch(Main) {
         tagsAdapter.data = data.map { HomeMediaAdapter.HomeMediaItem(it.name, null) }
         tagsAdapter.notifyDataSetChanged()
@@ -156,9 +156,9 @@ class HomeFragment : Fragment() {
       }
     }
 
-    randomArtistsRepository.fetch(originFor(randomArtistsRepository, force).origin).untilNetwork(lifecycleScope, IO) { data, isCache, _ ->
+    randomArtistsRepository.fetch(originFor(randomArtistsRepository, force).origin).untilNetwork(lifecycleScope, IO) { data, isCache, _, _ ->
       GlobalScope.launch(Main) {
-        randomAdapter.data = data.map { HomeMediaAdapter.HomeMediaItem(it.name, it.albums?.getOrNull(0)?.cover?.original, artist = it) }
+        randomAdapter.data = data.map { HomeMediaAdapter.HomeMediaItem(it.name, it.albums?.getOrNull(0)?.cover?.urls?.original, artist = it) }
         randomAdapter.notifyDataSetChanged()
 
         random_loader?.visibility = View.GONE
@@ -168,9 +168,9 @@ class HomeFragment : Fragment() {
       }
     }
 
-    recentlyListenedRepository.fetch(originFor(recentlyListenedRepository, force).origin).untilNetwork(lifecycleScope, IO) { data, isCache, _ ->
+    recentlyListenedRepository.fetch(originFor(recentlyListenedRepository, force).origin).untilNetwork(lifecycleScope, IO) { data, isCache, _, _ ->
       GlobalScope.launch(Main) {
-        recentlyListenedAdapter.data = data.map { HomeMediaAdapter.HomeMediaItem(it.track.title, it.track.album.cover.original, track = it.track) }
+        recentlyListenedAdapter.data = data.map { HomeMediaAdapter.HomeMediaItem(it.track.title, it.track.album?.cover(), track = it.track) }
         recentlyListenedAdapter.notifyDataSetChanged()
 
         recently_listened_loader?.visibility = View.GONE
@@ -180,9 +180,9 @@ class HomeFragment : Fragment() {
       }
     }
 
-    recentlyAddedRepository.fetch(originFor(recentlyAddedRepository, force).origin).untilNetwork(lifecycleScope, IO) { data, isCache, _ ->
+    recentlyAddedRepository.fetch(originFor(recentlyAddedRepository, force).origin).untilNetwork(lifecycleScope, IO) { data, isCache, _, _ ->
       GlobalScope.launch(Main) {
-        recentlyAddedAdapter.data = data.map { HomeMediaAdapter.HomeMediaItem(it.title, it.album.cover.original, track = it) }
+        recentlyAddedAdapter.data = data.map { HomeMediaAdapter.HomeMediaItem(it.title, it.album?.cover(), track = it) }
         recentlyAddedAdapter.notifyDataSetChanged()
 
         recently_added_loader?.visibility = View.GONE

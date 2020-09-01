@@ -33,7 +33,7 @@ class BrowseTabsAdapter(val context: Fragment, manager: FragmentManager) : Fragm
 
   override fun getPageTitle(position: Int): String {
     return when (position) {
-      0 -> "Otter"
+      0 -> context.getString(R.string.title_discover)
       1 -> context.getString(R.string.artists)
       2 -> context.getString(R.string.albums)
       3 -> context.getString(R.string.playlists)

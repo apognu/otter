@@ -12,6 +12,7 @@
     <string name="login_error_hostname_https">Le nom d\'hôte Funkwhale devrait être sécurisé à travers HTTPS</string>
     <string name="login_error_userinfo">Nous n\'avons pas pu récupérer les informations à propos de votre utilisateur</string>
     <string name="toolbar_search">Rechercher</string>
+    <string name="title_discover">Découvrir</string>
     <string name="title_downloads">Téléchargements</string>
     <string name="title_settings">Paramètres</string>
     <string name="title_oss_licences">Licences open source</string>
