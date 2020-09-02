@@ -143,7 +143,10 @@ class TracksFragment : OtterFragment<Track, TracksAdapter>() {
               }
 
               R.id.add_to_queue -> {
-                CommandBus.send(Command.AddToQueue(adapter.data))
+                when (PowerPreference.getDefaultFile().getString("play_order")) {
+                  "in_order" -> CommandBus.send(Command.AddToQueue(adapter.data))
+                  else -> CommandBus.send(Command.AddToQueue(adapter.data.shuffled()))
+                }
 
                 context.toast("All tracks were added to your queue")
               }
