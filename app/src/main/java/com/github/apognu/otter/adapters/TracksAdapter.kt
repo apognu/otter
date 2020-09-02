@@ -6,6 +6,7 @@ import android.graphics.*
 import android.graphics.drawable.ColorDrawable
 import android.view.*
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
@@ -61,12 +62,12 @@ class TracksAdapter(private val context: Context?, private val favoriteListener:
     holder.artist.text = track.artist.name
 
     context?.let {
-      holder.itemView.background = context.getDrawable(R.drawable.ripple)
+      holder.itemView.background = ContextCompat.getDrawable(context, R.drawable.ripple)
     }
 
     if (track == currentTrack || track.current) {
       context?.let {
-        holder.itemView.background = context.getDrawable(R.drawable.current)
+        holder.itemView.background = ContextCompat.getDrawable(context, R.drawable.current)
       }
     }
 

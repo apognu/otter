@@ -104,6 +104,10 @@ class MediaControlsManager(val context: Service, private val scope: CoroutineSco
     }
   }
 
+  fun remove() {
+    NotificationManagerCompat.from(context).cancel(AppContext.NOTIFICATION_MEDIA_CONTROL)
+  }
+
   private fun action(icon: Int, title: String, id: Long): NotificationCompat.Action {
     return MediaButtonReceiver.buildMediaButtonPendingIntent(context, id).run {
       NotificationCompat.Action.Builder(icon, title, this).build()

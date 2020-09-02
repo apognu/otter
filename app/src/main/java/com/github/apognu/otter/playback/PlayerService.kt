@@ -185,7 +185,10 @@ class PlayerService : Service() {
           is Command.PreviousTrack -> skipToPreviousTrack()
           is Command.Seek -> seek(command.progress)
 
-          is Command.ClearQueue -> queue.clear()
+          is Command.ClearQueue -> {
+            queue.clear()
+            player.stop()
+          }
           is Command.ShuffleQueue -> queue.shuffle()
 
           is Command.PlayRadio -> {
@@ -389,7 +392,20 @@ class PlayerService : Service() {
           when (playbackState) {
             Player.STATE_READY -> mediaControlsManager.updateNotification(queue.current(), true)
             Player.STATE_BUFFERING -> EventBus.send(Event.Buffering(true))
-            Player.STATE_ENDED -> EventBus.send(Event.PlaybackStopped)
+            Player.STATE_ENDED -> {
+              setPlaybackState(false)
+
+              queue.current = 0
+              player.seekTo(0, C.TIME_UNSET)
+
+              ProgressBus.send(0, 0, 0)
+            }
+
+            Player.STATE_IDLE -> {
+              setPlaybackState(false)
+
+              return EventBus.send(Event.PlaybackStopped)
+            }
           }
 
           if (playbackState != Player.STATE_BUFFERING) EventBus.send(Event.Buffering(false))
@@ -398,13 +414,14 @@ class PlayerService : Service() {
         false -> {
           EventBus.send(Event.Buffering(false))
 
-          if (playbackState == Player.STATE_READY) {
-            mediaControlsManager.updateNotification(queue.current(), false)
+          Build.VERSION_CODES.N.onApi(
+            { stopForeground(STOP_FOREGROUND_DETACH) },
+            { stopForeground(false) }
+          )
 
-            Build.VERSION_CODES.N.onApi(
-              { stopForeground(STOP_FOREGROUND_DETACH) },
-              { stopForeground(false) }
-            )
+          when (playbackState) {
+            Player.STATE_READY -> mediaControlsManager.updateNotification(queue.current(), false)
+            Player.STATE_IDLE -> mediaControlsManager.remove()
           }
         }
       }

@@ -178,25 +178,33 @@ class QueueManager(val context: Context) {
     metadata = mutableListOf()
     datasources.clear()
     current = -1
+
+    persist()
   }
 
   fun shuffle() {
-    if (metadata.size == 0) return
+    if (metadata.size < 2) return
 
     if (current == -1) {
       replace(metadata.shuffled())
     } else {
-      val track = metadata[current]
-      val shuffled = metadata.filter { it != track }.shuffled()
+      move(current, 0)
+      current = 0
 
-      shuffled.forEach {
-        metadata.remove(it)
+      val shuffled =
+        metadata
+          .drop(1)
+          .shuffled()
+
+      while (metadata.size > 1) {
+        datasources.removeMediaSource(metadata.size - 1)
+        metadata.removeAt(metadata.size - 1)
       }
 
       append(shuffled)
-
-      current = 0
     }
+
+    persist()
 
     EventBus.send(Event.QueueChanged)
   }
