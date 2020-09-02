@@ -112,6 +112,14 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         }
       }
 
+      preferenceManager.findPreference<ListPreference>("play_order")?.let {
+        it.summary = when (it.value) {
+          "shuffle" -> activity.getString(R.string.settings_play_order_shuffle_summary)
+          "in_order" -> activity.getString(R.string.settings_play_order_in_order_summary)
+          else -> activity.getString(R.string.settings_play_order_shuffle_summary)
+        }
+      }
+
       preferenceManager.findPreference<ListPreference>("night_mode")?.let {
         when (it.value) {
           "on" -> {

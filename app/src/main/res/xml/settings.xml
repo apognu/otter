@@ -22,6 +22,14 @@
       app:showSeekBarValue="true"
       app:updatesContinuously="true" />
 
+    <ListPreference
+      android:defaultValue="shuffle"
+      android:entries="@array/play_orders"
+      android:entryValues="@array/play_orders_values"
+      android:icon="@drawable/play"
+      android:key="play_order"
+      android:title="@string/settings_play_order" />
+
   </PreferenceCategory>
 
   <PreferenceCategory android:title="@string/settings_other">

@@ -3,6 +3,7 @@ package com.github.apognu.otter.fragments
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
@@ -14,6 +15,7 @@ import com.github.apognu.otter.repositories.FavoritesRepository
 import com.github.apognu.otter.repositories.TracksRepository
 import com.github.apognu.otter.utils.*
 import com.google.android.exoplayer2.offline.Download
+import com.preference.PowerPreference
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.fragment_tracks.*
@@ -107,8 +109,16 @@ class TracksFragment : OtterFragment<Track, TracksAdapter>() {
       }
     }
 
+    when (PowerPreference.getDefaultFile().getString("play_order")) {
+      "in_order" -> play.text = getString(R.string.playback_play)
+      else -> play.text = getString(R.string.playback_shuffle)
+    }
+
     play.setOnClickListener {
-      CommandBus.send(Command.ReplaceQueue(adapter.data.shuffled()))
+      when (PowerPreference.getDefaultFile().getString("play_order")) {
+        "in_order" -> CommandBus.send(Command.ReplaceQueue(adapter.data))
+        else -> CommandBus.send(Command.ReplaceQueue(adapter.data.shuffled()))
+      }
 
       context.toast("All tracks were added to your queue")
     }
@@ -118,8 +128,20 @@ class TracksFragment : OtterFragment<Track, TracksAdapter>() {
         PopupMenu(context, actions, Gravity.START, R.attr.actionOverflowMenuStyle, 0).apply {
           inflate(R.menu.album)
 
+          menu.findItem(R.id.play_secondary)?.let { item ->
+            when (PowerPreference.getDefaultFile().getString("play_order")) {
+              "in_order" -> item.title = getString(R.string.playback_shuffle)
+              else -> item.title = getString(R.string.playback_play)
+            }
+          }
+
           setOnMenuItemClickListener {
             when (it.itemId) {
+              R.id.play_secondary -> when (PowerPreference.getDefaultFile().getString("play_order")) {
+                "in_order" -> CommandBus.send(Command.ReplaceQueue(adapter.data.shuffled()))
+                else -> CommandBus.send(Command.ReplaceQueue(adapter.data))
+              }
+
               R.id.add_to_queue -> {
                 CommandBus.send(Command.AddToQueue(adapter.data))
 

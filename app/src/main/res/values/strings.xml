@@ -27,6 +27,11 @@
   <string name="settings_media_quality_summary_size">Smallest available track will be played</string>
   <string name="settings_media_cache_size">Media cache size</string>
   <string name="settings_media_cache_size_summary">%d GB will be used to store tracks for offline playback</string>
+  <string name="settings_play_order">Preferred playback order</string>
+  <string name="settings_play_order_shuffle">Shuffle albums</string>
+  <string name="settings_play_order_shuffle_summary">You prefer shuffling album tracks</string>
+  <string name="settings_play_order_in_order">Play albums in order</string>
+  <string name="settings_play_order_in_order_summary">You prefer playing albums in order</string>
   <string name="settings_other">Other</string>
   <string name="settings_night_mode">Dark mode</string>
   <string name="settings_night_mode_on">Always on (dark mode)</string>
@@ -57,6 +62,7 @@
   <string name="favorites">Favorites</string>
   <string name="playback_media_controls">Media controls</string>
   <string name="playback_media_controls_description">Control media playback</string>
+  <string name="playback_play">Play</string>
   <string name="playback_shuffle">Shuffle</string>
   <string name="playback_queue">Queue</string>
   <string name="playback_queue_empty">Your queue is empty</string>

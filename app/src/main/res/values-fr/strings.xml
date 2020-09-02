@@ -26,6 +26,11 @@
     <string name="settings_media_quality_summary_size">Les pistes les plus légères seront utilisées</string>
     <string name="settings_media_cache_size">Taille du cache</string>
     <string name="settings_media_cache_size_summary">%d Go seront utilisés pour mettre en cache les pistes pour la lecture hors-ligne</string>
+    <string name="settings_play_order">Ordre de lecture préféré</string>
+    <string name="settings_play_order_shuffle">Lecture aléatoire</string>
+    <string name="settings_play_order_shuffle_summary">Vous préférez écouter les albums aléatoirement</string>
+    <string name="settings_play_order_in_order">Lecture dans l\'ordre</string>
+    <string name="settings_play_order_in_order_summary">Vous préférez écouter les albums dans l\'ordre</string>
     <string name="settings_other">Autres</string>
     <string name="settings_night_mode">Mode nuit</string>
     <string name="settings_night_mode_on">Toujours activé (mode sombre)</string>
@@ -54,6 +59,7 @@
     <string name="playlists">Playlists</string>
     <string name="radios">Radios</string>
     <string name="favorites">Favoris</string>
+    <string name="playback_play">Jouer</string>
     <string name="playback_media_controls">Contrôle de lecture</string>
     <string name="playback_media_controls_description">Contrôler la lecture musicale</string>
     <string name="playback_shuffle">Lecture aléatoire</string>

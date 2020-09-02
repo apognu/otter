@@ -10,6 +10,16 @@
     <item>size</item>
   </array>
 
+  <array name="play_orders">
+    <item>@string/settings_play_order_shuffle</item>
+    <item>@string/settings_play_order_in_order</item>
+  </array>
+
+  <array name="play_orders_values">
+    <item>shuffle</item>
+    <item>in_order</item>
+  </array>
+
   <array name="night_mode">
     <item>@string/settings_night_mode_on</item>
     <item>@string/settings_night_mode_off</item>
