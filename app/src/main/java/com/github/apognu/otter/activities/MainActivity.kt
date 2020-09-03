@@ -55,6 +55,7 @@ class MainActivity : AppCompatActivity() {
 
   private val favoriteRepository = FavoritesRepository(this)
   private val favoritedRepository = FavoritedRepository(this)
+  private var menu: Menu? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -146,10 +147,18 @@ class MainActivity : AppCompatActivity() {
     super.onBackPressed()
   }
 
+  override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+    this.menu = menu
+
+    return super.onPrepareOptionsMenu(menu)
+  }
+
   override fun onCreateOptionsMenu(menu: Menu?): Boolean {
     menuInflater.inflate(R.menu.toolbar, menu)
 
-    menu?.findItem(R.id.nav_only_my_music)?.isChecked = Settings.getScope() == "me"
+    menu?.findItem(R.id.nav_all_music)?.isChecked = Settings.getScopes().contains("all")
+    menu?.findItem(R.id.nav_my_music)?.isChecked = Settings.getScopes().contains("me")
+    menu?.findItem(R.id.nav_followed)?.isChecked = Settings.getScopes().contains("subscribed")
 
     return true
   }
@@ -170,15 +179,48 @@ class MainActivity : AppCompatActivity() {
 
       R.id.nav_queue -> launchDialog(QueueFragment())
       R.id.nav_search -> startActivity(Intent(this, SearchActivity::class.java))
-      R.id.nav_only_my_music -> {
-        item.isChecked = !item.isChecked
+      R.id.nav_all_music, R.id.nav_my_music, R.id.nav_followed -> {
+        menu?.let { menu ->
+          item.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW)
+          item.actionView = View(this)
+          item.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+            override fun onMenuItemActionExpand(item: MenuItem?) = false
+            override fun onMenuItemActionCollapse(item: MenuItem?) = false
+          })
 
-        when (item.isChecked) {
-          true -> PowerPreference.getDefaultFile().set("scope", "me")
-          false -> PowerPreference.getDefaultFile().set("scope", "all")
+          item.isChecked = !item.isChecked
+
+          val scopes = Settings.getScopes().toMutableSet()
+
+          val new = when (item.itemId) {
+            R.id.nav_my_music -> "me"
+            R.id.nav_followed -> "subscribed"
+
+            else -> {
+              menu.findItem(R.id.nav_my_music).isChecked = false
+              menu.findItem(R.id.nav_followed).isChecked = false
+
+              PowerPreference.getDefaultFile().set("scope", "all")
+              EventBus.send(Event.ListingsChanged)
+
+              return false
+            }
+          }
+
+          menu.findItem(R.id.nav_all_music).isChecked = false
+
+          scopes.remove("all")
+
+          when (item.isChecked) {
+            true -> scopes.add(new)
+            false -> scopes.remove(new)
+          }
+
+          PowerPreference.getDefaultFile().set("scope", scopes.joinToString(","))
+          EventBus.send(Event.ListingsChanged)
+
+          return false
         }
-
-        EventBus.send(Event.ListingsChanged)
       }
       R.id.nav_downloads -> startActivity(Intent(this, DownloadsActivity::class.java))
       R.id.settings -> startActivityForResult(Intent(this, SettingsActivity::class.java), 0)

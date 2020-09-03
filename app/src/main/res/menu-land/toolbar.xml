@@ -8,11 +8,29 @@
     android:title="@string/toolbar_search"
     app:showAsAction="ifRoom" />
 
-  <item
-    android:id="@+id/nav_only_my_music"
-    android:checkable="true"
-    android:title="@string/only_my_music"
-    app:showAsAction="never" />
+  <item android:title="@string/filters">
+    <menu>
+      <group android:checkableBehavior="all">
+        <item
+          android:id="@+id/nav_all_music"
+          android:checkable="true"
+          android:title="@string/fiters_all"
+          app:showAsAction="never" />
+
+        <item
+          android:id="@+id/nav_my_music"
+          android:checkable="true"
+          android:title="@string/filters_my_music"
+          app:showAsAction="never" />
+
+        <item
+          android:id="@+id/nav_followed"
+          android:checkable="true"
+          android:title="@string/filters_followed"
+          app:showAsAction="never" />
+      </group>
+    </menu>
+  </item>
 
   <item
     android:id="@+id/nav_downloads"

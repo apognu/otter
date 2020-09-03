@@ -33,7 +33,7 @@ class HttpUpstream<D : Any, R : OtterResponse<D>>(val behavior: Behavior, privat
         .buildUpon()
         .appendQueryParameter("page_size", AppContext.PAGE_SIZE.toString())
         .appendQueryParameter("page", page.toString())
-        .appendQueryParameter("scope", Settings.getScope())
+        .appendQueryParameter("scope", Settings.getScopes().joinToString(","))
         .build()
         .toString()
 

@@ -69,7 +69,13 @@
     <item name="android:drawableTint" tools:targetApi="m">@android:color/white</item>
     <item name="android:tint">@android:color/white</item>
 
-    <item name="android:popupTheme">@style/ThemeOverlay.AppCompat.DayNight</item>
+    <item name="actionBarPopupTheme">@style/AppTheme.PopupMenu</item>
+    <item name="popupTheme">@style/AppTheme.PopupMenu</item>
+  </style>
+
+  <style name="AppTheme.PopupMenu" parent="ThemeOverlay.MaterialComponents.Toolbar.Primary">
+    <item name="android:drawableTint" tools:targetApi="m">@color/blackWhileLight</item>
+    <item name="android:tint">@color/blackWhileLight</item>
   </style>
 
   <style name="AppTheme.FloatingBottomSheet" parent="Theme.MaterialComponents.DayNight.BottomSheetDialog">

@@ -114,7 +114,10 @@
     <item quantity="one">%1$d track • %2$s"</item>
     <item quantity="other">%1$d tracks • %2$s"</item>
   </plurals>
-  <string name="only_my_music">Only my music</string>
+  <string name="filters">Filters</string>
+  <string name="fiters_all">All music</string>
+  <string name="filters_my_music">My music</string>
+  <string name="filters_followed">Followed content</string>
   <plurals name="downloads_description">
     <item quantity="one">Downloading %1$d track</item>
     <item quantity="other">Downloading %1$d tracks</item>
