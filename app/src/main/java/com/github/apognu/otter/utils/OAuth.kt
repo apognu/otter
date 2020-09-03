@@ -23,7 +23,7 @@ fun AuthState.save() {
 object OAuth {
   data class App(val client_id: String, val client_secret: String)
 
-  val REDIRECT_URI = Uri.parse("urn:/com.github.apognu.otter/oauth/callback")
+  private val REDIRECT_URI = Uri.parse("urn:/com.github.apognu.otter/oauth/callback")
 
   fun state(): AuthState = PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).getString("state").run {
     AuthState.jsonDeserialize(this)
@@ -38,8 +38,9 @@ object OAuth {
   fun register(context: Context, callback: () -> Unit) {
     state().authorizationServiceConfiguration?.let { config ->
       val body = mapOf(
-        "name" to UUID.randomUUID(),
-        "redirect_uris" to REDIRECT_URI.toString()
+        "name" to "Otter - ${UUID.randomUUID()}",
+        "redirect_uris" to REDIRECT_URI.toString(),
+        "scopes" to "read write"
       )
 
       runBlocking {
