@@ -156,7 +156,11 @@ class MainActivity : AppCompatActivity() {
   override fun onCreateOptionsMenu(menu: Menu?): Boolean {
     menuInflater.inflate(R.menu.toolbar, menu)
 
-    menu?.findItem(R.id.nav_all_music)?.isChecked = Settings.getScopes().contains("all")
+    menu?.findItem(R.id.nav_all_music)?.let {
+      it.isChecked = Settings.getScopes().contains("all")
+      it.isEnabled = !it.isChecked
+    }
+
     menu?.findItem(R.id.nav_my_music)?.isChecked = Settings.getScopes().contains("me")
     menu?.findItem(R.id.nav_followed)?.isChecked = Settings.getScopes().contains("subscribed")
 
@@ -197,6 +201,7 @@ class MainActivity : AppCompatActivity() {
             R.id.nav_followed -> "subscribed"
 
             else -> {
+              menu.findItem(R.id.nav_all_music).isEnabled = false
               menu.findItem(R.id.nav_my_music).isChecked = false
               menu.findItem(R.id.nav_followed).isChecked = false
 
@@ -207,13 +212,25 @@ class MainActivity : AppCompatActivity() {
             }
           }
 
-          menu.findItem(R.id.nav_all_music).isChecked = false
+          menu.findItem(R.id.nav_all_music).let {
+            it.isChecked = false
+            it.isEnabled = true
+          }
 
           scopes.remove("all")
 
           when (item.isChecked) {
             true -> scopes.add(new)
             false -> scopes.remove(new)
+          }
+
+          if (scopes.isEmpty()) {
+            menu.findItem(R.id.nav_all_music).let {
+              it.isChecked = true
+              it.isEnabled = false
+            }
+
+            scopes.add("all")
           }
 
           PowerPreference.getDefaultFile().set("scope", scopes.joinToString(","))
