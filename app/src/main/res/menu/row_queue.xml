@@ -2,6 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
   <item
+    android:id="@+id/track_add_to_playlist"
+    android:title="@string/playlist_add_to" />
+
+  <item
     android:id="@+id/queue_remove"
     android:title="@string/playback_queue_remove_item" />
 
