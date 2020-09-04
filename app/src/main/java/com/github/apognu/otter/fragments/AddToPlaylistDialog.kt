@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 object AddToPlaylistDialog {
   fun show(activity: Activity, lifecycleScope: CoroutineScope, track: Track) {
     val dialog = AlertDialog.Builder(activity).run {
-      setTitle("Add track to playlist")
+      setTitle(activity.getString(R.string.playlist_add_to))
       setView(activity.layoutInflater.inflate(R.layout.dialog_add_to_playlist, null))
 
       create()

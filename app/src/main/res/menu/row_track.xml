@@ -11,7 +11,7 @@
 
   <item
     android:id="@+id/track_add_to_playlist"
-    android:title="Add to playlist" />
+    android:title="@string/playlist_add_to" />
 
   <item
     android:id="@+id/track_pin"

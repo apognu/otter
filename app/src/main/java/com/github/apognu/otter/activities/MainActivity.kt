@@ -19,6 +19,7 @@ import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import com.github.apognu.otter.Otter
 import com.github.apognu.otter.R
@@ -380,7 +381,9 @@ class MainActivity : AppCompatActivity() {
 
           is Command.RefreshTrack -> refreshCurrentTrack(command.track)
 
-          is Command.AddToPlaylist -> AddToPlaylistDialog.show(this@MainActivity, lifecycleScope, command.track)
+          is Command.AddToPlaylist -> if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+              AddToPlaylistDialog.show(this@MainActivity, lifecycleScope, command.track)
+            }
         }
       }
     }

@@ -11,9 +11,9 @@
     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="8dp"
+    android:layout_marginHorizontal="16dp"
     android:layout_marginTop="16dp"
-    android:hint="New playlist..."
+    android:hint="@string/playlist_add_to_new"
     app:boxStrokeColor="@color/controlForeground"
     app:hintTextColor="@color/controlForeground"
     app:placeholderTextColor="@color/controlForeground">
@@ -30,9 +30,9 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="end"
-    android:layout_marginHorizontal="8dp"
+    android:layout_marginHorizontal="16dp"
     android:enabled="false"
-    android:text="Create playlist"
+    android:text="@string/playlist_add_to_create"
     android:textColor="@color/controlForeground"
     app:rippleColor="@color/ripple" />
 

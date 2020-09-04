@@ -114,6 +114,9 @@
     <item quantity="one">%1$d track • %2$s"</item>
     <item quantity="other">%1$d tracks • %2$s"</item>
   </plurals>
+  <string name="playlist_add_to">Add to playlist</string>
+  <string name="playlist_add_to_new">New playlist…</string>
+  <string name="playlist_add_to_create">Create playlist</string>
   <string name="filters">Filters</string>
   <string name="fiters_all">All music</string>
   <string name="filters_my_music">My music</string>

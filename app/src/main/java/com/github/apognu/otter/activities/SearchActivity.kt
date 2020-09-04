@@ -3,10 +3,12 @@ package com.github.apognu.otter.activities
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.apognu.otter.R
 import com.github.apognu.otter.adapters.SearchAdapter
+import com.github.apognu.otter.fragments.AddToPlaylistDialog
 import com.github.apognu.otter.fragments.AlbumsFragment
 import com.github.apognu.otter.fragments.ArtistsFragment
 import com.github.apognu.otter.repositories.*
@@ -46,6 +48,16 @@ class SearchActivity : AppCompatActivity() {
 
   override fun onResume() {
     super.onResume()
+
+    lifecycleScope.launch(Dispatchers.Main) {
+      CommandBus.get().collect { command ->
+        when (command) {
+          is Command.AddToPlaylist -> if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+            AddToPlaylistDialog.show(this@SearchActivity, lifecycleScope, command.track)
+          }
+        }
+      }
+    }
 
     lifecycleScope.launch(Dispatchers.IO) {
       EventBus.get().collect { message ->
