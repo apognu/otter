@@ -16,12 +16,13 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.row_track.view.*
 import java.util.*
 
-class PlaylistTracksAdapter(private val context: Context?, private val favoriteListener: OnFavoriteListener? = null, private val playlistListener: OnPlaylistListener? = null, val fromQueue: Boolean = false) : OtterAdapter<PlaylistTrack, PlaylistTracksAdapter.ViewHolder>() {
+class PlaylistTracksAdapter(private val context: Context?, private val favoriteListener: OnFavoriteListener? = null, private val playlistListener: OnPlaylistListener? = null) : OtterAdapter<PlaylistTrack, PlaylistTracksAdapter.ViewHolder>() {
   interface OnFavoriteListener {
     fun onToggleFavorite(id: Int, state: Boolean)
   }
 
   interface OnPlaylistListener {
+    fun onMoveTrack(from: Int, to: Int)
     fun onRemoveTrackFromPlaylist(track: Track, index: Int)
   }
 
@@ -38,10 +39,8 @@ class PlaylistTracksAdapter(private val context: Context?, private val favoriteL
   override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
     super.onAttachedToRecyclerView(recyclerView)
 
-    if (fromQueue) {
-      touchHelper = ItemTouchHelper(TouchHelperCallback()).also {
-        it.attachToRecyclerView(recyclerView)
-      }
+    touchHelper = ItemTouchHelper(TouchHelperCallback()).also {
+      it.attachToRecyclerView(recyclerView)
     }
   }
 
@@ -96,7 +95,7 @@ class PlaylistTracksAdapter(private val context: Context?, private val favoriteL
     holder.actions.setOnClickListener {
       context?.let { context ->
         PopupMenu(context, holder.actions, Gravity.START, R.attr.actionOverflowMenuStyle, 0).apply {
-          inflate(if (fromQueue) R.menu.row_queue else R.menu.row_track)
+          inflate(R.menu.row_track)
 
           menu.findItem(R.id.track_remove_from_playlist).isVisible = true
 
@@ -116,16 +115,14 @@ class PlaylistTracksAdapter(private val context: Context?, private val favoriteL
       }
     }
 
-    if (fromQueue) {
-      holder.handle.visibility = View.VISIBLE
+    holder.handle.visibility = View.VISIBLE
 
-      holder.handle.setOnTouchListener { _, event ->
-        if (event.actionMasked == MotionEvent.ACTION_DOWN) {
-          touchHelper.startDrag(holder)
-        }
-
-        true
+    holder.handle.setOnTouchListener { _, event ->
+      if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+        touchHelper.startDrag(holder)
       }
+
+      true
     }
   }
 
@@ -135,13 +132,12 @@ class PlaylistTracksAdapter(private val context: Context?, private val favoriteL
         Collections.swap(data, i, i + 1)
       }
     } else {
-      for (i in newPosition.downTo(oldPosition)) {
+      for (i in oldPosition.downTo(newPosition + 1)) {
         Collections.swap(data, i, i - 1)
       }
     }
 
     notifyItemMoved(oldPosition, newPosition)
-    CommandBus.send(Command.MoveFromQueue(oldPosition, newPosition))
   }
 
   inner class ViewHolder(view: View, val context: Context?) : RecyclerView.ViewHolder(view), View.OnClickListener {
@@ -154,20 +150,18 @@ class PlaylistTracksAdapter(private val context: Context?, private val favoriteL
     val actions = view.actions
 
     override fun onClick(view: View?) {
-      when (fromQueue) {
-        true -> CommandBus.send(Command.PlayTrack(layoutPosition))
-        false -> {
-          data.subList(layoutPosition, data.size).plus(data.subList(0, layoutPosition)).apply {
-            CommandBus.send(Command.ReplaceQueue(this.map { it.track }))
+      data.subList(layoutPosition, data.size).plus(data.subList(0, layoutPosition)).apply {
+        CommandBus.send(Command.ReplaceQueue(this.map { it.track }))
 
-            context.toast("All tracks were added to your queue")
-          }
-        }
+        context.toast("All tracks were added to your queue")
       }
     }
   }
 
   inner class TouchHelperCallback : ItemTouchHelper.Callback() {
+    var from = -1
+    var to = -1
+
     override fun isLongPressDragEnabled() = false
 
     override fun isItemViewSwipeEnabled() = false
@@ -176,6 +170,9 @@ class PlaylistTracksAdapter(private val context: Context?, private val favoriteL
       makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0)
 
     override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+      if (from == -1) from = viewHolder.adapterPosition
+      to = target.adapterPosition
+
       onItemMove(viewHolder.adapterPosition, target.adapterPosition)
 
       return true
@@ -193,6 +190,13 @@ class PlaylistTracksAdapter(private val context: Context?, private val favoriteL
 
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
       viewHolder.itemView.background = ColorDrawable(Color.TRANSPARENT)
+
+      if (from != -1 && to != -1 && from != to) {
+        playlistListener?.onMoveTrack(from, to)
+
+        from = -1
+        to = -1
+      }
 
       super.clearView(recyclerView, viewHolder)
     }

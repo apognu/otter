@@ -79,4 +79,21 @@ class ManagementPlaylistsRepository(override val context: Context?) : Repository
       .body(Gson().toJson(body))
       .awaitByteArrayResponseResult()
   }
+
+  fun move(id: Int, from: Int, to: Int) {
+    val body = mapOf("from" to from, "to" to to)
+
+    val request = Fuel.post(mustNormalizeUrl("/api/v1/playlists/${id}/move/")).apply {
+      if (!Settings.isAnonymous()) {
+        header("Authorization", "Bearer ${Settings.getAccessToken()}")
+      }
+    }
+
+    scope.launch(Dispatchers.IO) {
+      request
+        .header("Content-Type", "application/json")
+        .body(Gson().toJson(body))
+        .awaitByteArrayResponseResult()
+    }
+  }
 }

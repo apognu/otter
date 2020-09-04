@@ -146,7 +146,7 @@ class TracksAdapter(private val context: Context?, private val favoriteListener:
         Collections.swap(data, i, i + 1)
       }
     } else {
-      for (i in newPosition.downTo(oldPosition)) {
+      for (i in oldPosition.downTo(newPosition + 1)) {
         Collections.swap(data, i, i - 1)
       }
     }

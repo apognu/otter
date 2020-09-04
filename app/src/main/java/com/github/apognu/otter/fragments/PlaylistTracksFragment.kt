@@ -187,6 +187,10 @@ class PlaylistTracksFragment : OtterFragment<PlaylistTrack, PlaylistTracksAdapte
   }
 
   inner class PlaylistListener : PlaylistTracksAdapter.OnPlaylistListener {
+    override fun onMoveTrack(from: Int, to: Int) {
+      playlistsRepository.move(albumId, from, to)
+    }
+
     override fun onRemoveTrackFromPlaylist(track: Track, index: Int) {
       lifecycleScope.launch(Main) {
         playlistsRepository.remove(albumId, track, index)
