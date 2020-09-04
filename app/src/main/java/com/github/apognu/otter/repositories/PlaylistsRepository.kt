@@ -24,7 +24,7 @@ class PlaylistsRepository(override val context: Context?) : Repository<Playlist,
 
 class ManagementPlaylistsRepository(override val context: Context?) : Repository<Playlist, PlaylistsCache>() {
   override val cacheId = "tracks-playlists-management"
-  override val upstream = HttpUpstream<Playlist, OtterResponse<Playlist>>(HttpUpstream.Behavior.AtOnce, "/api/v1/playlists/?ordering=name", object : TypeToken<PlaylistsResponse>() {}.type)
+  override val upstream = HttpUpstream<Playlist, OtterResponse<Playlist>>(HttpUpstream.Behavior.AtOnce, "/api/v1/playlists/?scope=me&ordering=name", object : TypeToken<PlaylistsResponse>() {}.type)
 
   override fun cache(data: List<Playlist>) = PlaylistsCache(data)
   override fun uncache(reader: BufferedReader) = gsonDeserializerOf(PlaylistsCache::class.java).deserialize(reader)
@@ -63,5 +63,20 @@ class ManagementPlaylistsRepository(override val context: Context?) : Repository
         .body(Gson().toJson(body))
         .awaitByteArrayResponseResult()
     }
+  }
+
+  suspend fun remove(id: Int, track: Track, index: Int) {
+    val body = mapOf("index" to index)
+
+    val request = Fuel.post(mustNormalizeUrl("/api/v1/playlists/${id}/remove/")).apply {
+      if (!Settings.isAnonymous()) {
+        header("Authorization", "Bearer ${Settings.getAccessToken()}")
+      }
+    }
+
+    request
+      .header("Content-Type", "application/json")
+      .body(Gson().toJson(body))
+      .awaitByteArrayResponseResult()
   }
 }

@@ -3,9 +3,7 @@ package com.github.apognu.otter.adapters
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
-import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.view.*
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -18,9 +16,13 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.row_track.view.*
 import java.util.*
 
-class PlaylistTracksAdapter(private val context: Context?, private val favoriteListener: OnFavoriteListener? = null, val fromQueue: Boolean = false) : OtterAdapter<PlaylistTrack, PlaylistTracksAdapter.ViewHolder>() {
+class PlaylistTracksAdapter(private val context: Context?, private val favoriteListener: OnFavoriteListener? = null, private val playlistListener: OnPlaylistListener? = null, val fromQueue: Boolean = false) : OtterAdapter<PlaylistTrack, PlaylistTracksAdapter.ViewHolder>() {
   interface OnFavoriteListener {
     fun onToggleFavorite(id: Int, state: Boolean)
+  }
+
+  interface OnPlaylistListener {
+    fun onRemoveTrackFromPlaylist(track: Track, index: Int)
   }
 
   private lateinit var touchHelper: ItemTouchHelper
@@ -96,11 +98,14 @@ class PlaylistTracksAdapter(private val context: Context?, private val favoriteL
         PopupMenu(context, holder.actions, Gravity.START, R.attr.actionOverflowMenuStyle, 0).apply {
           inflate(if (fromQueue) R.menu.row_queue else R.menu.row_track)
 
+          menu.findItem(R.id.track_remove_from_playlist).isVisible = true
+
           setOnMenuItemClickListener {
             when (it.itemId) {
               R.id.track_add_to_queue -> CommandBus.send(Command.AddToQueue(listOf(track.track)))
               R.id.track_play_next -> CommandBus.send(Command.PlayNext(track.track))
               R.id.queue_remove -> CommandBus.send(Command.RemoveFromQueue(track.track))
+              R.id.track_remove_from_playlist -> playlistListener?.onRemoveTrackFromPlaylist(track.track, position)
             }
 
             true

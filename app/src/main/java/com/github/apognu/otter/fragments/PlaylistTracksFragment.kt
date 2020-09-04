@@ -10,7 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.adapters.PlaylistTracksAdapter
 import com.github.apognu.otter.repositories.FavoritesRepository
+import com.github.apognu.otter.repositories.ManagementPlaylistsRepository
 import com.github.apognu.otter.repositories.PlaylistTracksRepository
+import com.github.apognu.otter.repositories.Repository
 import com.github.apognu.otter.utils.*
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation
@@ -24,6 +26,7 @@ class PlaylistTracksFragment : OtterFragment<PlaylistTrack, PlaylistTracksAdapte
   override val recycler: RecyclerView get() = tracks
 
   lateinit var favoritesRepository: FavoritesRepository
+  lateinit var playlistsRepository: ManagementPlaylistsRepository
 
   var albumId = 0
   var albumArtist = ""
@@ -53,9 +56,10 @@ class PlaylistTracksFragment : OtterFragment<PlaylistTrack, PlaylistTracksAdapte
       albumCover = getString("albumCover") ?: ""
     }
 
-    adapter = PlaylistTracksAdapter(context, FavoriteListener())
+    adapter = PlaylistTracksAdapter(context, FavoriteListener(), PlaylistListener())
     repository = PlaylistTracksRepository(context, albumId)
     favoritesRepository = FavoritesRepository(context)
+    playlistsRepository = ManagementPlaylistsRepository(context)
 
     watchEventBus()
   }
@@ -178,6 +182,15 @@ class PlaylistTracksFragment : OtterFragment<PlaylistTrack, PlaylistTracksAdapte
       when (state) {
         true -> favoritesRepository.addFavorite(id)
         false -> favoritesRepository.deleteFavorite(id)
+      }
+    }
+  }
+
+  inner class PlaylistListener : PlaylistTracksAdapter.OnPlaylistListener {
+    override fun onRemoveTrackFromPlaylist(track: Track, index: Int) {
+      lifecycleScope.launch(Main) {
+        playlistsRepository.remove(albumId, track, index)
+        update()
       }
     }
   }

@@ -100,6 +100,11 @@ abstract class OtterFragment<D : Any, A : OtterAdapter<D, *>> : Fragment() {
     }
   }
 
+  fun update() {
+    swiper?.isRefreshing = true
+    fetch(Repository.Origin.Network.origin)
+  }
+
   open fun onDataFetched(data: List<D>) {}
 
   private fun fetch(upstreams: Int = Repository.Origin.Network.origin, size: Int = 0) {

@@ -17,4 +17,9 @@
     android:id="@+id/track_pin"
     android:title="@string/playback_queue_download" />
 
+  <item
+    android:id="@+id/track_remove_from_playlist"
+    android:visible="false"
+    android:title="@string/playback_queue_remove_item" />
+
 </menu>
