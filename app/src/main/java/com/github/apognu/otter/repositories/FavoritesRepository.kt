@@ -1,7 +1,6 @@
 package com.github.apognu.otter.repositories
 
 import android.content.Context
-import androidx.lifecycle.lifecycleScope
 import com.github.apognu.otter.Otter
 import com.github.apognu.otter.utils.*
 import com.github.kittinunf.fuel.Fuel
@@ -11,7 +10,6 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.io.BufferedReader

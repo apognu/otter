@@ -379,6 +379,8 @@ class MainActivity : AppCompatActivity() {
           }
 
           is Command.RefreshTrack -> refreshCurrentTrack(command.track)
+
+          is Command.AddToPlaylist -> AddToPlaylistDialog.show(this@MainActivity, lifecycleScope, command.track)
         }
       }
     }

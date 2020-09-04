@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical">
+
+  <com.google.android.material.textfield.TextInputLayout
+    android:id="@+id/name"
+    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginTop="16dp"
+    android:hint="New playlist..."
+    app:boxStrokeColor="@color/controlForeground"
+    app:hintTextColor="@color/controlForeground"
+    app:placeholderTextColor="@color/controlForeground">
+
+    <com.google.android.material.textfield.TextInputEditText
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+
+  </com.google.android.material.textfield.TextInputLayout>
+
+  <com.google.android.material.button.MaterialButton
+    android:id="@+id/create"
+    style="@style/Widget.MaterialComponents.Button.TextButton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="end"
+    android:layout_marginHorizontal="8dp"
+    android:enabled="false"
+    android:text="Create playlist"
+    android:textColor="@color/controlForeground"
+    app:rippleColor="@color/ripple" />
+
+  <androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/playlists"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:itemCount="10"
+    tools:listitem="@layout/row_playlist" />
+
+</LinearLayout>

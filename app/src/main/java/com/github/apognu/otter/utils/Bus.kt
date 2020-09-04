@@ -22,6 +22,7 @@ sealed class Command {
   class Seek(val progress: Int) : Command()
 
   class AddToQueue(val tracks: List<Track>) : Command()
+  class AddToPlaylist(val track: Track) : Command()
   class PlayNext(val track: Track) : Command()
   class ReplaceQueue(val queue: List<Track>, val fromRadio: Boolean = false) : Command()
   class RemoveFromQueue(val track: Track) : Command()

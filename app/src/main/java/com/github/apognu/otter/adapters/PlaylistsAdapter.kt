@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.OtterAdapter
@@ -35,6 +36,15 @@ class PlaylistsAdapter(val context: Context?, private val listener: OnPlaylistCl
 
     holder.name.text = playlist.name
     holder.summary.text = context?.resources?.getQuantityString(R.plurals.playlist_description, playlist.tracks_count, playlist.tracks_count, toDurationString(playlist.duration.toLong())) ?: ""
+
+    context?.let {
+      ContextCompat.getDrawable(context, R.drawable.cover).let {
+        holder.cover_top_left.setImageDrawable(it)
+        holder.cover_top_right.setImageDrawable(it)
+        holder.cover_bottom_left.setImageDrawable(it)
+        holder.cover_bottom_right.setImageDrawable(it)
+      }
+    }
 
     playlist.album_covers.shuffled().take(4).forEachIndexed { index, url ->
       val imageView = when (index) {

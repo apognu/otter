@@ -10,6 +10,10 @@
     android:title="@string/playback_queue_play_next" />
 
   <item
+    android:id="@+id/track_add_to_playlist"
+    android:title="Add to playlist" />
+
+  <item
     android:id="@+id/track_pin"
     android:title="@string/playback_queue_download" />
 
