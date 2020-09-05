@@ -40,6 +40,14 @@ class LandscapeQueueFragment : Fragment() {
     queue?.visibility = View.GONE
     placeholder?.visibility = View.VISIBLE
 
+    queue_shuffle.setOnClickListener {
+      CommandBus.send(Command.ShuffleQueue)
+    }
+
+    queue_clear.setOnClickListener {
+      CommandBus.send(Command.ClearQueue)
+    }
+
     refresh()
   }
 
