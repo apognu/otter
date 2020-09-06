@@ -117,6 +117,7 @@
   <string name="playlist_add_to">Add to playlist</string>
   <string name="playlist_add_to_new">New playlist…</string>
   <string name="playlist_add_to_create">Create playlist</string>
+  <string name="playlist_added_to">Added to playlist %s</string>
   <string name="filters">Filters</string>
   <string name="fiters_all">All music</string>
   <string name="filters_my_music">My music</string>

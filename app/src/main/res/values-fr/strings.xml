@@ -114,8 +114,9 @@
         <item quantity="other">%1$d pistes • %2$s</item>
     </plurals>
     <string name="playlist_add_to">Ajouter à une playlist</string>
-    <string name="playlist_add_to_new">Nouvelle playlist...</string>
+    <string name="playlist_add_to_new">Nouvelle playlist…</string>
     <string name="playlist_add_to_create">Créer playlist</string>
+    <string name="playlist_added_to">Ajouté à la playlist %s</string>
     <string name="filters">Filtres</string>
     <string name="fiters_all">Toute la musique</string>
     <string name="filters_my_music">Ma musique</string>
