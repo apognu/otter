@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.*
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.github.apognu.otter.R
@@ -67,12 +68,12 @@ class PlaylistTracksAdapter(private val context: Context?, private val favoriteL
     holder.artist.text = track.track.artist.name
 
     context?.let {
-      holder.itemView.background = context.getDrawable(R.drawable.ripple)
+      holder.itemView.background = ContextCompat.getDrawable(context, R.drawable.ripple)
     }
 
     if (track.track == currentTrack || track.track.current) {
       context?.let {
-        holder.itemView.background = context.getDrawable(R.drawable.current)
+        holder.itemView.background = ContextCompat.getDrawable(context, R.drawable.current)
       }
     }
 
@@ -182,7 +183,9 @@ class PlaylistTracksAdapter(private val context: Context?, private val favoriteL
 
     override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
       if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
-        viewHolder?.itemView?.background = ColorDrawable(Color.argb(255, 100, 100, 100))
+        context?.let {
+          viewHolder?.itemView?.background = ColorDrawable(context.getColor(R.color.colorSelected))
+        }
       }
 
       super.onSelectedChanged(viewHolder, actionState)
