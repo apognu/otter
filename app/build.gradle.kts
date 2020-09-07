@@ -132,6 +132,12 @@ dependencies {
   implementation("com.google.android.exoplayer:exoplayer-core:2.11.5")
   implementation("com.google.android.exoplayer:exoplayer-ui:2.11.5")
   implementation("com.google.android.exoplayer:extension-mediasession:2.11.5")
+  implementation("com.github.PaulWoitaschek.ExoPlayer-Extensions:extension-opus:2.11.4") {
+    isTransitive = false
+  }
+  implementation("com.github.PaulWoitaschek.ExoPlayer-Extensions:extension-flac:2.11.4" ){
+    isTransitive = false
+  }
 
   implementation("com.aliassadi:power-preference-lib:1.4.1")
   implementation("com.github.kittinunf.fuel:fuel:2.1.0")
