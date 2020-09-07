@@ -37,16 +37,27 @@ android {
   buildToolsVersion = "29.0.3"
   compileSdkVersion(29)
 
+  lintOptions {
+    isAbortOnError = false
+  }
+
   defaultConfig {
     applicationId = "com.github.apognu.otter"
 
     minSdkVersion(23)
     targetSdkVersion(29)
 
-    ndkVersion = "21.3.6528147"
-
     versionCode = androidGitVersion.code()
     versionName = androidGitVersion.name()
+
+    applicationVariants.all {
+      outputs
+        .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
+        .forEach { output ->
+          if (flavorName == "foss") output.outputFileName = "otter-foss-${versionName}-${buildType.name}.apk"
+          else output.outputFileName = "otter-${versionName}-${buildType.name}.apk"
+        }
+    }
   }
 
   signingConfigs {
@@ -93,6 +104,22 @@ android {
         getDefaultProguardFile("proguard-android-optimize.txt"),
         "proguard-rules.pro"
       )
+    }
+  }
+
+  flavorDimensions("version")
+
+  productFlavors {
+    create("full") {
+      setDimension("version")
+
+      applicationId = "com.github.apognu.otter"
+    }
+
+    create("foss") {
+      setDimension("version")
+
+      applicationId = "com.github.apognu.otter.foss"
     }
   }
 }
