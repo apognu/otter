@@ -66,6 +66,12 @@ class QueueFragment : BottomSheetDialogFragment() {
       CommandBus.send(Command.ShuffleQueue)
     }
 
+    queue_save.setOnClickListener {
+      adapter?.data?.let {
+        CommandBus.send(Command.AddToPlaylist(it))
+      }
+    }
+
     queue_clear.setOnClickListener {
       CommandBus.send(Command.ClearQueue)
     }

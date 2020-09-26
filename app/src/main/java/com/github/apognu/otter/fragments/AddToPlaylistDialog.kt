@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 object AddToPlaylistDialog {
-  fun show(activity: Activity, lifecycleScope: CoroutineScope, track: Track) {
+  fun show(activity: Activity, lifecycleScope: CoroutineScope, tracks: List<Track>) {
     val dialog = AlertDialog.Builder(activity).run {
       setTitle(activity.getString(R.string.playlist_add_to))
       setView(activity.layoutInflater.inflate(R.layout.dialog_add_to_playlist, null))
@@ -42,7 +42,7 @@ object AddToPlaylistDialog {
 
       lifecycleScope.launch(IO) {
         repository.new(name)?.let { id ->
-          repository.add(id, track)
+          repository.add(id, tracks)
 
           withContext(Main) {
             Toast.makeText(activity, activity.getString(R.string.playlist_added_to, name), Toast.LENGTH_SHORT).show()
@@ -55,7 +55,7 @@ object AddToPlaylistDialog {
 
     val adapter = PlaylistsAdapter(activity, object : PlaylistsAdapter.OnPlaylistClickListener {
       override fun onClick(holder: View?, playlist: Playlist) {
-        repository.add(playlist.id, track)
+        repository.add(playlist.id, tracks)
 
         Toast.makeText(activity, activity.getString(R.string.playlist_added_to, playlist.name), Toast.LENGTH_SHORT).show()
 

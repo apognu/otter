@@ -222,8 +222,8 @@
         <ImageButton
           android:id="@+id/now_playing_details_previous"
           style="@style/IconButton"
-          android:layout_width="48dp"
-          android:layout_height="48dp"
+          android:layout_width="32dp"
+          android:layout_height="32dp"
           android:layout_marginEnd="16dp"
           android:contentDescription="@string/control_previous"
           android:src="@drawable/previous" />
@@ -240,8 +240,8 @@
         <ImageButton
           android:id="@+id/now_playing_details_next"
           style="@style/IconButton"
-          android:layout_width="48dp"
-          android:layout_height="48dp"
+          android:layout_width="32dp"
+          android:layout_height="32dp"
           android:layout_marginStart="16dp"
           android:contentDescription="@string/control_next"
           android:src="@drawable/next" />

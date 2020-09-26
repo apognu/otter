@@ -48,8 +48,8 @@ class ManagementPlaylistsRepository(override val context: Context?) : Repository
     return result.get().id
   }
 
-  fun add(id: Int, track: Track) {
-    val body = PlaylistAdd(listOf(track.id), false)
+  fun add(id: Int, tracks: List<Track>) {
+    val body = PlaylistAdd(tracks.map { it.id }, false)
 
     val request = Fuel.post(mustNormalizeUrl("/api/v1/playlists/${id}/add/")).apply {
       if (!Settings.isAnonymous()) {

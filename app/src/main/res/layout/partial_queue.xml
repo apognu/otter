@@ -14,31 +14,44 @@
     android:paddingVertical="4dp">
 
     <Button
+      android:id="@+id/queue_save"
+      style="@style/Widget.MaterialComponents.Button.Icon"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="4dp"
+      android:backgroundTint="@color/colorPrimary"
+      android:layout_weight="1"
+      android:text="@string/playback_queue_save"
+      android:textColor="@android:color/white"
+      android:textSize="12sp"
+      app:icon="@drawable/playlist"
+      app:iconTint="@android:color/white"
+      app:rippleColor="@color/ripple" />
+
+    <Button
       android:id="@+id/queue_shuffle"
       style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginEnd="4dp"
+      android:layout_marginHorizontal="4dp"
       android:layout_weight="1"
       android:text="@string/playback_shuffle"
-      android:textColor="@color/colorPrimary"
+      android:textColor="@color/controlForeground"
       android:textSize="12sp"
       app:icon="@drawable/shuffle"
-      app:iconTint="@color/colorPrimary"
+      app:iconTint="@color/controlForeground"
       app:rippleColor="@color/ripple" />
 
     <Button
       android:id="@+id/queue_clear"
-      style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+      style="@style/AppTheme.IconButton"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginStart="4dp"
-      android:layout_weight="1"
-      android:text="@string/playback_queue_clear"
-      android:textColor="@color/colorPrimary"
+      android:layout_weight="0"
       android:textSize="12sp"
       app:icon="@drawable/delete"
-      app:iconTint="@color/colorPrimary"
+      app:iconTint="@color/controlForeground"
       app:rippleColor="@color/ripple" />
 
   </LinearLayout>

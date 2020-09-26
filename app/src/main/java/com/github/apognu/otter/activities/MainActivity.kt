@@ -382,7 +382,7 @@ class MainActivity : AppCompatActivity() {
           is Command.RefreshTrack -> refreshCurrentTrack(command.track)
 
           is Command.AddToPlaylist -> if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-              AddToPlaylistDialog.show(this@MainActivity, lifecycleScope, command.track)
+              AddToPlaylistDialog.show(this@MainActivity, lifecycleScope, command.tracks)
             }
         }
       }

@@ -53,7 +53,7 @@ class SearchActivity : AppCompatActivity() {
       CommandBus.get().collect { command ->
         when (command) {
           is Command.AddToPlaylist -> if (lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
-            AddToPlaylistDialog.show(this@SearchActivity, lifecycleScope, command.track)
+            AddToPlaylistDialog.show(this@SearchActivity, lifecycleScope, command.tracks)
           }
         }
       }
