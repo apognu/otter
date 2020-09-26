@@ -8,10 +8,7 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.observe
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.transition.Fade
 import androidx.transition.Slide
 import com.github.apognu.otter.R
@@ -33,7 +30,7 @@ class ArtistsFragment : PagedOtterFragment<FunkwhaleArtist, Artist, ArtistsAdapt
   override val adapter by inject<ArtistsAdapter> { parametersOf(context, OnArtistClickListener()) }
   override val viewModel by viewModel<ArtistsViewModel>()
 
-  override val liveData by lazy { viewModel.artistsPaged }
+  override val liveData by lazy { viewModel.artists }
   override val viewRes = R.layout.fragment_artists
   override val recycler: RecyclerView get() = artists
 

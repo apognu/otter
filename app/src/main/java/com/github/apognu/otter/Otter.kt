@@ -5,6 +5,7 @@ import android.content.Context
 import android.widget.SearchView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.room.Room
+import com.couchbase.lite.*
 import com.github.apognu.otter.activities.MainActivity
 import com.github.apognu.otter.activities.SearchActivity
 import com.github.apognu.otter.adapters.*
@@ -14,10 +15,7 @@ import com.github.apognu.otter.models.dao.OtterDatabase
 import com.github.apognu.otter.playback.MediaSession
 import com.github.apognu.otter.playback.QueueManager.Companion.factory
 import com.github.apognu.otter.repositories.*
-import com.github.apognu.otter.utils.AppContext
-import com.github.apognu.otter.utils.Cache
-import com.github.apognu.otter.utils.Command
-import com.github.apognu.otter.utils.Event
+import com.github.apognu.otter.utils.*
 import com.github.apognu.otter.viewmodels.*
 import com.google.android.exoplayer2.database.ExoDatabaseProvider
 import com.google.android.exoplayer2.offline.DefaultDownloadIndex
@@ -28,7 +26,6 @@ import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvicto
 import com.google.android.exoplayer2.upstream.cache.NoOpCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.preference.PowerPreference
-import io.realm.Realm
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.BroadcastChannel
 import org.koin.android.ext.koin.androidContext
@@ -38,6 +35,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -86,7 +84,7 @@ class Otter : Application() {
   override fun onCreate() {
     super.onCreate()
 
-    Realm.init(this)
+    CouchbaseLite.init(this)
 
     defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
 
@@ -107,6 +105,13 @@ class Otter : Application() {
           }
         }
 
+        single {
+          Database("otter", DatabaseConfiguration()).apply {
+            createIndex("type", IndexBuilder.valueIndex(ValueIndexItem.expression(Expression.property("type"))))
+            createIndex("order", IndexBuilder.valueIndex(ValueIndexItem.expression(Expression.property("order"))))
+          }
+        }
+
         fragment { BrowseFragment() }
         fragment { LandscapeQueueFragment() }
 
@@ -114,7 +119,7 @@ class Otter : Application() {
 
         single { ArtistsRepository(get(), get()) }
         factory { (id: Int) -> ArtistTracksRepository(get(), get(), id) }
-        viewModel { ArtistsViewModel(get(), get()) }
+        viewModel { ArtistsViewModel(get()) }
         factory { (context: Context?, listener: ArtistsFragment.OnArtistClickListener) -> ArtistsAdapter(context, listener) }
 
         factory { (id: Int?) -> AlbumsRepository(get(), get(), id) }
@@ -122,7 +127,7 @@ class Otter : Application() {
         factory { (context: Context?, adapter: AlbumsAdapter.OnAlbumClickListener) -> AlbumsAdapter(context, adapter) }
         factory { (context: Context?, adapter: AlbumsGridAdapter.OnAlbumClickListener) -> AlbumsGridAdapter(context, adapter) }
 
-        factory { (id: Int?) -> TracksRepository(get(), get(), id) }
+        factory { (id: Int?) -> TracksRepository(get(), get(), get(), id) }
         viewModel { (id: Int) -> TracksViewModel(get { parametersOf(id) }, get(), id) }
         factory { (context: Context?, favoriteListener: TracksAdapter.OnFavoriteListener?) -> TracksAdapter(context, favoriteListener) }
 
@@ -149,8 +154,6 @@ class Otter : Application() {
         single { ArtistsSearchRepository(get(), get()) }
         single { AlbumsSearchRepository(get(), get { parametersOf(null) }) }
         single { TracksSearchRepository(get(), get { parametersOf(null) }) }
-
-        single { Mediator(get(), get(), get()) }
       })
     }
 
@@ -163,6 +166,8 @@ class Otter : Application() {
 
   fun deleteAllData() {
     PowerPreference.getFileByName(AppContext.PREFS_CREDENTIALS).clear()
+
+    filesDir.deleteRecursively()
 
     cacheDir.listFiles()?.forEach {
       it.delete()

@@ -1,6 +1,9 @@
 package com.github.apognu.otter.models.api
 
+import com.couchbase.lite.Database
+import com.couchbase.lite.MutableDocument
 import com.github.apognu.otter.models.domain.SearchResult
+import com.github.apognu.otter.utils.toCouchbaseArray
 import com.google.android.exoplayer2.offline.Download
 import kotlinx.serialization.ContextualSerialization
 import kotlinx.serialization.Serializable
@@ -30,6 +33,63 @@ data class FunkwhaleTrack(
       album = FunkwhaleAlbum(0, FunkwhaleAlbum.Artist(0, ""), "", Covers(CoverUrls("")), ""),
       uploads = listOf(FunkwhaleUpload(download.contentId, 0, 0))
     )
+
+    fun persist(database: Database, tracks: List<FunkwhaleTrack>, base: Int? = null) {
+      tracks.forEachIndexed { index, track ->
+        val artistDoc = database.getDocument("artist:${track.artist.id}")?.toMutable() ?: MutableDocument("artist:${track.artist.id}")
+
+        artistDoc.run {
+          setString("type", "artist")
+
+          setInt("id", track.artist.id)
+          setString("name", track.artist.name)
+
+          database.save(this)
+        }
+
+        track.album?.let { album ->
+          val albumDoc = database.getDocument("album:${album.id}")?.toMutable() ?: MutableDocument("album:${album.id}")
+
+          albumDoc.run {
+            setString("type", "album")
+
+            setInt("id", album.id)
+            setInt("artist_id", album.artist.id)
+            setString("artist_name", album.artist.name)
+            setString("title", album.title)
+            setString("release_date", album.release_date)
+
+            album.cover?.urls?.original?.let { cover ->
+              setString("cover", cover)
+            }
+
+            database.save(this)
+          }
+        }
+
+        val doc = database.getDocument("track:${track.id}")?.toMutable() ?: MutableDocument("track:${track.id}")
+
+        doc.run {
+          setString("type", "track")
+
+          setInt("id", track.id)
+
+          track.album?.let { album ->
+            setInt("albumId", album.id)
+          }
+
+          setInt("artistId", track.artist.id)
+          setString("title", track.title)
+          setInt("position", track.position)
+          setInt("disc_number", track.disc_number ?: 0)
+          setString("copyright", track.copyright)
+          setString("license", track.license)
+          setString("uploads", track.uploads.getOrNull(0)?.listen_url ?: "")
+
+          database.save(this)
+        }
+      }
+    }
   }
 
   @Serializable

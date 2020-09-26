@@ -25,10 +25,6 @@ class ArtistsAdapter(val context: Context?, private val listener: OnArtistClickL
     fun onClick(holder: View?, artist: Artist)
   }
 
-  // override fun getItemCount() = data.size
-
-  // override fun getItemId(position: Int) = data[position].id.toLong()
-
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
     val view = LayoutInflater.from(context).inflate(R.layout.row_artist, parent, false)
 

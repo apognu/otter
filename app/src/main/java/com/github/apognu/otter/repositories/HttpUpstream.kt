@@ -8,6 +8,7 @@ import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.FuelError
 import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
 import com.github.kittinunf.fuel.coroutines.awaitObjectResult
+import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
 import com.github.kittinunf.result.Result
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.*
@@ -49,8 +50,6 @@ class HttpUpstream<D : Any>(val behavior: Behavior, private val url: String, pri
         }
       },
       { error ->
-        error.log()
-
         when (error.exception) {
           is RefreshError -> EventBus.send(Event.LogOut)
           else -> emit(Repository.Response(listOf(), page, false))
@@ -67,13 +66,18 @@ class HttpUpstream<D : Any>(val behavior: Behavior, private val url: String, pri
         }
       }
 
-      val (_, response, result) = request.awaitObjectResponseResult(AppContext.deserializer(OtterResponseSerializer(serializer)))
+      val (_, response, result) = request.awaitStringResponseResult()
+      val items = AppContext.deserializer(OtterResponseSerializer(serializer)).deserialize(result.get())
 
       if (response.statusCode == 401) {
         return retryGet(url)
       }
 
-      result
+      items?.let {
+        return Result.success(items)
+      }
+
+      Result.error(FuelError.wrap(Exception("")))
     } catch (e: Exception) {
       Result.error(FuelError.wrap(e))
     }

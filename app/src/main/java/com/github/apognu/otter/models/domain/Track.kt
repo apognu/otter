@@ -1,5 +1,6 @@
 package com.github.apognu.otter.models.domain
 
+import com.couchbase.lite.Result
 import com.github.apognu.otter.models.dao.DecoratedTrackEntity
 import com.preference.PowerPreference
 
@@ -23,6 +24,17 @@ data class Track(
 ) : SearchResult {
 
   companion object {
+    fun from(track: Result) = track.getDictionary(0).run {
+      Track(
+        getInt("id"),
+        getString("title") ?: "N/A",
+        getInt("position"),
+        getString("copyright"),
+        getString("license"),
+        false
+      )
+    }
+
     fun fromDecoratedEntity(entity: DecoratedTrackEntity) = entity.run {
       Track(
         id,

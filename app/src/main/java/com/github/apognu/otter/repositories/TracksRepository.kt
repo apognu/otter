@@ -2,11 +2,13 @@ package com.github.apognu.otter.repositories
 
 import android.content.Context
 import androidx.lifecycle.LiveData
+import com.couchbase.lite.*
 import com.github.apognu.otter.Otter
 import com.github.apognu.otter.models.api.FunkwhaleTrack
 import com.github.apognu.otter.models.dao.DecoratedTrackEntity
 import com.github.apognu.otter.models.dao.OtterDatabase
 import com.github.apognu.otter.models.domain.Track
+import com.github.apognu.otter.utils.asLiveData
 import com.github.apognu.otter.utils.getMetadata
 import com.github.apognu.otter.utils.maybeNormalizeUrl
 import com.google.android.exoplayer2.offline.Download
@@ -15,7 +17,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-class TracksRepository(override val context: Context, private val database: OtterDatabase, albumId: Int?) : Repository<FunkwhaleTrack>() {
+class TracksRepository(override val context: Context, private val database: OtterDatabase, private val couch: Database, albumId: Int?) : Repository<FunkwhaleTrack>() {
   override val upstream =
     HttpUpstream(HttpUpstream.Behavior.AtOnce, "/api/v1/tracks/?playable=true&album=$albumId&ordering=disc_number,position", FunkwhaleTrack.serializer())
 
@@ -39,18 +41,21 @@ class TracksRepository(override val context: Context, private val database: Otte
   }
 
   override fun onDataFetched(data: List<FunkwhaleTrack>): List<FunkwhaleTrack> = runBlocking {
-    data.forEach { track ->
-      database.tracks().insertWithAssocs(database.artists(), database.albums(), database.uploads(), track)
-    }
+    FunkwhaleTrack.persist(couch, data)
 
     data.sortedWith(compareBy({ it.disc_number }, { it.position }))
   }
 
-  fun insert(track: FunkwhaleTrack) {
-    database.tracks().insertWithAssocs(database.artists(), database.albums(), database.uploads(), track)
-  }
+  fun insert(tracks: List<FunkwhaleTrack>) = FunkwhaleTrack.persist(couch, tracks)
 
-  fun find(ids: List<Int>) = database.tracks().findAllDecorated(ids)
+  fun find(ids: List<Int>) = QueryBuilder
+    .select(SelectResult.all())
+    .from(DataSource.database(couch))
+    .where(
+      Expression.property("type").equalTo(Expression.string("track"))
+        .and(Meta.id.`in`(*ids.map { Expression.string("track:$it") }.toTypedArray()))
+    )
+    .asLiveData()
 
   suspend fun ofArtistBlocking(id: Int) = database.tracks().ofArtistBlocking(id)
 

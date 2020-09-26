@@ -30,7 +30,7 @@ class FavoritesViewModel(private val repository: FavoritesRepository, private va
       val ids = it.map { favorite -> favorite.track_id }
 
       Transformations.map(tracksRepository.find(ids)) { tracks ->
-        tracks.map { track -> Track.fromDecoratedEntity(track) }.sortedBy { it.title }
+        tracks.map { track -> Track.from(track) }.sortedBy { it.title }
       }
     }
   }

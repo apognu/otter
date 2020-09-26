@@ -4,9 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.paging.DataSource
 import androidx.room.*
 import com.github.apognu.otter.models.api.FunkwhaleArtist
-import io.realm.RealmObject
-import io.realm.annotations.Required
-
 @Entity(tableName = "artists")
 data class ArtistEntity(
   @PrimaryKey
@@ -59,14 +56,3 @@ data class DecoratedArtistEntity(
   val album_count: Int,
   val album_cover: String?
 )
-
-open class RealmArtist(
-  @io.realm.annotations.PrimaryKey
-  var id: Int = 0,
-  @Required
-  var name: String = ""
-) : RealmObject()
-
-fun FunkwhaleArtist.toRealmDao() = run {
-  RealmArtist(id, name)
-}

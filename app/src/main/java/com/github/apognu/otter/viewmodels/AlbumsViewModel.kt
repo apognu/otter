@@ -12,11 +12,11 @@ class AlbumsViewModel(private val repository: AlbumsRepository, private val trac
   val albums: LiveData<List<Album>> by lazy {
     if (artistId == null) {
       Transformations.map(repository.all()) {
-        it.map { album -> Album.fromDecoratedEntity(album) }
+        it.map { result -> Album.from(result) }
       }
     } else {
       Transformations.map(repository.ofArtist(artistId)) {
-        it.map { album -> Album.fromDecoratedEntity(album) }
+        it.map { result -> Album.from(result) }
       }
     }
   }

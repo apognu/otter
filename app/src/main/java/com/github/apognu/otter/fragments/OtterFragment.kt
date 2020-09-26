@@ -5,12 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
+import androidx.lifecycle.*
 import androidx.paging.PagingData
 import androidx.paging.PagingDataAdapter
+import androidx.paging.map
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
@@ -21,11 +19,14 @@ import com.github.apognu.otter.utils.EventBus
 import com.github.apognu.otter.utils.log
 import com.github.apognu.otter.utils.untilNetwork
 import kotlinx.android.synthetic.main.fragment_artists.*
-import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
-import org.koin.ext.scope
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 abstract class OtterAdapter<D, VH : RecyclerView.ViewHolder> : RecyclerView.Adapter<VH>() {
   var data: MutableList<D> = mutableListOf()
@@ -154,8 +155,6 @@ abstract class OtterFragment<DAO : Any, D : Any, A : OtterAdapter<D, *>> : Fragm
 }
 
 abstract class PagedOtterFragment<DAO : Any, D : Any, A : PagingDataAdapter<D, *>> : Fragment() {
-  open val OFFSCREEN_PAGES = 10
-
   abstract val repository: Repository<DAO>
   abstract val adapter: A
   open val viewModel: ViewModel? = null
@@ -218,16 +217,5 @@ abstract class PagedOtterFragment<DAO : Any, D : Any, A : PagingDataAdapter<D, *
         }
       }
     }
-  }
-
-  private fun needsMoreOffscreenPages(): Boolean {
-    view?.let {
-      val offset = recycler.computeVerticalScrollOffset()
-      val left = recycler.computeVerticalScrollRange() - recycler.height - offset
-
-      return left < (recycler.height * OFFSCREEN_PAGES)
-    }
-
-    return false
   }
 }

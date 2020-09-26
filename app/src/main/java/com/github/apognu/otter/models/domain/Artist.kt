@@ -1,5 +1,6 @@
 package com.github.apognu.otter.models.domain
 
+import com.couchbase.lite.Result
 import com.github.apognu.otter.models.dao.DecoratedArtistEntity
 
 data class Artist(
@@ -11,6 +12,15 @@ data class Artist(
 ) : SearchResult {
 
   companion object {
+    fun from(artist: Result) = artist.getDictionary(0).run {
+      Artist(
+        getInt("id"),
+        getString("name") ?: "N/A",
+        getArray("albums")?.count() ?: 0,
+        getString("cover")
+      )
+    }
+
     fun fromDecoratedEntity(entity: DecoratedArtistEntity): Artist = entity.run {
       Artist(
         id,

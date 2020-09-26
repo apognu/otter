@@ -50,7 +50,7 @@ class AlbumsFragment : OtterFragment<FunkwhaleAlbum, Album, AlbumsAdapter>() {
 
   companion object {
     fun new(artist: Artist, _art: String? = null): AlbumsFragment {
-      val art = _art ?: if (artist.albums?.isNotEmpty() == true) artist.cover() else ""
+      val art = _art ?: (artist.cover() ?: "")
 
       return AlbumsFragment().apply {
         arguments = bundleOf(

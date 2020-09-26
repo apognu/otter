@@ -1,51 +1,64 @@
 package com.github.apognu.otter.repositories
 
 import android.content.Context
-import androidx.lifecycle.LiveData
+import androidx.lifecycle.asLiveData
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import com.couchbase.lite.Database
+import com.couchbase.lite.Expression
+import com.couchbase.lite.Meta
+import com.github.apognu.otter.models.Mediator
 import com.github.apognu.otter.models.api.FunkwhaleArtist
-import com.github.apognu.otter.models.dao.DecoratedArtistEntity
-import com.github.apognu.otter.models.dao.OtterDatabase
-import com.github.apognu.otter.models.dao.toDao
-import com.github.apognu.otter.models.dao.toRealmDao
-import io.realm.Realm
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import com.github.apognu.otter.models.domain.Artist
+import com.github.apognu.otter.utils.AppContext
+import com.github.apognu.otter.viewmodels.CouchbasePagingSource
+import com.molo17.couchbase.lite.*
+import kotlinx.coroutines.GlobalScope
 
-class ArtistsRepository(override val context: Context, private val database: OtterDatabase) : Repository<FunkwhaleArtist>() {
+class ArtistsRepository(override val context: Context, private val database: Database) : Repository<FunkwhaleArtist>() {
+  private val mediator = Mediator(context, database, this)
+
   override val upstream =
-    HttpUpstream(HttpUpstream.Behavior.Progressive, "/api/v1/artists/?playable=true&ordering=id", FunkwhaleArtist.serializer())
+    HttpUpstream(HttpUpstream.Behavior.Progressive, "/api/v1/artists/?playable=true&ordering=name", FunkwhaleArtist.serializer())
 
-  override fun onDataFetched(data: List<FunkwhaleArtist>): List<FunkwhaleArtist> {
-    scope.launch(IO) {
-      data.forEach { artist ->
-        database.artists().insert(artist.toDao())
-
-        Realm.getDefaultInstance().executeTransaction { realm ->
-          realm.insertOrUpdate(artist.toRealmDao())
-        }
-
-        artist.albums?.forEach { album ->
-          database.albums().insert(album.toDao(artist.id))
+  val pager = Pager(
+    // config = PagingConfig(pageSize = AppContext.PAGE_SIZE, initialLoadSize = AppContext.PAGE_SIZE * 5, prefetchDistance = 10 * AppContext.PAGE_SIZE, maxSize = 25 * AppContext.PAGE_SIZE, enablePlaceholders = false),
+    config = PagingConfig(pageSize = AppContext.PAGE_SIZE, initialLoadSize = 10, prefetchDistance = 2),
+    pagingSourceFactory = {
+      CouchbasePagingSource(this).apply {
+        mediator.addListener {
+          invalidate()
         }
       }
-    }
+    },
+    remoteMediator = mediator
+  )
 
-    return super.onDataFetched(data)
-  }
+  fun insert(artists: List<FunkwhaleArtist>) = FunkwhaleArtist.persist(database, artists)
 
-  fun insert(artist: FunkwhaleArtist) = database.artists().insert(artist.toDao())
+  fun all(page: Int) =
+    select(all())
+      .from(database)
+      .where { "type" equalTo "artist" }
+      .orderBy { "order".ascending() }
+      .limit(AppContext.PAGE_SIZE, AppContext.PAGE_SIZE * page)
+      .execute()
 
-  fun allPaged() = database.artists().allPaged()
+  fun get(id: Int) =
+    select(all())
+      .from(database)
+      .where {
+        ("type" equalTo "artist") and ("_id" equalTo "artist:$id")
+      }
+      .limit(1)
+      .execute()
+      .next()
+      .run { Artist.from(this) }
 
-  fun all(): LiveData<List<DecoratedArtistEntity>> {
-    scope.launch(IO) {
-      fetch().collect()
-    }
-
-    return database.artists().allDecorated()
-  }
-
-  fun get(id: Int) = database.artists().getDecorated(id)
-  fun find(ids: List<Int>) = database.artists().findDecorated(ids)
+  fun find(ids: List<Int>) =
+    select(all())
+      .from(database)
+      .where { ("type" equalTo "artist") and (Meta.id.`in`(*ids.map { Expression.string("artist:$it") }.toTypedArray())) }
+      .asFlow()
+      .asLiveData(GlobalScope.coroutineContext)
 }

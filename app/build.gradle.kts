@@ -7,13 +7,12 @@ plugins {
   id("kotlin-android")
   id("kotlin-android-extensions")
   id("kotlin-kapt")
-  id("realm-android")
 
   id("org.jlleitschuh.gradle.ktlint") version "8.1.0"
   id("com.gladed.androidgitversion") version "0.4.10"
   id("com.github.triplet.play") version "2.4.2"
 
-  kotlin("plugin.serialization") version "1.3.70"
+  kotlin("plugin.serialization") version "1.3.72"
 }
 
 val props = Properties().apply {
@@ -149,12 +148,14 @@ dependencies {
 
   implementation("com.aliassadi:power-preference-lib:1.4.1")
   implementation("com.github.kittinunf.fuel:fuel:2.2.3")
-  implementation("com.github.kittinunf.fuel:fuel-coroutines:2.1.0")
-  implementation("com.github.kittinunf.fuel:fuel-android:2.1.0")
-  implementation("com.github.kittinunf.fuel:fuel-gson:2.1.0")
+  implementation("com.github.kittinunf.fuel:fuel-coroutines:2.2.3")
+  implementation("com.github.kittinunf.fuel:fuel-android:2.2.3")
   implementation("com.github.kittinunf.fuel:fuel-kotlinx-serialization:2.2.3")
   implementation("com.squareup.picasso:picasso:2.71828")
   implementation("jp.wasabeef:picasso-transformations:2.2.1")
+
+  implementation("com.couchbase.lite:couchbase-lite-android:2.7.1")
+  implementation("com.github.MOLO17:couchbase-lite-kotlin:1.0.0")
 
   debugImplementation("com.amitshekhar.android:debug-db:1.0.6")
 

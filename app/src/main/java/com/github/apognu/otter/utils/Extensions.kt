@@ -2,6 +2,9 @@ package com.github.apognu.otter.utils
 
 import android.os.Build
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import com.couchbase.lite.*
+import com.couchbase.lite.Array
 import com.github.apognu.otter.R
 import com.github.apognu.otter.fragments.BrowseFragment
 import com.github.apognu.otter.models.api.DownloadInfo
@@ -77,3 +80,32 @@ fun Request.authorize(): Request {
 }
 
 fun Download.getMetadata(): DownloadInfo? = AppContext.json.parse(DownloadInfo.serializer(), String(this.request.data))
+
+class DocumentSetLiveData(val query: Query) : LiveData<List<Result>>() {
+  private var token: ListenerToken? = null
+
+  override fun onActive() {
+    token = query.addChangeListener {
+      postValue(query.execute().allResults())
+    }
+
+    query.execute()
+  }
+
+  override fun onInactive() {
+    token?.let {
+      query.removeChangeListener(it)
+      token = null
+    }
+  }
+}
+
+fun Query.asLiveData() = DocumentSetLiveData(this)
+
+fun <T : Any> List<T>?.toCouchbaseArray(): Array {
+  this?.let {
+    return MutableArray(this)
+  }
+
+  return MutableArray(listOf())
+}
