@@ -145,8 +145,6 @@ class PlayerService : Service() {
       CommandBus.get().collect { command ->
         when (command) {
           is Command.RefreshService -> {
-            EventBus.send(Event.QueueChanged)
-
             if (queue.metadata.isNotEmpty()) {
               CommandBus.send(Command.RefreshTrack(queue.current()))
               EventBus.send(Event.StateChanged(player.playWhenReady))
