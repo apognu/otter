@@ -171,11 +171,19 @@
         </LinearLayout>
 
         <ImageButton
+          android:id="@+id/now_playing_details_add_to_playlist"
+          style="@style/IconButton"
+          android:layout_width="24dp"
+          android:layout_height="24dp"
+          android:layout_margin="8dp"
+          android:contentDescription="@string/playlist_add_to"
+          android:src="@drawable/add_to_playlist" />
+
+        <ImageButton
           android:id="@+id/now_playing_details_favorite"
           style="@style/IconButton"
           android:layout_width="24dp"
           android:layout_height="24dp"
-          android:layout_gravity="bottom|end"
           android:layout_margin="8dp"
           android:contentDescription="@string/alt_album_cover"
           android:src="@drawable/favorite" />

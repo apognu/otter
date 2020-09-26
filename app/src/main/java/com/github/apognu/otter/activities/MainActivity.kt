@@ -533,6 +533,10 @@ class MainActivity : AppCompatActivity() {
 
           favoriteRepository.fetch(Repository.Origin.Network.origin)
         }
+
+        now_playing_details_add_to_playlist.setOnClickListener {
+          CommandBus.send(Command.AddToPlaylist(listOf(track)))
+        }
       }
     }
   }
