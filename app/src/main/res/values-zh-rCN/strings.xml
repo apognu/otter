@@ -111,4 +111,15 @@
     <string name="track_info_details_track_copyright">版权所有</string>
     <string name="login_error_userinfo">我们无法检索有关您的用户的信息</string>
     <string name="login_cleartext">允许明文流量（HTTP）</string>
+    <string name="filters_followed">跟随内容</string>
+    <string name="filters_my_music">我的音乐</string>
+    <string name="fiters_all">所有的音乐</string>
+    <string name="filters">过滤</string>
+    <string name="playback_queue_clear">清除</string>
+    <string name="playback_play">播放</string>
+    <string name="settings_play_order_in_order_summary">你喜欢按顺序播放专辑</string>
+    <string name="settings_play_order_in_order">按顺序播放专辑</string>
+    <string name="settings_play_order_shuffle_summary">你喜欢随机播放专辑曲目吗</string>
+    <string name="settings_play_order_shuffle">专辑重新排序</string>
+    <string name="settings_play_order">首选播放顺序</string>
 </resources>
