@@ -16,7 +16,7 @@ You can get help and discuss Otter on Matrix on [#otter:matrix.org](https://matr
 
 A beta version of the app can be downloaded on [Google Play](https://play.google.com/store/apps/details?id=com.github.apognu.otter), on [IzzySoft](https://apt.izzysoft.de/fdroid/index/apk/com.github.apognu.otter) (F-Droid-compatible repository) or through [GitHub releases](https://github.com/apognu/otter/releases). Please bear with it, there **will** be bugs, there **will** be crashes and there **will** be performance or UX issues.
 
-Otter's features, as of this writing, are the following:
+Otter's features, are the following:
 
  * Basic collection browsing (artists, albums and tracks)
  * Playlists listing
@@ -26,7 +26,7 @@ Otter's features, as of this writing, are the following:
  * Caching of played tracks (played tracks work offline)
  * Download tracks for offline playback
  * Radios playback
- * Dark mode! 🎉
+ * Dark mode!! 🎉
 
 Otter will try to behave as you would expect a mobile music player to, meaning integrating with the OS's media controls (including headset controls) or pause on incoming calls. If there is anything you would like it to do, please [open an issue](https://github.com/apognu/otter/issues/new).
 
