@@ -112,4 +112,9 @@
         <item quantity="one">Lade %1$d Lied herunter</item>
         <item quantity="other">Lade %1$d Lieder herunter</item>
     </plurals>
+    <string name="settings_play_order_in_order">Alben in reihenfolgen spielen</string>
+    <string name="playback_queue_save">Speichern</string>
+    <string name="playlist_add_to_new">Neue Playlist…</string>
+    <string name="playlist_add_to_create">Playlist erstellen</string>
+    <string name="filters_my_music">Meine Musik</string>
 </resources>
