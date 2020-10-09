@@ -85,7 +85,7 @@
     <string name="alt_album_cover">Couverture de l\'album</string>
     <string name="alt_more_options">Plus d\'options</string>
     <string name="alt_track_info">Informations sur cette piste</string>
-    <string name="track_info_artist">Voir l\'artist</string>
+    <string name="track_info_artist">Voir l\'artiste</string>
     <string name="track_info_album">Voir l\'album</string>
     <string name="track_info_details">Informations</string>
     <string name="track_info_details_title">Détails de la piste</string>
