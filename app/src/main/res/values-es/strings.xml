@@ -118,4 +118,13 @@
     <string name="login_cleartext">Permitir tráfico sin cifrar (HTTP)</string>
     <string name="login_hostname">Servidor</string>
     <string name="login_welcome">Por favor, introduce los detalles de tu instancia de Funkwhale para acceder a su contenido</string>
+    <string name="filters_followed">Contenido seguido</string>
+    <string name="filters_my_music">Mi música</string>
+    <string name="fiters_all">Toda la música</string>
+    <string name="filters">Filtros</string>
+    <string name="playlist_added_to">Añadida a la lista de reproducción %s</string>
+    <string name="playlist_add_to_create">Crear lista de reproducción</string>
+    <string name="playlist_add_to_new">Nueva lista de reproducción…</string>
+    <string name="playlist_add_to">Añadir a la lista de reproducción</string>
+    <string name="playback_queue_save">Guardar</string>
 </resources>
