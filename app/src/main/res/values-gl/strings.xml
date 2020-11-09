@@ -1,2 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="settings_experiments">Activar características experimentais</string>
+    <string name="settings_night_mode_system_summary">O modo escuro seguirá os axustes do sistema</string>
+    <string name="settings_night_mode_system">Seguir axustes do sistema</string>
+    <string name="settings_night_mode_off_summary">O modo claro estará activo sempre</string>
+    <string name="settings_night_mode_off">Desactivado (modo claro)</string>
+    <string name="settings_night_mode_on_summary">O modo escuro estará sempre activo</string>
+    <string name="settings_night_mode_on">Activo sempre (modo escuro)</string>
+    <string name="settings_night_mode">Modo escuro</string>
+    <string name="settings_other">Outro</string>
+    <string name="settings_play_order_in_order_summary">Prefires reproducir os álbumes en orde</string>
+    <string name="settings_play_order_in_order">Reproducir álbumes en orde</string>
+    <string name="settings_play_order_shuffle_summary">Prefires mesturar as cancións dos álbumes</string>
+    <string name="settings_play_order_shuffle">Barallar álbumes</string>
+    <string name="settings_play_order">Orde preferida de reprodución</string>
+    <string name="settings_media_cache_size_summary">Utilizarase %d GB de almacenaxe para reprodución sen conexión</string>
+    <string name="settings_media_cache_size">Tamaño da caché</string>
+    <string name="settings_media_quality_summary_size">Reproducirase a canción co menor tamaño dispoñible</string>
+    <string name="settings_media_quality_summary_quality">Reproducirase a mellor calidade dispoñible</string>
+    <string name="settings_media_quality_size">O menor tamaño</string>
+    <string name="settings_media_quality_quality">A mellor calidade</string>
+    <string name="settings_media_quality">Calidade do multimedia</string>
+    <string name="settings_general">Xeral</string>
+    <string name="search_no_results">Non se atopan resultados para a consulta</string>
+    <string name="search_welcome">Escribe os termos de busca e preme enter para buscar a túa colección</string>
+    <string name="search_placeholder">Busca artistas, álbumes e cancións</string>
+    <string name="title_oss_licences">Licenzas de código aberto</string>
+    <string name="title_settings">Axustes</string>
+    <string name="title_downloads">Descargas</string>
+    <string name="toolbar_search">Buscar</string>
+    <string name="login_error_userinfo">Non puidemos obter información acerca da túa usuaria</string>
+    <string name="login_error_hostname_https">O servidor Funkwhale debería ser seguro a través de HTTPS</string>
+    <string name="login_error_hostname">Non semella ser un URL válido</string>
+    <string name="login_logging_in">Conectando</string>
+    <string name="login_submit">Conectar</string>
+    <string name="login_password">Contrasinal</string>
+    <string name="login_username">Nome de usuaria</string>
+    <string name="login_anonymous">Autentificación anónima</string>
+    <string name="login_cleartext">Permitir tráfico sen cifrar (HTTP)</string>
+    <string name="login_hostname">Nome do servidor</string>
+    <string name="login_welcome">Escribe os datos da túa instancia Funkwhale para acceder ó seu contido</string>
+</resources>
