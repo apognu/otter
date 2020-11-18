@@ -117,4 +117,5 @@
     <string name="playlist_add_to_new">Neue Playlist…</string>
     <string name="playlist_add_to_create">Playlist erstellen</string>
     <string name="filters_my_music">Meine Musik</string>
+    <string name="settings_play_order">Bevorzugte Wiedergabereihenfolge</string>
 </resources>
