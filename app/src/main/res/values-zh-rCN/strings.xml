@@ -122,4 +122,9 @@
     <string name="settings_play_order_shuffle_summary">你喜欢随机播放专辑曲目吗</string>
     <string name="settings_play_order_shuffle">专辑重新排序</string>
     <string name="settings_play_order">首选播放顺序</string>
+    <string name="playlist_added_to">播放列表已添加%s</string>
+    <string name="playlist_add_to_create">创建播放列表</string>
+    <string name="playlist_add_to_new">新播放列表…</string>
+    <string name="playlist_add_to">加入播放列表</string>
+    <string name="playback_queue_save">保存</string>
 </resources>
