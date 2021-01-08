@@ -114,4 +114,20 @@
     <string name="login_cleartext">Разрешить незашифрованный тарфик (HTTP)</string>
     <string name="login_hostname">Доменное имя</string>
     <string name="login_welcome">Введите данные вашего инстанса Funkwhale для доступа к контенту</string>
+    <string name="playlist_add_to_new">Новый плейлист...</string>
+    <string name="filters_followed">Подписки на контент</string>
+    <string name="filters_my_music">Моя музыка</string>
+    <string name="fiters_all">Вся музыка</string>
+    <string name="filters">Фильтры</string>
+    <string name="playlist_added_to">Добавлено в плейлист %s</string>
+    <string name="playlist_add_to_create">Создать плейлист</string>
+    <string name="playlist_add_to">Добавить в плейлист</string>
+    <string name="playback_queue_save">Сохранить</string>
+    <string name="playback_queue_clear">Очистить</string>
+    <string name="playback_play">Играть</string>
+    <string name="settings_play_order_in_order_summary">Предпочитаемый порядок проигрывания альбомов</string>
+    <string name="settings_play_order_in_order">Проигрывать альбомы в порядке</string>
+    <string name="settings_play_order_shuffle_summary">Перемешивать трэки в альбомах</string>
+    <string name="settings_play_order_shuffle">Перемешать альбомы</string>
+    <string name="settings_play_order">Предпочитаемый порядок</string>
 </resources>
