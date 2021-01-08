@@ -114,7 +114,7 @@
     <string name="login_cleartext">Разрешить незашифрованный тарфик (HTTP)</string>
     <string name="login_hostname">Доменное имя</string>
     <string name="login_welcome">Введите данные вашего инстанса Funkwhale для доступа к контенту</string>
-    <string name="playlist_add_to_new">Новый плейлист...</string>
+    <string name="playlist_add_to_new">Новый плейлист…</string>
     <string name="filters_followed">Подписки на контент</string>
     <string name="filters_my_music">Моя музыка</string>
     <string name="fiters_all">Вся музыка</string>
