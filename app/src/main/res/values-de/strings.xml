@@ -123,4 +123,7 @@
     <string name="playlist_add_to">Zur Wiedergabeliste hinzufügen</string>
     <string name="playback_queue_clear">Leeren</string>
     <string name="playback_play">Abspielen</string>
+    <string name="fiters_all">Alle Musikinhalte</string>
+    <string name="filters_followed">Gefolgte Inhalte</string>
+    <string name="settings_play_order_shuffle">Alben zufällig wiedergeben</string>
 </resources>
