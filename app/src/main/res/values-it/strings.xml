@@ -125,5 +125,5 @@
     <string name="login_anonymous">Autenticazione anonima</string>
     <string name="login_cleartext">Consenti traffico in chiaro (HTTP)</string>
     <string name="login_hostname">Nome dell\'host</string>
-    <string name="login_welcome">Inserisci i dettagli della tua istanza Funkwhale per accedere al suo contenuto</string>
+    <string name="login_welcome">Inserisci i dettagli della tua istanza di Funkwhale per accedere al suo contenuto</string>
 </resources>
