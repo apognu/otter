@@ -16,7 +16,11 @@ data class PlaylistAdd(val tracks: List<Int>, val allow_duplicates: Boolean)
 
 class PlaylistsRepository(override val context: Context?) : Repository<Playlist, PlaylistsCache>() {
   override val cacheId = "tracks-playlists"
-  override val upstream = HttpUpstream<Playlist, OtterResponse<Playlist>>(HttpUpstream.Behavior.Progressive, "/api/v1/playlists/?playable=true&ordering=name", object : TypeToken<PlaylistsResponse>() {}.type)
+  override val upstream = HttpUpstream<Playlist, OtterResponse<Playlist>>(
+    HttpUpstream.Behavior.Progressive,
+    "/api/v1/playlists/?playable=true&ordering=name",
+    object : TypeToken<PlaylistsResponse>() {}.type
+  )
 
   override fun cache(data: List<Playlist>) = PlaylistsCache(data)
   override fun uncache(reader: BufferedReader) = gsonDeserializerOf(PlaylistsCache::class.java).deserialize(reader)
@@ -24,7 +28,11 @@ class PlaylistsRepository(override val context: Context?) : Repository<Playlist,
 
 class ManagementPlaylistsRepository(override val context: Context?) : Repository<Playlist, PlaylistsCache>() {
   override val cacheId = "tracks-playlists-management"
-  override val upstream = HttpUpstream<Playlist, OtterResponse<Playlist>>(HttpUpstream.Behavior.AtOnce, "/api/v1/playlists/?scope=me&ordering=name", object : TypeToken<PlaylistsResponse>() {}.type)
+  override val upstream = HttpUpstream<Playlist, OtterResponse<Playlist>>(
+    HttpUpstream.Behavior.AtOnce,
+    "/api/v1/playlists/?scope=me&ordering=name",
+    object : TypeToken<PlaylistsResponse>() {}.type
+  )
 
   override fun cache(data: List<Playlist>) = PlaylistsCache(data)
   override fun uncache(reader: BufferedReader) = gsonDeserializerOf(PlaylistsCache::class.java).deserialize(reader)
@@ -51,7 +59,7 @@ class ManagementPlaylistsRepository(override val context: Context?) : Repository
   fun add(id: Int, tracks: List<Track>) {
     val body = PlaylistAdd(tracks.map { it.id }, false)
 
-    val request = Fuel.post(mustNormalizeUrl("/api/v1/playlists/${id}/add/")).apply {
+    val request = Fuel.post(mustNormalizeUrl("/api/v1/playlists/$id/add/")).apply {
       if (!Settings.isAnonymous()) {
         header("Authorization", "Bearer ${Settings.getAccessToken()}")
       }
@@ -68,7 +76,7 @@ class ManagementPlaylistsRepository(override val context: Context?) : Repository
   suspend fun remove(id: Int, track: Track, index: Int) {
     val body = mapOf("index" to index)
 
-    val request = Fuel.post(mustNormalizeUrl("/api/v1/playlists/${id}/remove/")).apply {
+    val request = Fuel.post(mustNormalizeUrl("/api/v1/playlists/$id/remove/")).apply {
       if (!Settings.isAnonymous()) {
         header("Authorization", "Bearer ${Settings.getAccessToken()}")
       }
@@ -83,7 +91,7 @@ class ManagementPlaylistsRepository(override val context: Context?) : Repository
   fun move(id: Int, from: Int, to: Int) {
     val body = mapOf("from" to from, "to" to to)
 
-    val request = Fuel.post(mustNormalizeUrl("/api/v1/playlists/${id}/move/")).apply {
+    val request = Fuel.post(mustNormalizeUrl("/api/v1/playlists/$id/move/")).apply {
       if (!Settings.isAnonymous()) {
         header("Authorization", "Bearer ${Settings.getAccessToken()}")
       }

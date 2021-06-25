@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.FrameLayout
 
-class  DisableableFrameLayout : FrameLayout {
+class DisableableFrameLayout : FrameLayout {
   var callback: ((MotionEvent?) -> Boolean)? = null
 
   constructor(context: Context) : super(context)

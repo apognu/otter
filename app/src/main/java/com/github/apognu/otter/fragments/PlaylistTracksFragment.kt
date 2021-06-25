@@ -12,7 +12,6 @@ import com.github.apognu.otter.adapters.PlaylistTracksAdapter
 import com.github.apognu.otter.repositories.FavoritesRepository
 import com.github.apognu.otter.repositories.ManagementPlaylistsRepository
 import com.github.apognu.otter.repositories.PlaylistTracksRepository
-import com.github.apognu.otter.repositories.Repository
 import com.github.apognu.otter.utils.*
 import com.squareup.picasso.Picasso
 import jp.wasabeef.picasso.transformations.RoundedCornersTransformation

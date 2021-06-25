@@ -3,7 +3,6 @@ package com.github.apognu.otter.fragments
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.lifecycle.lifecycleScope
