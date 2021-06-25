@@ -135,7 +135,7 @@ dependencies {
   implementation("com.github.PaulWoitaschek.ExoPlayer-Extensions:extension-opus:2.11.4") {
     isTransitive = false
   }
-  implementation("com.github.PaulWoitaschek.ExoPlayer-Extensions:extension-flac:2.11.4" ){
+  implementation("com.github.PaulWoitaschek.ExoPlayer-Extensions:extension-flac:2.11.4") {
     isTransitive = false
   }
 
