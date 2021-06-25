@@ -6,7 +6,6 @@
         <item quantity="few">Загрузка %1$d треков</item>
         <item quantity="many">Загрузка %1$d треков</item>
     </plurals>
-    <string name="only_my_music">Только моя музыка</string>
     <plurals name="playlist_description">
         <item quantity="one">%1$d трек • %2$s</item>
         <item quantity="few">%1$d трека • %2$s</item>

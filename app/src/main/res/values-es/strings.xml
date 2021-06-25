@@ -4,7 +4,6 @@
         <item quantity="one">Descargando %1$d pista</item>
         <item quantity="other">Descargando %1$d pistas</item>
     </plurals>
-    <string name="only_my_music">Sólo mi música</string>
     <plurals name="playlist_description">
         <item quantity="one">%1$d pista • %2$s</item>
         <item quantity="other">%1$d pistas • %2$s</item>

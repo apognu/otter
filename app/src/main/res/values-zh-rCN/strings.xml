@@ -4,7 +4,6 @@
         <item quantity="one">下载 %1$d 曲目</item>
         <item quantity="other"/>
     </plurals>
-    <string name="only_my_music">只有我的音乐</string>
     <plurals name="playlist_description">
         <item quantity="one">%1$d 曲目 • %2$s</item>
         <item quantity="other"/>

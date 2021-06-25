@@ -107,12 +107,12 @@
     <string name="settings_crash_report_description">Nur Otters Protokolle der letzten 5 Minuten vor dem Crash werden werden gespeichert</string>
     <string name="settings_crash_report_title">Kopiere Absturzberichte</string>
     <string name="radio_favorites_description">Spielen Sie Ihre Lieblingsmusik in einer nicht endenen Glücksschleife.</string>
-    <string name="only_my_music">Nur meine Musik</string>
     <plurals name="downloads_description">
         <item quantity="one">Lade %1$d Lied herunter</item>
         <item quantity="other">Lade %1$d Lieder herunter</item>
     </plurals>
     <string name="settings_play_order_in_order">Alben in reihenfolgen spielen</string>
+    <string name="settings_play_order_in_order_summary">Alben werden der Reihe nach gespielt</string>
     <string name="playback_queue_save">Speichern</string>
     <string name="playlist_add_to_new">Neue Playlist…</string>
     <string name="playlist_add_to_create">Playlist erstellen</string>
@@ -126,4 +126,5 @@
     <string name="fiters_all">Alle Musikinhalte</string>
     <string name="filters_followed">Gefolgte Inhalte</string>
     <string name="settings_play_order_shuffle">Alben zufällig wiedergeben</string>
+    <string name="settings_play_order_shuffle_summary">Zufallswiedergabe ist aktiviert</string>
 </resources>

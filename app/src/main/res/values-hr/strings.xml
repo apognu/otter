@@ -11,7 +11,7 @@
         <item quantity="other">%1$d pjesme • %2$s</item>
     </plurals>
     <plurals name="album_count">
-        <item quantity="one">Album</item>
+        <item quantity="one">%d Album</item>
         <item quantity="few">Albumi</item>
         <item quantity="other">Albumi</item>
     </plurals>
