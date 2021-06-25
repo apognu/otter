@@ -19,7 +19,7 @@
       android:layout_marginBottom="32dp"
       android:contentDescription="@string/alt_app_logo"
       android:src="@drawable/otter"
-      android:tint="@android:color/white" />
+      app:tint="@android:color/white" />
 
     <TextView
       android:layout_width="match_parent"
