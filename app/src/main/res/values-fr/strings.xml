@@ -8,7 +8,7 @@
     <string name="login_password">Mot de passe</string>
     <string name="login_submit">Se connecter</string>
     <string name="login_logging_in">Connexion</string>
-    <string name="login_error_hostname">Cela ne semble pas être un nom d\hôte valide</string>
+    <string name="login_error_hostname">Cela ne semble pas être un nom d\'hôte valide</string>
     <string name="login_error_hostname_https">Le nom d\'hôte Funkwhale devrait être sécurisé à travers HTTPS</string>
     <string name="login_error_userinfo">Nous n\'avons pas pu récupérer les informations à propos de votre utilisateur</string>
     <string name="toolbar_search">Rechercher</string>
@@ -85,7 +85,7 @@
     <string name="alt_album_cover">Couverture de l\'album</string>
     <string name="alt_more_options">Plus d\'options</string>
     <string name="alt_track_info">Informations sur cette piste</string>
-    <string name="track_info_artist">Voir l\'artist</string>
+    <string name="track_info_artist">Voir l\'artiste</string>
     <string name="track_info_album">Voir l\'album</string>
     <string name="track_info_details">Informations</string>
     <string name="track_info_details_title">Détails de la piste</string>
