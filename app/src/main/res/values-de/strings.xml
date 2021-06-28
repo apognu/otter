@@ -126,4 +126,6 @@
     <string name="fiters_all">Alle Musikinhalte</string>
     <string name="filters_followed">Gefolgte Inhalte</string>
     <string name="settings_play_order_shuffle">Alben zufällig wiedergeben</string>
+    <string name="settings_play_order_shuffle_summary">Alben werden in zufälliger Reihenfolge abgespielt</string>
+    <string name="settings_play_order_in_order_summary">Alben der Reihe nach abspielen</string>
 </resources>
