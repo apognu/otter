@@ -1,2 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="settings_experiments">実験的な機能を有効にする</string>
+    <string name="title_settings">設定</string>
+    <string name="title_oss_licences">オープンソースライセンス</string>
+    <string name="settings_general">一般設定</string>
+    <string name="settings_media_cache_size">メディアのキャッシュサイズ</string>
+    <string name="settings_media_cache_size_summary">オフライン再生向けの曲の保存のために、%d GBが使われます</string>
+    <string name="settings_night_mode">ダークモード</string>
+    <string name="settings_other">その他の設定</string>
+    <string name="settings_experiments_restart_title">アプリの再起動が必要です</string>
+    <string name="settings_experiments_restart_content">変更を適用するためにアプリを終了し、再起動して下さい</string>
+    <string name="settings_information">情報</string>
+    <string name="settings_information_repository_title">Gitリポジトリ</string>
+    <string name="settings_information_repository_description">Otterは、Antoine POPINEAU (apognu)によって開発されました</string>
+    <string name="settings_version_title">バージョン</string>
+    <string name="settings_information_license_title">ライセンス</string>
+    <string name="settings_information_license_description">MITライセンス</string>
+    <string name="settings_crash_report_title">クラッシュログのコピー</string>
+    <string name="login_username">ユーザーネーム</string>
+    <string name="login_password">パスワード</string>
+    <string name="login_submit">ログイン</string>
+    <string name="login_logging_in">ログインしています</string>
+    <string name="toolbar_search">検索</string>
+    <string name="title_downloads">ダウンロード一覧</string>
+    <string name="search_placeholder">アーティスト、アルバム、曲を探す</string>
+    <string name="settings_experiments_description">あなた自身のリスクで使用してください。アプリがフリーズしたり、クラッシュするかもしれません</string>
+    <string name="settings_crash_report_copied">クリップボードに前回のクラッシュレポートがコピーされました</string>
+</resources>
