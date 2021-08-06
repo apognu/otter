@@ -1,2 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="login_welcome">Vær så snill å oppføre detaljene av Funkwhale instansen din for å få tilgang til inholdene sin</string>
+    <string name="login_anonymous">Anonym autentifisering</string>
+    <string name="login_username">Brukernavn</string>
+    <string name="login_password">Passord</string>
+    <string name="login_submit">Innkoble</string>
+    <string name="login_logging_in">Logger på</string>
+    <string name="login_error_hostname">Det kan ikke forstås som en gyldig url</string>
+    <string name="login_error_hostname_https">Funkwhale vertsnavnet skulle bli sikret med HTTPS</string>
+    <string name="login_error_userinfo">Vi kunne ikke få informasjoner om brukeren din</string>
+    <string name="toolbar_search">Søk</string>
+    <string name="title_downloads">Nedlastinger</string>
+    <string name="title_settings">Instillinger</string>
+    <string name="title_oss_licences">Open source lisenser</string>
+    <string name="search_welcome">Taste inn søkbegrepene dine oppi og press enter til å søke i sammlingen din</string>
+    <string name="search_no_results">Ingen resultater funnet for ettersøkningen din</string>
+    <string name="settings_general">Generell</string>
+    <string name="settings_media_quality">Mediekvalitet</string>
+    <string name="settings_media_quality_size">Smålest størrelse</string>
+    <string name="settings_media_quality_summary_quality">Best disponible versjon skal avspilles</string>
+    <string name="settings_media_quality_summary_size">Minst disponibelt stykke skal avspilles</string>
+    <string name="settings_media_cache_size">Media cache størrelse</string>
+    <string name="settings_media_cache_size_summary">%d GB skal brukes til å lagre stykker for offline avspilling</string>
+    <string name="search_placeholder">Søk etter kunstnere, albumer og stykker</string>
+    <string name="settings_media_quality_quality">Best kvalitet</string>
+</resources>
