@@ -11,9 +11,9 @@
         <item quantity="other">%1$d pjesme • %2$s</item>
     </plurals>
     <plurals name="album_count">
-        <item quantity="one">Album</item>
-        <item quantity="few">Albumi</item>
-        <item quantity="other">Albumi</item>
+        <item quantity="one">%d album</item>
+        <item quantity="few">%d albuma</item>
+        <item quantity="other">%d albuma</item>
     </plurals>
     <string name="filters_followed">Praćeni sadržaj</string>
     <string name="filters_my_music">Moja glazba</string>
