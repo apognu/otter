@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <plurals name="downloads_description">
-        <item quantity="one">下载 %1$d 曲目</item>
-        <item quantity="other"/>
+        <item quantity="other">下载 %1$d 曲目…</item>
     </plurals>
     <string name="only_my_music">只有我的音乐</string>
     <plurals name="playlist_description">
         <item quantity="one">%1$d 曲目 • %2$s</item>
         <item quantity="other"/>
     </plurals>
-    <string name="logout_content">是否确实要退出此 Funkwhale 实例？</string>
+    <string name="logout_content">退出此 Funkwhale 实例？</string>
     <string name="logout_title">登出</string>
-    <string name="radio_less_listened_description">听一些你通常不听的曲目。是时候恢复一些平衡了。</string>
-    <string name="radio_less_listened_title">少听</string>
+    <string name="radio_less_listened_description">听一些你通常不听的曲目。</string>
+    <string name="radio_less_listened_title">听的最少的</string>
     <string name="radio_random_description">完全随机挑选，也许你会发现新的东西？</string>
     <string name="radio_random_title">随机</string>
-    <string name="radio_playback_error">尝试播放此电台时出错</string>
+    <string name="radio_playback_error">无法播放此电台</string>
     <string name="track_info_details_track_instance">Funkwhale 实例</string>
     <string name="track_info_details_track_bitrate">比特率</string>
     <string name="track_info_details_track_position">专辑位置</string>
@@ -27,7 +26,7 @@
     <string name="track_info_details">信息</string>
     <string name="track_info_album">进入专辑</string>
     <string name="track_info_artist">转到艺术家</string>
-    <string name="alt_track_info">有关音乐的信息</string>
+    <string name="alt_track_info">音乐信息</string>
     <string name="alt_more_options">更多操作</string>
     <string name="alt_album_cover">专辑封面</string>
     <string name="alt_artist_art">艺术家</string>
@@ -58,7 +57,7 @@
     <string name="artists">艺术家</string>
     <string name="settings_logout">登出</string>
     <string name="settings_crash_report_copied">上次崩溃报告已复制到剪贴板</string>
-    <string name="settings_crash_report_description">仅从崩溃前的最后 5 分钟开始，仅包含 Otter 的日志</string>
+    <string name="settings_crash_report_description">仅收集从崩溃前的最后 5 分钟开始的 Otter日志</string>
     <string name="settings_crash_report_title">复制崩溃日志</string>
     <string name="settings_information_license_description">MIT许可证</string>
     <string name="settings_information_license_title">许可证</string>
@@ -66,10 +65,10 @@
     <string name="settings_information_repository_description">Otter来自Antoine POPINEAU (apognu)</string>
     <string name="settings_information_repository_title">代码库</string>
     <string name="settings_information">信息</string>
-    <string name="settings_experiments_restart_content">请终止并重新启动应用程序，以便此更改生效</string>
-    <string name="settings_experiments_restart_title">需要重新启动</string>
-    <string name="settings_experiments_description">自行承担使用风险，可能会冻结或崩溃应用</string>
-    <string name="settings_experiments">启用实验功能</string>
+    <string name="settings_experiments_restart_content">请关闭并重新启动应用程序，以应用新设置</string>
+    <string name="settings_experiments_restart_title">应用需要重新启动</string>
+    <string name="settings_experiments_description">自行承担使用风险，可能会冻结或崩溃应用。</string>
+    <string name="settings_experiments">实验功能</string>
     <string name="settings_night_mode_system_summary">夜间模式将遵循系统设置</string>
     <string name="settings_night_mode_system">遵循系统设置</string>
     <string name="settings_night_mode_off_summary">明亮模式将始终打开</string>
@@ -87,15 +86,15 @@
     <string name="settings_media_quality">媒体质量</string>
     <string name="settings_general">常规</string>
     <string name="search_no_results">未找到查询结果</string>
-    <string name="search_welcome">在上面输入您的搜索词，然后按Enter搜索您的收藏</string>
+    <string name="search_welcome">在上面输入您的搜索词，然后按 Enter 搜索您的收藏</string>
     <string name="search_placeholder">搜索艺术家、专辑、曲目</string>
-    <string name="title_oss_licences">开放源码许可证</string>
+    <string name="title_oss_licences">自由授权条款</string>
     <string name="title_settings">设置</string>
     <string name="title_downloads">下载</string>
     <string name="toolbar_search">搜索</string>
     <string name="login_error_hostname_https">应通过HTTPS保护Funkwhale主机名</string>
-    <string name="login_error_hostname">这不能理解为有效的 URL</string>
-    <string name="login_logging_in">登录中</string>
+    <string name="login_error_hostname">请先输入一个有效的 URL</string>
+    <string name="login_logging_in">登录中…</string>
     <string name="login_submit">登录</string>
     <string name="login_password">密码</string>
     <string name="login_username">用户名</string>
@@ -109,7 +108,7 @@
     <string name="radio_instance_radios">实例电台</string>
     <string name="track_info_details_track_license">许可证</string>
     <string name="track_info_details_track_copyright">版权所有</string>
-    <string name="login_error_userinfo">我们无法检索有关您的用户的信息</string>
+    <string name="login_error_userinfo">我们无法获取用户信息</string>
     <string name="login_cleartext">允许明文流量（HTTP）</string>
     <string name="filters_followed">跟随内容</string>
     <string name="filters_my_music">我的音乐</string>
@@ -122,7 +121,7 @@
     <string name="settings_play_order_shuffle_summary">你喜欢随机播放专辑曲目吗</string>
     <string name="settings_play_order_shuffle">专辑重新排序</string>
     <string name="settings_play_order">首选播放顺序</string>
-    <string name="playlist_added_to">播放列表已添加%s</string>
+    <string name="playlist_added_to">添加到播放列表 %s</string>
     <string name="playlist_add_to_create">创建播放列表</string>
     <string name="playlist_add_to_new">新播放列表…</string>
     <string name="playlist_add_to">加入播放列表</string>
