@@ -32,8 +32,8 @@
     <string name="login_error_userinfo">Non se puido obter info da usuaria</string>
     <string name="login_error_hostname_https">O servidor Funkwhale debería ser seguro a través de HTTPS</string>
     <string name="login_error_hostname">Escribe un URL válido</string>
-    <string name="login_logging_in">Conectando…</string>
-    <string name="login_submit">Conectar</string>
+    <string name="login_logging_in">Accedendo…</string>
+    <string name="login_submit">Acceder</string>
     <string name="login_password">Contrasinal</string>
     <string name="login_username">Nome de usuaria</string>
     <string name="login_anonymous">Autentificación anónima</string>
@@ -57,8 +57,8 @@
         <item quantity="one">%1$d pista • %2$s</item>
         <item quantity="other">%1$d pistas • %2$s</item>
     </plurals>
-    <string name="logout_content">Queres desconectar desta instancia Funkwhale\?</string>
-    <string name="logout_title">Desconectar</string>
+    <string name="logout_content">Queres saír da sesión en Funkwhale\?</string>
+    <string name="logout_title">Pechar sesión</string>
     <string name="radio_less_listened_description">Escoita pistas que non adoitas escoitar.</string>
     <string name="radio_less_listened_title">Menos reproducido</string>
     <string name="radio_random_description">Escollas ao chou, igoal descubres algo novo\?</string>
@@ -113,7 +113,7 @@
     <string name="tracks">Pistas</string>
     <string name="albums">Álbumes</string>
     <string name="artists">Artistas</string>
-    <string name="settings_logout">Desconectar</string>
+    <string name="settings_logout">Pechar sesión</string>
     <string name="settings_crash_report_copied">Copiouse ao portapapeis o último informe de fallos</string>
     <string name="settings_crash_report_description">Só se recollen os rexistros de Otter dos 5 minutos anteriores ao fallo</string>
     <string name="settings_crash_report_title">Copiar rexistro de fallos</string>
