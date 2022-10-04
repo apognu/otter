@@ -1,2 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="login_submit">Masuk</string>
+    <string name="settings_other">Lainnya</string>
+    <string name="settings_night_mode">Mode gelap</string>
+    <string name="settings_night_mode_system">Ikuti sistem</string>
+    <string name="settings_information">Informasi</string>
+    <string name="settings_version_title">Versi</string>
+    <string name="settings_information_license_title">Lisensi</string>
+    <string name="settings_logout">Keluar</string>
+    <string name="artists">Artis</string>
+    <string name="albums">Album</string>
+    <string name="login_hostname">Hostname</string>
+    <string name="login_anonymous">Autentikasi anonim</string>
+    <string name="login_username">Nama pengguna</string>
+    <string name="login_password">Sandi</string>
+    <string name="login_logging_in">Sedang masuk…</string>
+    <string name="login_error_userinfo">Tidak dapat memuat informasi pengguna</string>
+    <string name="toolbar_search">Telusuri</string>
+    <string name="title_downloads">Unduhan</string>
+    <string name="title_settings">Pengaturan</string>
+    <string name="title_oss_licences">Lisensi libre</string>
+    <string name="search_no_results">Tak ada hasil</string>
+    <string name="settings_general">Umum</string>
+    <string name="settings_media_quality">Kualitas media</string>
+    <string name="login_error_hostname">Masukkan URL yang sah terlebih dahulu</string>
+    <string name="search_welcome">Masukkan pencarian Anda di atas dan tekan enter untuk menelusuri koleksi Anda</string>
+    <string name="settings_media_quality_quality">Kualitas terbaik</string>
+    <string name="settings_media_quality_size">Ukuran terkecil</string>
+    <string name="settings_media_quality_summary_quality">Versi terbaik yang akan diputar</string>
+    <string name="settings_media_cache_size">Ukuran cache untuk media</string>
+    <string name="settings_play_order_in_order">Putar album sesuai urutan</string>
+    <string name="settings_play_order_in_order_summary">Anda memilih untuk memutar album sesuai urutan</string>
+    <string name="settings_night_mode_on">Selalu aktif (mode gelap)</string>
+    <string name="settings_night_mode_on_summary">Mode gelap akan selalu aktif</string>
+    <string name="settings_night_mode_off">Selalu nonaktif (mode cerah)</string>
+    <string name="settings_night_mode_off_summary">Mode cerah akan selalu aktif</string>
+    <string name="settings_night_mode_system_summary">Mode gelap akan mengikuti sistem</string>
+    <string name="settings_experiments">Fitur eksperimental</string>
+    <string name="settings_experiments_restart_title">Aplikasi harus dimulai ulang</string>
+    <string name="settings_experiments_restart_content">Tutup kemudian mulai kembali aplikasi untuk menggunakan pengaturan baru</string>
+    <string name="settings_information_repository_title">Repositori</string>
+    <string name="settings_information_repository_description">Otter oleh Antoine POPINEAU (apognu)</string>
+    <string name="settings_information_license_description">Lisensi MIT</string>
+</resources>
