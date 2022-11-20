@@ -118,7 +118,7 @@
     <string name="login_cleartext">Permitir tráfico sin cifrar (HTTP)</string>
     <string name="login_hostname">Servidor</string>
     <string name="login_welcome">Por favor, introduzca los datos de una instancia de Funkwhale para acceder a su contenido</string>
-    <string name="filters_followed">Contenidos seguidos</string>
+    <string name="filters_followed">Contenido seguido</string>
     <string name="filters_my_music">Mi música</string>
     <string name="fiters_all">Toda la música</string>
     <string name="filters">Filtros</string>
