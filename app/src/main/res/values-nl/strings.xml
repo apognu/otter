@@ -39,9 +39,9 @@
     <string name="login_submit">Log in</string>
     <string name="login_password">Wachtwoord</string>
     <string name="login_username">Gebruikersnaam</string>
-    <string name="login_anonymous">Anoniem aanmelden</string>
+    <string name="login_anonymous">Anoniem inloggen</string>
     <string name="login_hostname">Servernaam</string>
-    <string name="login_welcome">Voer de gegevens van je Funkwhale-server in om toegang te krijgen tot je media</string>
+    <string name="login_welcome">Voer de gegevens van een Funkwhale-server in om toegang te krijgen tot de media</string>
     <string name="track_info_details_track_duration">Duur</string>
     <string name="track_info_details_track_title">Nummer-titel</string>
     <string name="track_info_details_album">Album</string>
@@ -84,5 +84,5 @@
     <string name="settings_experiments_restart_content">Beëindig en herstart de app om nieuwe instelling toe te passen</string>
     <string name="settings_experiments_restart_title">Opnieuw opstarten vereist</string>
     <string name="settings_experiments_description">Gebruik op eigen risico; kan de app bevriezen of crashen</string>
-    <string name="login_cleartext">Niet-versleutelde verbindingen toestaan (HTTP)</string>
+    <string name="login_cleartext">Onversleutelde verbindingen toestaan (http)</string>
 </resources>
